@@ -1,0 +1,19 @@
+# 배포에서 제외 — 보관본·개발용·미사용 자산
+index.A.html
+index.v1.html
+app.v1.js
+_render.html
+_*.html
+
+# MS 시스템 폰트 — 재배포 금지
+assets/fonts/impact.ttf
+assets/fonts/times.ttf
+assets/fonts/bahnschrift.ttf
+
+# 이번 룩에 안 쓰는 폰트 (로컬에는 남겨둔다)
+assets/fonts/Anton-Regular.ttf
+assets/fonts/Anton-OFL.txt
+assets/fonts/Barlow-Regular.ttf
+assets/fonts/Barlow-Medium.ttf
+assets/fonts/Barlow-OFL.txt
+assets/fonts/Tinos-Italic.ttf

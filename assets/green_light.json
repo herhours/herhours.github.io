@@ -1,0 +1,122 @@
+{
+ "phrases": [
+  {
+   "start": 42,
+   "end": 342,
+   "text": "Closer now",
+   "words": [
+    {
+     "t": 42,
+     "w": "Closer"
+    },
+    {
+     "t": 78,
+     "w": "now"
+    }
+   ]
+  },
+  {
+   "start": 342,
+   "end": 483,
+   "text": "Closer still",
+   "words": [
+    {
+     "t": 342,
+     "w": "Closer"
+    },
+    {
+     "t": 366,
+     "w": "still"
+    }
+   ]
+  },
+  {
+   "start": 483,
+   "end": 768,
+   "text": "Look how quiet all that light can be",
+   "words": [
+    {
+     "t": 483,
+     "w": "Look"
+    },
+    {
+     "t": 525,
+     "w": "how"
+    },
+    {
+     "t": 540,
+     "w": "quiet"
+    },
+    {
+     "t": 570,
+     "w": "all"
+    },
+    {
+     "t": 597,
+     "w": "that"
+    },
+    {
+     "t": 615,
+     "w": "light"
+    },
+    {
+     "t": 636,
+     "w": "can"
+    },
+    {
+     "t": 678,
+     "w": "be"
+    }
+   ]
+  },
+  {
+   "start": 768,
+   "end": 960,
+   "text": "Look how quiet all that light can be",
+   "words": [
+    {
+     "t": 768,
+     "w": "Look"
+    },
+    {
+     "t": 810,
+     "w": "how"
+    },
+    {
+     "t": 828,
+     "w": "quiet"
+    },
+    {
+     "t": 855,
+     "w": "all"
+    },
+    {
+     "t": 897,
+     "w": "that"
+    },
+    {
+     "t": 909,
+     "w": "light"
+    },
+    {
+     "t": 933,
+     "w": "can"
+    },
+    {
+     "t": 939,
+     "w": "be"
+    }
+   ]
+  }
+ ],
+ "title1": "GREEN LIGHT",
+ "title2": "ON THE WINDOW",
+ "tag": "♪ GREEN LIGHT ON THE WINDOW",
+ "label": "VIOLET · MIDNIGHT TRAIN TO THE NORTHERN LIGHTS",
+ "brand": "VIOLET",
+ "accent": "#8CFFB0",
+ "ink": "#070b16",
+ "cream": "#f3f0e8",
+ "shot": 80,
+ "crossfade": 12
+}

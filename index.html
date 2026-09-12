@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#06070B">
+<title>Her Hours Shorts</title>
+<link rel="stylesheet" href="./ui.css">
+<script type="importmap">{"imports":{"mediabunny":"./vendor/mediabunny.min.mjs"}}</script>
+<style>
+/* ---- Design B: 무대 + 도구줄 (stage & rail) — the reel fills the screen, tools float on it ---- */
+body{position:fixed;inset:0}
+.stage{position:absolute;inset:0;padding:0;z-index:0}
+.frame{border-radius:0;border:0;box-shadow:none}
+.top{position:absolute;top:0;left:0;right:0;z-index:3;
+  background:linear-gradient(to bottom,rgba(0,0,0,.65),rgba(0,0,0,0))}
+/* The video is letterboxed by `contain`, so its drawn height is min(screen, width*16/9).
+   The look's photo band sits at 600..1140 of 1920 - centre 45.3%, i.e. 4.7% above the video's
+   own centre. Anchoring the rail there keeps it off the lyric line (1210) at every size. */
+.rail{--vidh:min(100dvh, 177.78vw);
+  position:absolute;right:8px;top:calc(50% - var(--vidh) * 0.047);transform:translateY(-50%);
+  z-index:3;display:flex;flex-direction:column;gap:14px}
+.rail button{display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;padding:0}
+.rail .b{width:42px;height:42px;border-radius:50%;background:rgba(10,12,18,.55);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.34);display:grid;place-items:center;color:#fff}
+.rail .b svg{width:21px;height:21px}
+.rail .l{font-size:13px;line-height:1;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.95)}
+.rail button.mine .b{border-color:var(--accent);color:var(--accent)}
+.rail button.mine .l{color:var(--accent)}
+.transport{position:absolute;left:0;right:0;bottom:calc(78px + var(--safe-b));z-index:3;
+  padding:0 16px;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
+.dock{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:10px 16px calc(14px + var(--safe-b));
+  background:linear-gradient(to top,rgba(0,0,0,.82) 46%,rgba(0,0,0,.45) 72%,rgba(0,0,0,0))}
+/* A phone barely taller than the 9:16 video has no letterbox worth using, so there is no letterbox to put
+   app chrome in. Rather than sit on the artwork, the top bar leaves - 기기 정보 stays reachable
+   from the 글자 sheet. */
+@media (min-aspect-ratio: 52 / 100){
+  .top{display:none}
+  .live{display:none}
+}
+/* On a short phone the video reaches the bottom edge, so the controls give back some height. */
+@media (max-height:700px){
+  .rail{gap:8px}
+  .rail .b{width:34px;height:34px}
+  .rail .b svg{width:17px;height:17px}
+  .rail .l{font-size:12px}
+  .dock{padding:6px 14px calc(10px + var(--safe-b))}
+  .dock .pill{min-height:52px;font-size:var(--t-m)}
+  .transport{bottom:calc(66px + var(--safe-b))}
+}
+.makebox{display:flex;flex-direction:column;gap:8px}
+.donebox{display:none;flex-direction:column;gap:10px}
+body.is-done .makebox,body.is-done .rail{display:none}
+body.is-done .donebox{display:flex}
+body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none}
+body.is-done .done-meta{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
+.live{left:auto;right:12px;bottom:auto;top:56px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-photo" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v8.2l4.2-4.2 3.3 3.3L16 11l3 3V7H5zm3.2 1.3a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4v10.5a3.5 3.5 0 1 1-2-3.16V7.3l-8 1.6v8.6a3.5 3.5 0 1 1-2-3.16V6.2l12-2.2z"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h12v2.4H9.9V19H8.1V7.4H3V5zm11.4 5H21v2h-2.4v7h-1.8v-7H14.4v-2z"/></symbol>
+<symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l5 5-1.4 1.4L13 6.3V15h-2V6.3L8.4 8.9 7 7.5l5-5zM4 13h2v6h12v-6h2v8H4v-8z"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v8.2l2.6-2.6L17 10l-5 5-5-5 1.4-1.4L11 11.2V3zM4 18h16v3H4z"/></symbol>
+</defs></svg>
+
+<header class="top">
+  <div class="mark">HER HOURS<i>.</i></div>
+  <button class="lnk" data-open="info">정보</button>
+</header>
+
+<div class="stage">
+  <div class="frame">
+    <canvas id="stage" width="1080" height="1920"></canvas>
+    <video id="out" playsinline loop controls></video>
+    <div class="live"><b></b>미리보기</div>
+    <button class="tap" id="tap" aria-label="재생 / 멈춤">
+      <span class="playbtn" id="play">
+        <svg class="go" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+        <svg class="pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+      </span>
+    </button>
+    <div class="making">
+      <b id="pct">0%</b>
+      <div id="status"></div>
+      <div class="bar"><i id="fill"></i></div>
+    </div>
+  </div>
+</div>
+
+<nav class="rail">
+  <button data-open="photo" data-chip="photo">
+    <span class="b"><svg width="26" height="26"><use href="#i-photo"/></svg></span><span class="l">사진</span>
+  </button>
+  <button data-open="song" data-chip="song">
+    <span class="b"><svg width="26" height="26"><use href="#i-music"/></svg></span><span class="l">노래</span>
+  </button>
+  <button data-open="text">
+    <span class="b"><svg width="26" height="26"><use href="#i-type"/></svg></span><span class="l">글자</span>
+  </button>
+</nav>
+
+<div class="transport">
+  <span class="t" id="tnow">0:00</span>
+  <input id="seek" type="range" min="0" max="959" value="120" step="1" aria-label="구간 이동">
+  <span class="t" id="tdur">0:32</span>
+</div>
+
+<div class="dock">
+  <div class="makebox">
+    <button class="pill" id="make">쇼츠 만들기</button>
+  </div>
+  <div class="donebox">
+    <p class="done-meta" id="doneMeta"></p>
+    <button class="pill" id="share"><svg width="22" height="22"><use href="#i-share"/></svg>인스타에 올리기</button>
+    <div class="two">
+      <a class="pill ghost" id="save"><svg width="20" height="20"><use href="#i-save"/></svg>저장</a>
+      <button class="again" id="again">다시 만들기</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" data-close></div>
+<section class="panel" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+
+  <div class="pane pane-photo">
+    <h2>사진</h2>
+    <div class="two">
+      <label class="pill ghost" for="photos">내 사진 고르기</label>
+      <button class="pill ghost" id="useDemo">데모로</button>
+    </div>
+    <input type="file" id="photos" accept="image/*" multiple>
+    <div class="thumbs" id="thumbs"></div>
+    <p class="hint" id="phint">3장 이상이면 좋아요. 고르는 즉시 위 미리보기에 들어갑니다.</p>
+    <button class="pill done" data-close>확인</button>
+  </div>
+
+  <div class="pane pane-song">
+    <h2>노래</h2>
+    <button class="opt on" id="useOurs">
+      <svg width="22" height="22"><use href="#i-music"/></svg>
+      <span class="t"><b>Green Light on the Window</b><span>Her Hours · 가사가 박자에 맞춰 켜져요</span></span>
+    </button>
+    <label class="opt" for="audio">
+      <svg width="22" height="22"><use href="#i-music"/></svg>
+      <span class="t"><b>내 음악 파일</b><span id="shint">앞 32초를 써요. 가사는 안 나와요</span></span>
+    </label>
+    <input type="file" id="audio" accept="audio/*">
+    <button class="pill done" data-close>확인</button>
+  </div>
+
+  <div class="pane pane-text">
+    <h2>글자</h2>
+    <div class="row"><label>이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"></div>
+    <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"></div>
+    <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"></div>
+    <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
+    <button class="again" data-open="info" style="margin-top:12px">기기 정보</button>
+    <button class="pill done" data-close>확인</button>
+  </div>
+
+  <div class="pane pane-info">
+    <h2>기기 정보</h2>
+    <div id="caps"></div>
+    <button class="pill ghost done" data-close>닫기</button>
+  </div>
+</section>
+
+<audio id="pv" preload="auto" playsinline></audio>
+<script>
+  window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); };
+  window.hhClose = () => document.body.classList.remove('panel-open');
+</script>
+<script type="module" src="./ui.js"></script>
+</body>
+</html>
