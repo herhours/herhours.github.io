@@ -42,8 +42,8 @@ export const F_LYRIC = `"HHItalic","Gaegu","HHKr",${KRF},serif`;
 export const F_CAPS = `"HHSans","Gaegu","HHKrSans",${KRF},sans-serif`;
 // Every look's lyric colour: champagne gold (영샘 10-02, from 8 set over the same photo).
 export const LYRIC = '#f3dca2';
-// Gaegu reads ~20% smaller than the Latin faces at the same px, so a line with Hangul grows.
-export const krScale = (text) => (/[가-힣]/.test(text) ? 1.2 : 1);
+// Gaegu reads ~30% smaller than the Latin faces at the same px, so a line with Hangul grows.
+export const krScale = (text) => (/[가-힣]/.test(text) ? 1.3 : 1);
 // canvas draws with whatever is loaded; before export, fetch the slices this text needs
 export const ensureLyricFont = (text) => document.fonts.load('64px "Gaegu"', text || '가').catch(() => {});
 

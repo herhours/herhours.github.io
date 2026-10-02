@@ -507,14 +507,19 @@ function drawPulse(ctx, f, N, d) {
   const line = phrases.find((p) => f >= p.start && f < p.end);
   if (line) {
     const lo = out(Math.min(clamp((f - line.start) / 7), clamp((line.end - f) / 7)));
-    const size = 40 * krScale(line.text);
+    const size = 54 * krScale(line.text);   // 40 read too small over a phone video (영샘 10-02)
     ctx.font = `${size}px ${F_CAPS}`; ctx.letterSpacing = krScale(line.text) === 1 ? '7px' : '2px'; ctx.textAlign = 'left';
-    const lines = wrap(ctx, line.text.toUpperCase().split(/\s+/).map((w) => ({ w })), W * 0.8, size * 0.4);
+    const pw = line.text.toUpperCase().split(/\s+/).map((w) => ({ w }));
+    let lines = wrap(ctx, pw, W * 0.84, size * 0.32);
+    if (lines.length > 1 && lines[lines.length - 1].words.length === 1) {   // no word alone on the last line
+      const even = wrap(ctx, pw, lines.reduce((s, l) => s + l.width, 0) / lines.length * 1.15, size * 0.32);
+      if (even.length === lines.length) lines = even;
+    }
     ctx.globalAlpha = lo; ctx.fillStyle = LYRIC;
     ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 2;
     lines.forEach((ln, li) => {
       let x = (W - ln.width) / 2;
-      for (const w of ln.words) { ctx.fillText(w.w, x, 300 + li * size * 1.6 + size + (1 - lo) * 8); x += w.ww + size * 0.4; }
+      for (const w of ln.words) { ctx.fillText(w.w, x, 280 + li * size * 1.35 + size + (1 - lo) * 8); x += w.ww + size * 0.32; }
     });
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; ctx.globalAlpha = 1;
   }
