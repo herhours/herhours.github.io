@@ -10,10 +10,9 @@ assets/fonts/impact.ttf
 assets/fonts/times.ttf
 assets/fonts/bahnschrift.ttf
 
-# 이번 룩에 안 쓰는 폰트 (로컬에는 남겨둔다)
-assets/fonts/Anton-Regular.ttf
-assets/fonts/Anton-OFL.txt
-assets/fonts/Barlow-Regular.ttf
+# 안 쓰는 폰트 (로컬에는 남겨둔다). Anton(Triptych)·Barlow Regular(Black Cut)는 10-02부터 쓴다.
 assets/fonts/Barlow-Medium.ttf
-assets/fonts/Barlow-OFL.txt
 assets/fonts/Tinos-Italic.ttf
+
+# 개발용 시험 영상
+_testclips/

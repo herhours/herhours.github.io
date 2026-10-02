@@ -13,14 +13,49 @@ const inOut = (t) => { const x = clamp(t); return x < 0.5 ? 4 * x * x * x : 1 - 
 export async function loadFonts() {
   const faces = [
     ['HHTitle', 'assets/fonts/PinyonScript-Regular.ttf'],
+    ['HHDisplay', 'assets/fonts/Anton-Regular.ttf'],
+    ['HHLight', 'assets/fonts/Barlow-Regular.ttf'],
     ['HHSans', 'assets/fonts/JosefinSans-SemiBold.ttf'],
     ['HHSerif', 'assets/fonts/Tinos-Regular.ttf'],
+    ['HHItalic', 'assets/fonts/InstrumentSerif-Italic.ttf'],
   ];
   for (const [name, url] of faces) {
     const f = new FontFace(name, `url(${url})`);
     await f.load();
     document.fonts.add(f);
   }
+  // Hangul faces are 1-1.5MB each, so they load behind the first frame instead of before it
+  for (const [name, url] of [['HHKr', 'assets/fonts/MaruBuri-Light.otf'], ['HHKrSans', 'assets/fonts/Pretendard-Bold.otf']]) {
+    const f = new FontFace(name, `url(${url})`);
+    f.load().then(() => document.fonts.add(f)).catch(() => {});
+  }
+}
+
+// Lyric type. The approved shorts set lyrics in Georgia italic, which may not be shipped;
+// Instrument Serif Italic carries that voice, MaruBuri the Hangul beside it.
+const KRF = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR"';
+// Hangul lyrics: Gaegu, a handwriting face (영샘 10-02, from 13 set over the same photo), served by
+// Google Fonts in unicode-range slices so a phone only fetches the syllables a lyric uses.
+// MaruBuri stays behind it for when Google is out of reach.
+export const F_LYRIC = `"HHItalic","Gaegu","HHKr",${KRF},serif`;
+// spaced capitals: Josefin (the brand face) — Italiana was tried and vanished on photographs
+export const F_CAPS = `"HHSans","Gaegu","HHKrSans",${KRF},sans-serif`;
+// Every look's lyric colour: champagne gold (영샘 10-02, from 8 set over the same photo).
+export const LYRIC = '#f3dca2';
+// Gaegu reads ~20% smaller than the Latin faces at the same px, so a line with Hangul grows.
+export const krScale = (text) => (/[가-힣]/.test(text) ? 1.2 : 1);
+// canvas draws with whatever is loaded; before export, fetch the slices this text needs
+export const ensureLyricFont = (text) => document.fonts.load('64px "Gaegu"', text || '가').catch(() => {});
+
+// One sung word: dim until its time, then it rises into full colour and glows for a moment.
+export function paintWord(ctx, text, x, y, f, t, { color, dim, glow }) {
+  const on = f >= t;
+  const k = 1 - Math.pow(1 - Math.max(0, Math.min(1, (f - t) / 8)), 3);
+  const g = on ? Math.max(0, 1 - (f - t) / 20) : 0;
+  ctx.fillStyle = on ? color : dim;
+  if (g > 0) { ctx.shadowColor = glow; ctx.shadowBlur = 28 * g; }
+  ctx.fillText(text, x, y + (on ? (1 - k) * 8 : 0));
+  if (g > 0) { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; }
 }
 export const loadImage = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
 export async function fileToBitmap(file) {
@@ -58,7 +93,7 @@ grain.width = 256; grain.height = 256;
 // ---------- type ----------
 // Pinyon Script / Josefin Sans / Tinos carry no Hangul, so every canvas font names a
 // Korean fallback after them. Those faces are already on the phone - nothing is downloaded.
-const KR = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR"';
+const KR = '"HHKr","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR"';
 const F_TITLE = `"HHTitle",${KR},cursive`;
 const F_SANS = `"HHSans",${KR},sans-serif`;
 const F_SERIF = `"HHSerif",${KR},serif`;
@@ -140,12 +175,17 @@ function fitHeadline(ctx, t1, t2) {
 }
 
 // ---------- drawing ----------
-function drawCover(ctx, img, x, y, w, h, scale, txPct, dir) {
+export function grainPattern(ctx) { return ctx.createPattern(grain, 'repeat'); }
+
+export function drawCover(ctx, img, x, y, w, h, scale, txPct) {
   const iw = img.width, ih = img.height;
   const s = Math.max(w / iw, h / ih) * scale;
   const dw = iw * s, dh = ih * s;
   const dx = x + (w - dw) / 2 + (txPct / 100) * w;
-  const dy = y + (h - dh) / 2;
+  // A phone portrait cut into a wide band loses its top or bottom. Faces sit in the upper
+  // third of a portrait, so tall photos keep their upper part instead of the centre.
+  const fy = ih > iw * 1.1 ? 0.3 : 0.5;
+  const dy = y + (h - dh) * fy;
   ctx.drawImage(img, dx, dy, dw, dh);
 }
 
@@ -248,8 +288,8 @@ export function drawFrame(ctx, f, N, d) {
   // karaoke line (top 1210, centered, wraps in 936px)
   const phrase = [...phrases].reverse().find((p) => f >= p.start);
   if (phrase) {
-    const size = SZ.lyric;
-    ctx.font = `${size}px ${F_SERIF}`; ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
+    const size = 64 * krScale(phrase.text);   // Instrument Serif runs small for its size
+    ctx.font = `${size}px ${F_LYRIC}`; ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
     const words = phrase.words ?? [{ t: phrase.start, w: phrase.text }];
     const gap = size * 0.28;
     const lines = wrapWords(ctx, words, W - 144, gap);
@@ -257,13 +297,10 @@ export function drawFrame(ctx, f, N, d) {
     for (const ln of lines) {
       let x = (W - ln.width) / 2;
       for (const w of ln.words) {
-        const on = f >= w.t;
-        const k = out(clamp((f - w.t) / 8));
-        ctx.fillStyle = on ? cream : cream + '52';
-        ctx.fillText(w.w, x, y + (1 - k) * 6);
+        paintWord(ctx, w.w, x, y, f, w.t, { color: LYRIC, dim: LYRIC + '45', glow: LYRIC });
         x += w.ww + gap;
       }
-      y += size * 1.15;
+      y += size * 1.12;
     }
   }
 
@@ -310,7 +347,7 @@ export function trimBuffer(buf, seconds) {
 
 // ---------- encode ----------
 // Draws N frames of `d` onto `canvas` (1080x1920) and muxes them with `audioBuf` into an mp4 Blob.
-export async function encode({ canvas, d, N, audioBuf, onProgress }) {
+export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFrame, beforeFrame }) {
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!(await canEncodeVideo('avc'))) throw new Error('이 브라우저는 H.264 인코딩을 지원하지 않아요. 크롬으로 열어주세요.');
   if (!(await canEncodeAudio('aac'))) {
@@ -327,7 +364,8 @@ export async function encode({ canvas, d, N, audioBuf, onProgress }) {
   asrc.close();
   const t0 = performance.now();
   for (let f = 0; f < N; f++) {
-    drawFrame(ctx, f, N, d);
+    if (beforeFrame) await beforeFrame(f / FPS);
+    draw(ctx, f, N, d);
     await vsrc.add(f / FPS, 1 / FPS);
     if (f % 15 === 0) {
       onProgress?.(f / N, (performance.now() - t0) / 1000);
@@ -342,12 +380,12 @@ export async function encode({ canvas, d, N, audioBuf, onProgress }) {
 
 // ---------- frame data ----------
 // One place builds the object drawFrame reads, so the live preview and the exported file cannot drift.
-export function buildData({ tpl, images, useOurs, brand, title1, title2 }) {
+export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases }) {
   const B = (brand || 'HER HOURS').toUpperCase();
   const t1 = titleCase(title1 || tpl.title1, true);
   const t2 = titleCase(title2 || tpl.title2, false);   // line 2 reads as a continuation
   return {
-    images, phrases: useOurs ? tpl.phrases : [],
+    useOurs, images, phrases: useOurs ? tpl.phrases : (phrases || []),
     brand: B,
     label: useOurs ? tpl.label : `${B} · MY OWN PLAYLIST`,
     title1: t1, title2: t2,
