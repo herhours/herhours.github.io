@@ -2,7 +2,7 @@
 // Each look is one approved channel short, redrawn for the phone canvas. The Remotion
 // originals live in D:\_research\visual_playlist_pilot\shorts_clo\src\templates\ — layout,
 // timings and colours are carried over from there; only the drawing code is new.
-import { W, H, drawFrame as drawWindowBand, drawCover, grainPattern, F_LYRIC, F_CAPS, paintWord, LYRIC, krScale } from './core.js';
+import { W, H, drawFrame as drawWindowBand, drawCover, grainPattern, F_LYRIC, F_CAPS, paintWord, LYRIC, krScale, titleCase } from './core.js';
 
 const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
 const out = (t) => 1 - Math.pow(1 - clamp(t), 3);
@@ -946,14 +946,18 @@ function drawLyricBloom(ctx, f, N, d) {
     // the original's 118/205px filled the frame only because its lines were long; a user's
     // two-word line sat small in a corner. The whole line now grows until its widest piece nearly
     // spans the frame (up to 2.6x), every piece keeping its proportion to the others.
-    ctx.letterSpacing = '-5px';
-    const meas = (text, size) => { ctx.font = `${size}px ${F_BLOOM}`; return ctx.measureText(text).width * 0.84; };
+    // 영샘 10-04: the title/brand cards speak in the Her Hours title script (Pinyon, Title Case —
+    // script in capitals falls apart); the sung lines keep the condensed capitals.
+    const intro = !!line.intro;
+    const FONT = intro ? F_TITLE : F_BLOOM, SX = intro ? 1 : 0.84, LS = intro ? '0px' : '-5px', LH = intro ? 1.0 : 0.9;
+    ctx.letterSpacing = LS;
+    const meas = (text, size) => { ctx.font = `${size}px ${FONT}`; return ctx.measureText(text).width * SX; };
     const all = line.chunks.map((c, i) => {
-      const text = c.w.toUpperCase(), base = (i === line.chunks.length - 1 ? 205 : 118) * krScale(text);
+      const text = intro ? titleCase(c.w, true) : c.w.toUpperCase(), base = (i === line.chunks.length - 1 ? 205 : 118) * krScale(text);
       return { text, base, w: meas(text, base) };
     });
     let grow = Math.max(1, Math.min(2.6, (maxW * 0.92) / Math.max(...all.map((a) => a.w))));
-    const tall = all.reduce((s, a) => s + a.base * 0.9, 0) * grow;
+    const tall = all.reduce((s, a) => s + a.base * LH, 0) * grow;
     if (tall > H * 0.6) grow *= (H * 0.6) / tall;   // the stack stays inside the safe area
     grow *= 0.5;   // 영샘 10-04: half the full-frame size reads better — big, but the picture breathes
     for (const c of shown) {
@@ -963,7 +967,7 @@ function drawLyricBloom(ctx, f, N, d) {
       if (w0 > maxW) size *= maxW / w0;
       c.size = size; c.text = a.text; c.w0 = meas(a.text, size);
     }
-    const total = shown.reduce((a, c) => a + c.size * 0.9, 0);
+    const total = shown.reduce((a, c) => a + c.size * LH, 0);
     let y = place.v === 'top' ? place.pad : place.v === 'bottom' ? H - place.pad - total : (H - total) / 2;
     for (const c of shown) {
       const e = clamp((f - c.t) / 11), k = back(e);
@@ -974,9 +978,14 @@ function drawLyricBloom(ctx, f, N, d) {
       ctx.globalAlpha = master * e * (1 - outro);
       ctx.translate(ox + (1 - e) * (c.i % 2 ? 60 : -60), base - c.size * 0.35);
       ctx.scale(0.86 + 0.14 * k, 0.86 + 0.14 * k); ctx.translate(-ox, -(base - c.size * 0.35));
-      ctx.translate(x, base); ctx.scale(0.84, 1);
-      ctx.font = `${c.size}px ${F_BLOOM}`; ctx.letterSpacing = '-5px'; ctx.textAlign = 'left';
-      if (c.key) {
+      ctx.translate(x, base); ctx.scale(SX, 1);
+      ctx.font = `${c.size}px ${FONT}`; ctx.letterSpacing = LS; ctx.textAlign = 'left';
+      if (intro) {
+        // script strokes are too thin to hold a photograph; the last word is lit in gold instead
+        ctx.shadowColor = c.key ? accent : 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.key ? 30 : 40; ctx.shadowOffsetY = c.key ? 0 : 10;
+        ctx.fillStyle = c.key ? LYRIC : '#fff8ec';
+        ctx.fillText(c.text, 0, 0);
+      } else if (c.key) {
         // the last word is cut out of the photograph, with a coloured edge
         ctx.lineJoin = 'round'; ctx.strokeStyle = accent; ctx.lineWidth = 8;
         ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 10;
@@ -1002,7 +1011,7 @@ function drawLyricBloom(ctx, f, N, d) {
         ctx.fillText(c.text, 0, 0);
       }
       ctx.restore();
-      y += c.size * 0.9;
+      y += c.size * LH;
     }
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; ctx.letterSpacing = '0px';
   }
@@ -1085,7 +1094,8 @@ export const LOOKS = [
     build: (base, beat) => {
       const N = base.N ?? 960, outroLen = Math.min(80, Math.round(N * 0.1));
       const ps = base.phrases.length ? base.phrases : bloomFallback(base, N - outroLen);
-      const lines = ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, chunks: bloomChunks(p) }));
+      // with no words from the user the cards are the song's own name, so they take the title script too
+      const lines = ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, intro: !base.phrases.length, chunks: bloomChunks(p) }));
       // 영샘 10-04: before the first sung line the frame was just a photo — flat. The song's name
       // opens in the same grammar (stacked, last word cut from the photo), and a long intro gets
       // a second card with the brand, so the look speaks from the first second.
@@ -1094,7 +1104,7 @@ export const LOOKS = [
         const intro = [];
         const say = (start, text) => {
           const words = text.split(/\s+/).filter(Boolean);
-          intro.push({ from: start, chunks: bloomChunks({ start, text, words: words.map((w, k) => ({ t: start + 4 + k * 7, w })) }) });
+          intro.push({ from: start, intro: true, chunks: bloomChunks({ start, text, words: words.map((w, k) => ({ t: start + 4 + k * 7, w })) }) });
         };
         say(6, `${base.title1} ${base.title2}`.trim());
         if (first > 210) say(Math.round(first / 2), base.brand);
