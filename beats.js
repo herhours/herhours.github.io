@@ -59,6 +59,35 @@ export function analyze(buf, seconds) {
   return { beat, period, hits, chorusFrom, energy, spec: spectrum(data, sr, N, hop) };
 }
 
+// ---------- where to start the short ----------
+// The loudest `len`-second stretch of the whole song, then pulled back onto the jump that opens
+// it, so the short begins as the chorus arrives rather than halfway into it. Seconds.
+export function findChorus(buf, len) {
+  const sr = buf.sampleRate, hop = sr / 2, n = Math.floor(buf.length / hop);   // half-second steps
+  const chs = Math.min(2, buf.numberOfChannels), data = [];
+  for (let c = 0; c < chs; c++) data.push(buf.getChannelData(c));
+  const e = new Float32Array(n);
+  for (let k = 0; k < n; k++) {
+    let s = 0, m = 0;
+    for (let c = 0; c < chs; c++) { const d = data[c]; for (let i = Math.floor(k * hop); i < Math.floor((k + 1) * hop); i += 8) { s += d[i] * d[i]; m++; } }
+    e[k] = Math.sqrt(s / Math.max(1, m));
+  }
+  const win = Math.min(n, Math.round(len * 2));
+  if (n <= win + 10) return 0;
+  let best = 10, bestV = -1;   // never before 5s: that is the intro
+  for (let k = 10; k + win <= n; k++) {
+    let v = 0; for (let i = k; i < k + win; i++) v += e[i];
+    if (v > bestV) { bestV = v; best = k; }
+  }
+  // the biggest 2s-over-2s rise within 6s before .. 2s after the window start
+  let at = best, jump = -Infinity;
+  for (let k = Math.max(4, best - 12); k <= Math.min(n - 4, best + 4); k++) {
+    const after = (e[k] + e[k + 1] + e[k + 2] + e[k + 3]) / 4, before = (e[k - 1] + e[k - 2] + e[k - 3] + e[k - 4]) / 4;
+    if (after - before > jump) { jump = after - before; at = k; }
+  }
+  return Math.max(0, Math.min(buf.duration - len, at / 2));
+}
+
 // ---------- per-frame spectrum, for the looks that draw the music (Pulse) ----------
 // 128 log-spaced bands from 40Hz to 16kHz, scaled so the song's loud moments sit near 0.25 —
 // the range the approved Pulse (Remotion visualizeAudio) was tuned on (0.2 reads closest by eye).

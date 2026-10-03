@@ -4,7 +4,7 @@
 import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, trimBuffer,
          encode, buildData, loadDemo, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont } from './core.js';
 import { LOOKS, lookById } from './looks.js';
-import { analyze } from './beats.js';
+import { analyze, findChorus } from './beats.js';
 import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
 
 const $ = (id) => document.getElementById(id);
@@ -20,7 +20,10 @@ const S = {
   look: lookById(new URLSearchParams(location.search).get('look')), beat: null,
   clipGain: 0.35,
   userPhrases: [], tap: null,   // lyrics the user timed to their own song by tapping   // clip sound under the song: present, never on top of it
+  // which part of the song becomes the short (영샘 10-03): length, start, and where the chorus is
+  len: 32, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
 };
+const LENGTHS = [15, 32, 60];
 
 const stage = $('stage');
 const ctx = stage.getContext('2d', { alpha: false });
@@ -36,15 +39,33 @@ function rebuild() {
     brand: $('brand').value, title1: $('t1').value, title2: $('t2').value,
     phrases: S.userPhrases,
   });
+  base.N = S.N;
+  // our own song's lyrics are timed from 0; a later start moves them with it
+  if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
   S.d = S.look.build(base, S.beat);
 }
+function shiftPhrases(ps, by, N) {
+  return ps.map((p) => ({ ...p, start: p.start + by, end: p.end + by, words: p.words?.map((w) => ({ ...w, t: w.t + by })) }))
+    .filter((p) => p.end > 0 && p.start < N);
+}
 
-// The song is read once when it is chosen; looks that cut on the music read S.beat.
+// The song is read once when it is chosen; the part the short uses is measured again whenever
+// the length or the start moves. Looks that cut on the music read S.beat.
 async function listen(arrayBuffer) {
   try {
-    const buf = await decodeAudio(arrayBuffer);
-    S.beat = analyze(buf, Math.min(MAX_SEC, buf.duration));
-    S.musicRms = rms(buf, 0, Math.min(MAX_SEC, buf.duration));
+    S.fullBuf = await decodeAudio(arrayBuffer);
+    S.songDur = S.fullBuf.duration;
+    S.chorusAt = findChorus(S.fullBuf, Math.min(S.len, S.songDur));
+  } catch (e) { console.warn('song read failed', e); S.fullBuf = null; }
+  applyCut();
+  measureCut();
+}
+function measureCut() {
+  try {
+    if (!S.fullBuf) throw new Error('no song');
+    const seg = trimBuffer(S.fullBuf, S.seconds, S.offset);
+    S.beat = analyze(seg, S.seconds);
+    S.musicRms = rms(seg, 0, S.seconds);
   } catch (e) { console.warn('beat analysis failed', e); S.beat = null; }
   rebuild(); renderLooks();
 }
@@ -53,6 +74,7 @@ async function listen(arrayBuffer) {
 // worked out from the current song, not printed once.
 function advice(look) {
   const base = buildData({ tpl: S.tpl, images: S.demo, useOurs: S.useOurs, brand: $('brand').value, title1: $('t1').value, title2: $('t2').value });
+  base.N = S.N;
   const slots = look.photo.slots(look.build(base, S.beat), S.N);
   const min = Math.min(look.photo.min, slots);
   const wide = look.photo.shape === 'wide';
@@ -70,15 +92,23 @@ function advice(look) {
 
 function renderLooks() {
   const box = $('looks'); if (!box) return;
+  const keep = box.scrollLeft;
   box.innerHTML = '';
   for (const l of LOOKS) {
-    const a = advice(l);
     const b = document.createElement('button');
-    b.className = 'opt' + (l.id === S.look.id ? ' on' : '');
-    b.innerHTML = `<span class="sw sw-${l.id}"></span><span class="t"><b>${l.name}</b><span>${l.sub}</span>`
-      + a.lines.map((x, i) => `<span class="adv${i && !a.ok ? ' warn' : ''}">${x}</span>`).join('') + `</span>`;
+    b.className = 'tile' + (l.id === S.look.id ? ' on' : '');
+    b.innerHTML = `<span class="sw sw-${l.id}"></span><span>${l.name.replace(' · ', '<br>')}</span>`;
     b.onclick = () => { S.look = l; renderLooks(); rebuild(); chips(); };
     box.appendChild(b);
+  }
+  box.scrollLeft = keep;
+  const a = advice(S.look), info = $('lookInfo');
+  if (info) info.innerHTML = `<b>${S.look.name}</b> · ${S.look.sub}`
+    + a.lines.map((x, i) => `<span class="adv${i && !a.ok ? ' warn' : ''}">${x}</span>`).join('');
+  // a mouse wheel scrolls the strip sideways on a computer
+  if (!box.dataset.wheel) {
+    box.dataset.wheel = '1';
+    box.addEventListener('wheel', (e) => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { box.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
   }
   const pa = $('padv');
   if (pa) pa.textContent = `「${S.look.name}」 · ` + advice(S.look).lines.join(' · ');
@@ -107,9 +137,9 @@ function loop(now) {
   const dt = Math.min(100, now - last); last = now;
   if (document.hidden || document.body.classList.contains('is-making')) return;
 
-  if (!pv.paused) S.vf = Math.round(pv.currentTime * FPS);
+  if (!pv.paused) S.vf = Math.max(0, Math.round((pv.currentTime - S.offset) * FPS));
   else if (!S.started && !calm.matches) { acc += dt; while (acc >= 1000 / FPS) { acc -= 1000 / FPS; S.vf++; } }
-  if (S.vf >= S.N) { S.vf = 0; if (!pv.paused) pv.currentTime = 0; }
+  if (S.vf >= S.N) { S.vf = 0; if (!pv.paused) pv.currentTime = S.offset; }
 
   tick++;
   if (S.every > 1 && tick % S.every) return;
@@ -132,7 +162,7 @@ let seeking = false;
 $('seek').addEventListener('pointerdown', () => { seeking = true; });
 $('seek').addEventListener('input', (e) => {
   S.vf = +e.target.value; S.started = true;
-  if (!pv.paused) pv.currentTime = S.vf / FPS;
+  if (!pv.paused) pv.currentTime = S.offset + S.vf / FPS;
   $('tnow').textContent = mmss(S.vf / FPS);
 });
 $('seek').addEventListener('pointerup', () => { seeking = false; });
@@ -142,7 +172,7 @@ async function togglePlay() {
   if (document.body.classList.contains('is-making') || document.body.classList.contains('is-done')) return;
   if (pv.paused) {
     S.started = true;
-    try { pv.currentTime = S.vf / FPS; await pv.play(); } catch { /* no audio: keep the silent loop running */ S.started = false; }
+    try { pv.currentTime = S.offset + S.vf / FPS; await pv.play(); } catch { /* no audio: keep the silent loop running */ S.started = false; }
   } else pv.pause();
   syncPlay();
 }
@@ -152,11 +182,46 @@ pv.addEventListener('pause', syncPlay);
 $('play').onclick = (e) => { e.stopPropagation(); togglePlay(); };
 $('tap').onclick = togglePlay;
 
-function setDuration(sec) {
-  S.seconds = Math.min(MAX_SEC, sec || MAX_SEC);
+// ---------- which part of the song (영샘 10-03: length + where it starts) ----------
+function applyCut() {
+  const dur = S.songDur || S.len;
+  S.offset = Math.max(0, Math.min(S.offset, dur - Math.min(S.len, dur)));
+  S.seconds = Math.min(S.len, dur - S.offset);
   S.N = Math.round(S.seconds * FPS);
+  if (S.vf >= S.N) S.vf = 0;
   $('seek').max = S.N - 1;
   $('tdur').textContent = mmss(S.seconds);
+  const off = $('offset'); if (!off) return;
+  off.max = Math.max(0, dur - S.seconds); off.value = S.offset;
+  off.disabled = +off.max === 0;
+  $('offV').textContent = mmss(S.offset);
+  $('offTo').textContent = `~ ${mmss(S.offset + S.seconds)} · 곡 ${mmss(dur)}`;
+  document.querySelectorAll('#lenSeg [data-len]').forEach((b) => {
+    b.classList.toggle('on', +b.dataset.len === S.len);
+    b.disabled = +b.dataset.len > LENGTHS[0] && dur <= LENGTHS[LENGTHS.indexOf(+b.dataset.len) - 1];   // song too short for this length
+  });
+  $('offChorus').disabled = S.chorusAt == null || +off.max === 0;
+  $('cutHint').textContent = +off.max === 0 ? `곡이 ${Math.round(dur)}초라 처음부터 끝까지 써요.`
+    : S.chorusAt != null && Math.abs(S.offset - S.chorusAt) < 0.6 ? '후렴이 시작되는 곳부터예요.' : '막대를 밀어 시작점을 골라요. 놓으면 그 부분을 들려줘요.';
+}
+// lyrics tapped against the old start no longer line up; say so instead of showing them wrong
+function cutMoved(startMoved) {
+  if (startMoved && !S.useOurs && S.userPhrases.length) {
+    S.userPhrases = []; lyricHint();
+    $('lhint').textContent = '시작점이 바뀌어서 글을 다시 맞춰야 해요. 「탭으로 맞추기」를 눌러 주세요.';
+  }
+  S.vf = 0; S.started = true;
+  pv.currentTime = S.offset;
+  measureCut();
+}
+document.querySelectorAll('#lenSeg [data-len]').forEach((b) => {
+  b.onclick = () => { if (b.disabled) return; S.len = +b.dataset.len; if (S.fullBuf) S.chorusAt = findChorus(S.fullBuf, Math.min(S.len, S.songDur)); applyCut(); cutMoved(false); };
+});
+if ($('offset')) {   // shell A (index.A.html) has no cut controls
+  $('offset').addEventListener('input', (e) => { S.offset = +e.target.value; applyCut(); rebuild(); });
+  $('offset').addEventListener('change', async () => { cutMoved(true); try { await pv.play(); } catch {} });
+  $('offStart').onclick = () => { S.offset = 0; applyCut(); cutMoved(true); };
+  $('offChorus').onclick = async () => { if (S.chorusAt == null) return; S.offset = S.chorusAt; applyCut(); cutMoved(true); try { await pv.play(); } catch {} };
 }
 
 // ---------- inputs ----------
@@ -197,9 +262,9 @@ $('useOurs').onclick = () => {
   S.useOurs = true; S.audioFile = null; $('audio').value = '';
   document.body.classList.remove('mine-song');
   pv.pause(); pv.src = 'assets/green_light.mp3';
-  setDuration(MAX_SEC);
+  S.offset = 0; S.chorusAt = null; S.songDur = MAX_SEC; applyCut();
   $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
-  $('shint').textContent = '가사가 박자에 맞춰 켜져요.';
+  $('shint').textContent = '내 노래 파일을 골라요. 길이와 시작점은 아래에서.';
   rebuild(); chips(); syncPlay();
   fetch('assets/green_light.mp3').then((r) => r.arrayBuffer()).then(listen);
 };
@@ -211,12 +276,12 @@ $('audio').onchange = async (e) => {
   pv.pause();
   pv.src = URL.createObjectURL(f);
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
-  setDuration(pv.duration);
+  S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || S.len; applyCut();
   const base = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().toUpperCase().split(' ');
   $('t1').value = base.slice(0, Math.ceil(base.length / 2)).join(' ').slice(0, 14) || 'MY SONG';
   $('t2').value = base.slice(Math.ceil(base.length / 2)).join(' ').slice(0, 18) || 'ON MY PHONE';
   S.userPhrases = []; S.tap = null; lyricHint();
-  $('shint').textContent = `앞 ${Math.round(S.seconds)}초를 써요. 「글 넣기」로 가사나 한마디를 넣을 수 있어요.`;
+  $('shint').textContent = '아래에서 길이와 시작점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.';
   rebuild(); chips(); syncPlay();
   listen(await f.arrayBuffer());
 };
@@ -269,19 +334,19 @@ $('tapStart').onclick = async () => {
   S.userPhrases = []; rebuild();
   document.body.classList.add('is-tapping');
   tapShow();
-  S.started = true; pv.currentTime = 0; S.vf = 0;
+  S.started = true; pv.currentTime = S.offset; S.vf = 0;
   try { await pv.play(); } catch {}
 };
 $('tapBtn').onclick = () => {
   if (!S.tap || S.tap.taps.length >= S.tap.lines.length) return;
-  S.tap.taps.push(Math.max(0, pv.currentTime - REACT));
+  S.tap.taps.push(Math.max(0, pv.currentTime - S.offset - REACT));   // taps count from the short's start
   tapApply(); tapShow();
   if (S.tap.taps.length >= S.tap.lines.length) $('tapNow').textContent = '다 맞췄어요 ✓ 끝까지 들어보고 「끝」';
 };
 $('tapUndo').onclick = () => {
   if (!S.tap?.taps.length) return;
   const t = S.tap.taps.pop();
-  pv.currentTime = Math.max(0, t - 1.5);   // back up a little so the line can be tapped again
+  pv.currentTime = S.offset + Math.max(0, t - 1.5);   // back up a little so the line can be tapped again
   tapApply(); tapShow();
 };
 function tapEnd() {
@@ -290,7 +355,7 @@ function tapEnd() {
   if (S.tap) $('lhint').textContent = S.userPhrases.length ? `${S.userPhrases.length}줄 맞췄어요. 위 영상에서 확인해 보세요.` : '맞춘 줄이 없어요.';
 }
 $('tapStop').onclick = tapEnd;
-pv.addEventListener('timeupdate', () => { if (document.body.classList.contains('is-tapping') && pv.currentTime >= S.seconds) tapEnd(); });
+pv.addEventListener('timeupdate', () => { if (document.body.classList.contains('is-tapping') && pv.currentTime >= S.offset + S.seconds) tapEnd(); });
 $('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.userPhrases = []; rebuild(); lyricHint(); $('lhint').textContent = '글을 고쳤어요. 「탭으로 맞추기」로 다시 맞춰 주세요.'; } });
 
 $('clipGain').addEventListener('input', (e) => { S.clipGain = e.target.value / 100; $('clipGainV').textContent = `${e.target.value}%`; });
@@ -313,8 +378,8 @@ async function make() {
     status('노래 읽는 중…');
     const ab = S.useOurs ? await (await fetch('assets/green_light.mp3')).arrayBuffer() : await S.audioFile.arrayBuffer();
     const decoded = await decodeAudio(ab);
-    const seconds = Math.min(MAX_SEC, decoded.duration);
-    const audioBuf = trimBuffer(decoded, seconds);
+    const seconds = Math.min(S.seconds, decoded.duration - S.offset);
+    const audioBuf = trimBuffer(decoded, seconds, S.offset);
     const N = Math.round(seconds * FPS);
     rebuild();
     await ensureLyricFont(S.d.phrases.map((p) => p.text).join(' ') + ' ' + (S.d.boxText || ''));
@@ -385,7 +450,7 @@ async function caps() {
     await loadFonts();
     S.demo = await loadDemo();
     pv.src = 'assets/green_light.mp3';
-    setDuration(MAX_SEC);
+    applyCut();
     rebuild(); chips(); renderLooks();
     await listen(await (await fetch('assets/green_light.mp3')).arrayBuffer());
     document.body.classList.add('ready');

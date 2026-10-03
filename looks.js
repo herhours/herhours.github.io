@@ -380,7 +380,7 @@ const blackCut = (id, name, sub, v) => ({
   id, name, sub, draw: drawBlackCut,
   build: (base, beat) => ({
     ...base,
-    phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, 960),
+    phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, base.N ?? 960),
     accent: v.accent, grade: v.grade, motions: v.motions,
     step: beatStep(beat), gap: 4, openHold: 24,
     lyricSize: v.lyricSize, lyricWidth: 0.8, lyricPos: v.lyricPos, lyricWords: v.lyricWords, lyricFont: v.lyricFont,
@@ -534,6 +534,317 @@ function drawPulse(ctx, f, N, d) {
 }
 
 // =====================================================================================
+// CLOCKFACE — EP05 Veronica's Whole Day / EP06 Five Pages Left (09-19 승인).
+// A whole day (or a whole night) in 32 seconds. The photo fills the frame and the hour
+// recolours the world around her face. Two voices:
+//   하루 — a sunk clock at the bottom counts the hours; cuts land on the beat.
+//   밤 — the clock gives its place to the lyric; a header, the scene count and the next
+//        scene in a small window give the frame structure (영샘 09-19 "단순했다").
+// The ground is keyed to the hour of day, not to the photo: an average-colour ground gave
+// ten shades of grey and no sense of time passing.
+// =====================================================================================
+const lerp = (a, b, t) => a + (b - a) * t;
+const hexRgb = (s) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
+const mixHex = (a, b, t) => { const p = hexRgb(a), q = hexRgb(b); return `rgb(${p.map((v, i) => Math.round(lerp(v, q[i], t))).join(',')})`; };
+// position 0 = 05:00, 1 = 04:00 next day
+const SKY = [[0.0, '#1b2a5e'], [0.09, '#4a3a6b'], [0.17, '#a8742e'], [0.26, '#7d92a8'], [0.35, '#cfd6dc'], [0.48, '#c09a5e'],
+  [0.57, '#d1622a'], [0.65, '#5b3b78'], [0.74, '#2b3b6b'], [0.87, '#141c36'], [1.0, '#1d1430']];
+function skyAtMinute(minute) {
+  const p = ((((minute / 60 - 5) / 24) % 1) + 1) % 1;
+  for (let i = 1; i < SKY.length; i++) if (p <= SKY[i][0]) return mixHex(SKY[i - 1][1], SKY[i][1], (p - SKY[i - 1][0]) / (SKY[i][0] - SKY[i - 1][0]));
+  return SKY[SKY.length - 1][1];
+}
+const CLOCK_FOCUS = [0.5, 0.4, 0.6, 0.46, 0.55];
+const DAY_MOVES = ['push', 'slideL', 'rise', 'pull', 'slideR', 'tilt'];
+// the four turns of the day, each announced once in the title script as the clock passes it
+const DAY_TURNS = [[6, 'Dawn', '06:00'], [12, 'Noon', '12:00'], [18, 'Dusk', '18:00'], [24, 'Midnight', '00:00']];
+const F_TITLE = `"HHTitle",${KR},serif`;
+
+let clockLayer = null;
+function drawClockface(ctx, f, N, d) {
+  const { images, phrases, shot, startMinute, spanMinutes, night } = d;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.letterSpacing = '0px'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#05070c'; ctx.fillRect(0, 0, W, H);
+
+  const n = images.length, slots = Math.ceil(N / shot);
+  const t = clamp(f / N);
+  const minute = startMinute + t * spanMinutes;
+  const hh = String(Math.floor(minute / 60) % 24).padStart(2, '0');
+  const mm = String(Math.floor(minute) % 60).padStart(2, '0');
+  const ground = skyAtMinute(minute);
+  const master = out(clamp(f / 12)) * (1 - inOut(clamp((f - (N - 24)) / 24)));
+  const outro = clamp((f - (N - 96)) / 40);
+
+  const idx = Math.min(slots - 1, Math.floor(f / shot)), local = f - idx * shot, cross = 7;
+  const still = (i) => {
+    const a = i === idx ? (idx === 0 ? 1 : out(clamp(local / cross))) : 1 - out(clamp(local / cross));
+    if (a <= 0) return;
+    const k = clamp((f - i * shot) / shot), dir = i % 2 === 0 ? 1 : -1;
+    const img = images[i % n];
+    const fx = clamp(CLOCK_FOCUS[i % CLOCK_FOCUS.length] + dir * (0.5 - k) * 0.05);
+    ctx.globalAlpha = master * a;
+    if (night) {
+      const sc = 1.06 + 0.07 * k;
+      const s = Math.max(W / img.width, H / img.height) * sc, dw = img.width * s, dh = img.height * s;
+      ctx.drawImage(img, (W - dw) * fx, (H - dh) * 0.42, dw, dh);
+    } else {
+      // 하루: every shot its own move, so the cuts do not all breathe the same way
+      const mv = blackMove(DAY_MOVES[i % DAY_MOVES.length], k, dir);
+      const ox = fx * W, oy = 0.42 * H;
+      const s = Math.max(W / img.width, H / img.height), dw = img.width * s, dh = img.height * s;
+      ctx.save();
+      ctx.translate(ox, oy); ctx.scale(mv.scale, mv.scale);
+      ctx.translate(mv.x / 100 * W, mv.y / 100 * H); ctx.rotate(mv.rot * Math.PI / 180); ctx.translate(-ox, -oy);
+      ctx.drawImage(img, (W - dw) * fx, (H - dh) * 0.42, dw, dh);
+      ctx.restore();
+    }
+  };
+  if (idx > 0) still(idx - 1);
+  still(idx);
+
+  // the hour owns the world: 'color' swaps the hue and keeps the light. A full-strength pass
+  // read as a purple filter on skin, so the strong pass is masked away from where the face sits.
+  ctx.globalAlpha = master * 0.26; ctx.globalCompositeOperation = 'color';
+  ctx.fillStyle = ground; ctx.fillRect(0, 0, W, H);
+  if (!clockLayer) { clockLayer = document.createElement('canvas'); clockLayer.width = W; clockLayer.height = H; }
+  const g = clockLayer.getContext('2d');
+  g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+  g.fillStyle = ground; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'destination-in';
+  g.save(); g.translate(W * 0.5, H * 0.4); g.scale(W * 0.58, H * 0.34);
+  const mk = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+  mk.addColorStop(0, 'rgba(0,0,0,0)'); mk.addColorStop(0.55, 'rgba(0,0,0,0.35)'); mk.addColorStop(0.88, 'rgba(0,0,0,1)'); mk.addColorStop(1, 'rgba(0,0,0,1)');
+  g.fillStyle = mk; g.fillRect(-3, -3, 6, 6); g.restore();
+  ctx.globalAlpha = master * 0.78; ctx.drawImage(clockLayer, 0, 0);
+  ctx.globalAlpha = master * 0.45; ctx.globalCompositeOperation = 'soft-light';
+  ctx.fillStyle = ground; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over';
+
+  // 하루 only: the sky itself moves. A sun crosses on an arc from 05 to 19, then a moon and stars.
+  // 영샘 10-03 "하루는 단조롭다" — colour alone changed too slowly to be felt as a day passing.
+  if (!night) {
+    const hr = (minute / 60) % 24;
+    if (hr >= 5 && hr < 19) {
+      const p = (hr - 5) / 14, up = Math.sin(p * Math.PI);
+      const sx = 120 + p * 840, sy = 560 - up * 380;
+      ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = master * (0.18 + 0.32 * up);
+      const sun = ctx.createRadialGradient(sx, sy, 0, sx, sy, 520);
+      sun.addColorStop(0, p > 0.75 || p < 0.2 ? '#ffb070' : '#fff1cf'); sun.addColorStop(0.25, 'rgba(255,200,140,0.45)'); sun.addColorStop(1, 'rgba(255,200,140,0)');
+      ctx.fillStyle = sun; ctx.fillRect(0, 0, W, H);
+    } else {
+      const night01 = hr >= 19 ? clamp((hr - 19) / 1.5) : clamp((5 - hr) / 1.5);
+      const p = ((hr + 24 - 19) % 24) / 10, mx = 900 - p * 700, my = 300 + Math.abs(p - 0.5) * 160;
+      ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = master * 0.28 * night01;
+      const moon = ctx.createRadialGradient(mx, my, 0, mx, my, 300);
+      moon.addColorStop(0, '#e6eeff'); moon.addColorStop(0.12, 'rgba(200,215,255,0.5)'); moon.addColorStop(1, 'rgba(200,215,255,0)');
+      ctx.fillStyle = moon; ctx.fillRect(0, 0, W, H);
+      const sec = f / 30;
+      for (let i = 0; i < 70; i++) {
+        const x = hash(i, 21) * W, y = hash(i, 22) * H * 0.48;
+        const tw = 0.35 + 0.65 * Math.max(0, Math.sin(sec * (1.5 + hash(i, 23) * 3) + i * 1.7));
+        const r = 3 + hash(i, 24) * 6;
+        ctx.globalAlpha = master * night01 * tw * 0.9;
+        ctx.drawImage(sprite('#eaf2ff'), x - r, y - r, r * 2, r * 2);
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // the scrim flips end for end every shot, so nothing on screen is constant
+  const flip = idx % 2 === 0;
+  const sg = ctx.createLinearGradient(0, flip ? 0 : H, 0, flip ? H : 0);
+  sg.addColorStop(0, 'rgba(0,0,0,0.10)'); sg.addColorStop(0.3, 'rgba(0,0,0,0)'); sg.addColorStop(0.46, 'rgba(0,0,0,0)');
+  sg.addColorStop(1, `rgba(0,0,0,${0.52 + 0.16 * Math.sin(f / 37)})`);
+  ctx.globalAlpha = master; ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
+
+  const line = [...phrases].reverse().find((p) => f >= p.start && f < p.end);
+  if (!night) {
+    // the clock. The original sank it into the bottom edge, but the Shorts feed lays its title and
+    // channel over the bottom and its grid crops to 2:3 (safe y 170~1750) — 영샘 10-03 saw it cut.
+    // It now stands whole, its foot at 1700.
+    ctx.font = `380px ${F_DISPLAY}`; ctx.letterSpacing = '-14px'; ctx.textAlign = 'center';
+    const clock = `${hh}:${mm}`;
+    const clockTop = 1700 - ctx.measureText('00:00').actualBoundingBoxAscent;
+    const y = 1700;
+    ctx.globalAlpha = master * 0.9; ctx.globalCompositeOperation = 'overlay';
+    ctx.fillStyle = '#fff'; ctx.fillText(clock, W / 2, y);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = master; ctx.fillStyle = 'rgba(255,255,255,0.20)'; ctx.fillText(clock, W / 2, y);
+    ctx.letterSpacing = '0px';
+    // the user's own words, if any, sit above the clock in the lyric voice
+    if (line) {
+      const lo = out(Math.min(clamp((f - line.start) / 7), clamp((line.end - f) / 7)));
+      const size = 62 * krScale(line.text);
+      ctx.font = `${size}px ${F_LYRIC}`; ctx.textAlign = 'left';
+      const lines = wrap(ctx, line.text.split(/\s+/).map((w) => ({ w })), W * 0.82, size * 0.28);
+      ctx.globalAlpha = master * lo; ctx.fillStyle = LYRIC;
+      ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 22; ctx.shadowOffsetY = 2;
+      const top = clockTop - 56 - (lines.length - 1) * size * 1.2;
+      lines.forEach((ln, li) => {
+        let x = (W - ln.width) / 2;
+        for (const w of ln.words) { ctx.fillText(w.w, x, top + li * size * 1.2 + (1 - lo) * 8); x += w.ww + size * 0.28; }
+      });
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    }
+
+    // the turns of the day: a flash of that hour's light, and its name in the title script
+    for (const [hour, word, stamp] of DAY_TURNS) {
+      const at = ((hour * 60 - startMinute) / spanMinutes) * N;
+      const k = f - at;
+      if (k < 0 || k > 60) continue;
+      const flash = 0.55 * (1 - out(clamp(k / 14)));
+      if (flash > 0.01) {
+        ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = master * flash;
+        const fg = ctx.createRadialGradient(W / 2, H * 0.4, 0, W / 2, H * 0.4, H * 0.7);
+        fg.addColorStop(0, '#fff6e2'); fg.addColorStop(0.5, skyAtMinute(hour * 60 + 30)); fg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      const a = out(clamp(k / 10)) * (1 - inOut(clamp((k - 44) / 16)));
+      ctx.globalAlpha = master * a; ctx.textAlign = 'center'; ctx.letterSpacing = '0px';
+      ctx.shadowColor = 'rgba(0,0,0,0.75)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 4;
+      // high in the frame: at 0.36 the word sat across her eyes
+      ctx.save(); ctx.translate(W / 2, H * 0.22); const z = 0.94 + 0.06 * out(clamp(k / 18)); ctx.scale(z, z);
+      ctx.font = `230px ${F_TITLE}`; ctx.fillStyle = '#fff8ec'; ctx.fillText(word, 0, 0);
+      ctx.letterSpacing = '10px'; ctx.font = `30px ${F_SANS}`; ctx.fillStyle = 'rgba(255,240,215,0.9)';
+      ctx.fillText(stamp, 0, 78);
+      ctx.restore(); ctx.letterSpacing = '0px';
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    }
+  } else {
+    // header — says what this is the whole way through
+    ctx.globalAlpha = master; ctx.textAlign = 'left'; ctx.letterSpacing = '2px';
+    const bs = fit(ctx, d.brand, 46, F_DISPLAY, 560);
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 3;
+    ctx.fillStyle = '#f6f2e8'; ctx.fillText(d.brand, 56, 96 + bs);
+    ctx.fillStyle = '#ffc78a'; ctx.fillText('.', 56 + ctx.measureText(d.brand).width, 96 + bs);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    ctx.textAlign = 'right'; ctx.letterSpacing = '5px';
+    fit(ctx, `${hh}:${mm}`, 24, F_SANS, 300);
+    ctx.fillStyle = 'rgba(255,255,255,0.72)'; ctx.fillText(`${hh}:${mm}`, W - 56, 96 + bs);
+
+    // next scene in a small window
+    if (idx + 1 < slots) {
+      const bw = 214, bh = 300, bx = W - 56 - bw, by = H - 470 - bh + (1 - out(clamp(local / 14))) * 16;
+      ctx.globalAlpha = master * 0.94;
+      ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 44; ctx.shadowOffsetY = 14;
+      ctx.fillStyle = '#000'; ctx.fillRect(bx, by, bw, bh);
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      ctx.save(); ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.clip();
+      drawCover(ctx, images[(idx + 1) % n], bx, by, bw, bh, 1, 0);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(bx, by + bh - 30, bw, 30);
+      ctx.textAlign = 'left'; ctx.letterSpacing = '3px'; ctx.font = `16px ${F_SANS}`;
+      ctx.fillStyle = '#ffc78a'; ctx.fillText('NEXT', bx + 10, by + bh - 9);
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.82)'; ctx.lineWidth = 3; ctx.strokeRect(bx + 1.5, by + 1.5, bw - 3, bh - 3);
+    }
+
+    // scene count
+    ctx.globalAlpha = master; ctx.textAlign = 'left'; ctx.letterSpacing = '0px';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 4;
+    ctx.font = `90px ${F_DISPLAY}`; ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    const num = String(idx + 1).padStart(2, '0');
+    ctx.fillText(num, 56, H - 476);
+    const nw = ctx.measureText(num).width;
+    ctx.font = `30px ${F_DISPLAY}`; ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillText('/' + String(slots).padStart(2, '0'), 56 + nw + 4, H - 476);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+    // a line down the left edge fills as the night goes
+    ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(30, 200, 3, H - 400);
+    ctx.fillStyle = '#ffc78a'; ctx.fillRect(30, 200, 3, (H - 400) * t);
+
+    // the lyric takes the clock's place; each word rises as it is sung
+    if (line) {
+      const lo = out(Math.min(clamp((f - line.start) / 8), clamp((line.end - f) / 8)));
+      let size = 84 * krScale(line.text);
+      ctx.letterSpacing = krScale(line.text) === 1 ? '4px' : '1px'; ctx.textAlign = 'left';
+      const words = (line.words?.length ? line.words : line.text.split(/\s+/).map((w, i) => ({ t: line.start + i * 6, w })))
+        .map((w) => ({ ...w, w: w.w.toUpperCase() }));
+      // two lines at most: a third climbs into the scene count and the next-scene window
+      let lines;
+      for (;;) {
+        ctx.font = `${size}px ${F_CAPS}`;
+        lines = wrap(ctx, words, W - 120, size * 0.28);
+        if (lines.length <= 2 || size < 48) break;
+        size *= 0.9;
+      }
+      if (lines.length > 1 && lines[lines.length - 1].words.length === 1) {   // no word alone on the last line
+        const total = lines.reduce((s, l) => s + l.width, 0) + size * 0.28 * (lines.length - 1);
+        for (const k of [1.0, 1.08, 1.16, 1.24]) {
+          const even = wrap(ctx, words, total / lines.length * k, size * 0.28);
+          if (even.length === lines.length && even[even.length - 1].words.length > 1) { lines = even; break; }
+        }
+      }
+      const lh = size * 1.06, bottom = H - 250;
+      ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 6;
+      lines.forEach((ln, li) => {
+        let x = (W - ln.width) / 2;
+        const y = bottom - (lines.length - 1 - li) * lh;
+        for (const w of ln.words) {
+          const k = out(clamp((f - w.t) / 10));
+          ctx.globalAlpha = master * k * lo; ctx.fillStyle = LYRIC;
+          ctx.save(); ctx.translate(x + w.ww / 2, y + (1 - k) * 34); ctx.scale(0.9 + 0.1 * k, 0.9 + 0.1 * k);
+          ctx.fillText(w.w, -w.ww / 2, 0); ctx.restore();
+          x += w.ww + size * 0.28;
+        }
+      });
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    }
+  }
+
+  // how far through the day we are. 영샘 10-03: the 6px line on the very top edge went unseen —
+  // it now runs inset on a faint track, thicker, with a glowing head and the day's turns marked.
+  {
+    // y 190: inside the safe area, below the player's own top icons
+    const x0 = 56, x1 = W - 56, y = night ? 58 : 190, th = 9, x = x0 + (x1 - x0) * t;
+    ctx.globalAlpha = master * 0.9;
+    ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(x0, y, x1 - x0, th);
+    if (!night) for (const [hour] of DAY_TURNS) {
+      const tx = x0 + (x1 - x0) * clamp((hour * 60 - startMinute) / spanMinutes);
+      ctx.fillStyle = tx <= x ? 'rgba(255,241,207,0.95)' : 'rgba(255,255,255,0.45)'; ctx.fillRect(tx - 2, y - 7, 4, th + 14);
+    }
+    ctx.shadowColor = 'rgba(255,214,150,0.9)'; ctx.shadowBlur = 14;
+    ctx.fillStyle = '#fff1cf'; ctx.fillRect(x0, y, x - x0, th);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    ctx.globalAlpha = master; ctx.drawImage(sprite('#fff1cf'), x - 22, y + th / 2 - 22, 44, 44);
+  }
+
+  // close: title card over a dark veil
+  if (outro > 0) {
+    ctx.globalAlpha = master * outro;
+    ctx.fillStyle = 'rgba(6,7,12,0.78)'; ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = 'center'; ctx.letterSpacing = '1px';
+    const ts = fit(ctx, d.title, 106, F_DISPLAY, W - 120);
+    ctx.fillStyle = '#f1eade'; ctx.fillText(d.title, W / 2, 780 + ts * 0.9);
+    ctx.letterSpacing = '7px'; fit(ctx, d.tag, 30, F_SANS, W - 144);
+    ctx.fillStyle = '#b9f0d8'; ctx.fillText(d.tag, W / 2, 780 + ts * 0.9 + 26 + 30);
+    ctx.letterSpacing = '4px'; fit(ctx, d.footR, 26, F_SANS, W - 144);
+    ctx.fillStyle = '#8f97a6'; ctx.fillText(d.footR, W / 2, 780 + ts * 0.9 + 26 + 30 + 54 + 26);
+    ctx.letterSpacing = '0px';
+  }
+
+  // grain 0.07
+  ctx.globalAlpha = 0.07; ctx.globalCompositeOperation = 'overlay';
+  const shift = (f % 7) * 13;
+  ctx.save(); ctx.translate(shift, -shift); ctx.fillStyle = grainPattern(ctx); ctx.fillRect(-shift, shift, W, H); ctx.restore();
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
+const clockface = (id, name, sub, v) => ({
+  id, name, sub, draw: drawClockface,
+  build: (base, beat) => ({
+    ...base,
+    phrases: v.night && !base.phrases.length ? titleAsLyrics(base, base.N ?? 960) : base.phrases,
+    title: `${base.title1} ${base.title2}`.trim(),
+    // on the beat, but never quicker than the approved cut: a whole day must not turn into flicker
+    shot: (() => { const s = beatStep(beat, v.shot); return s < v.shot * 0.8 ? s * 2 : s; })(), startMinute: v.startMinute, spanMinutes: v.spanMinutes, night: v.night,
+  }),
+});
+
+// =====================================================================================
 // registry. `build` turns the shared inputs into what that look's draw() reads.
 // Colours are fixed per look on purpose (영샘 09-13): presets, not a colour picker.
 // =====================================================================================
@@ -575,11 +886,15 @@ export const LOOKS = [
     draw: drawPulse,
     build: (base, beat) => ({
       ...base,
-      phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, 960),
+      phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, base.N ?? 960),
       accent: '#7ad7ff', accent2: '#ffd58a', grade: 'saturate(1.05) contrast(1.08)',
       step: beatStep(beat, 122), spec: beat?.spec ?? null, bands: 128,
     }),
   },
+  clockface('clockface-day', 'Clockface · 하루', '하루가 32초 · 시간 따라 색이 바뀜 · 큰 시계 · EP05',
+    { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
+  clockface('clockface-night', 'Clockface · 밤', '밤 열 시간 · 가사가 시계 자리에 · 다음 장면 창 · EP06',
+    { shot: 57, startMinute: 1200, spanMinutes: 600, night: true }),
 ];
 // How many photos each look actually shows for this song, and which shape suits it.
 // slots = distinct picture places in N frames; fewer photos than `min` and the repeats show.
@@ -589,6 +904,8 @@ const PHOTO = {
   'blackcut-room': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) },
   'blackcut-road': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) },
   pulse: { min: 4, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) },
+  'clockface-day': { min: 10, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
+  'clockface-night': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
 };
 for (const l of LOOKS) l.photo = PHOTO[l.id];
 

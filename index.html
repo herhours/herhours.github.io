@@ -59,9 +59,31 @@ body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none
 body.is-done .done-meta{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
 .live{left:auto;right:12px;bottom:auto;top:56px}
 body[data-pane="look"] .pane-look{display:block}
-.looks{display:flex;flex-direction:column;gap:10px}
-.opt .t span.adv{white-space:normal;margin-top:3px;color:var(--cream)}
-.opt .t span.adv.warn{color:#FFC27A}
+/* Looks are a strip you swipe sideways: seven stacked cards filled the sheet and hid the video
+   the choice is meant to be judged on (영샘 10-03). Details show once, for the chosen look. */
+.looks{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 10px;margin:0 -18px;padding-left:18px;padding-right:18px;
+  scroll-padding-left:18px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
+.tile{flex:0 0 92px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 6px 9px;border-radius:16px;
+  border:2px solid var(--line);background:rgba(255,255,255,.03);color:var(--cream);scroll-snap-align:start;
+  font-size:13px;font-weight:700;line-height:1.25;text-align:center}
+.tile .sw{width:52px;height:52px;border-radius:12px}
+.tile.on{border-color:var(--accent);background:rgba(140,255,176,.08);color:var(--accent)}
+.cut{margin:4px 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.cutrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:var(--t-xs)}
+.cutrow .cl{color:var(--dim);font-weight:700;min-width:62px}
+.cutrow b{color:var(--accent);font-size:var(--t-m)}
+.cutrow .cdim{color:var(--dim)}
+.seg{display:flex;flex:1;gap:6px}
+.seg button{flex:1;min-height:44px;border-radius:12px;border:2px solid var(--line);background:none;color:var(--cream);font:inherit;font-size:var(--t-s);font-weight:800}
+.seg button.on{border-color:var(--accent);color:var(--accent);background:rgba(140,255,176,.08)}
+.seg button:disabled,.cut .pill:disabled{opacity:.35}
+#offset{width:100%;accent-color:var(--accent);margin:0 0 10px}
+#offset:disabled{opacity:.35}
+.cut .hint{margin-top:8px}
+.lookinfo{min-height:4.2em;font-size:14px;line-height:1.45;color:var(--dim);margin-top:4px}
+.lookinfo b{color:var(--cream);font-size:var(--t-xs)}
+.lookinfo .adv{display:block;color:var(--cream)}
+.lookinfo .adv.warn{color:#FFC27A}
 .pane-photo #padv{color:var(--cream)}
 body[data-pane="lyrics"] .pane-lyrics{display:block}
 body:not(.mine-song) #lyricsBtn{display:none}
@@ -95,6 +117,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 .sw-blackcut-road{background:linear-gradient(90deg,#3a4a66 0 44%,#000 44% 56%,#c9a46a 56%)}
 .sw-pulse{background:radial-gradient(circle at 50% 50%,#04040a 0 30%,#7ad7ff 31% 37%,#ffd58a 38% 41%,#1a2236 42%)}
 .sw-triptych{background:linear-gradient(#5a2a12 0 33%,#0b0a0c 33% 35%,#b0602a 35% 66%,#0b0a0c 66% 68%,#ffb063 68%)}
+.sw-clockface-day{background:linear-gradient(#1b2a5e,#a8742e 30%,#cfd6dc 50%,#d1622a 72%,#141c36)}
+.sw-clockface-night{background:linear-gradient(#5b3b78,#2b3b6b 40%,#141c36 75%,#1d1430);box-shadow:inset 0 -6px 0 #ffc78a}
 </style>
 </head>
 <body>
@@ -175,7 +199,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <div class="pane pane-look">
     <h2>룩</h2>
     <div class="looks" id="looks"></div>
-    <p class="hint">고르는 즉시 위 영상이 그 룩으로 바뀌어요. 박자는 노래에서 자동으로 찾아요.</p>
+    <div class="lookinfo" id="lookInfo"></div>
+    <p class="hint">옆으로 밀어서 골라요. 고르는 즉시 위 영상이 바뀌어요.</p>
     <button class="pill done" data-close>확인</button>
   </div>
 
@@ -206,9 +231,18 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     </button>
     <label class="opt" for="audio">
       <svg width="22" height="22"><use href="#i-music"/></svg>
-      <span class="t"><b>내 음악 파일</b><span id="shint">앞 32초를 써요. 가사는 안 나와요</span></span>
+      <span class="t"><b>내 음악 파일</b><span id="shint">내 노래 파일을 골라요. 길이와 시작점은 아래에서.</span></span>
     </label>
     <input type="file" id="audio" accept="audio/*">
+    <div class="cut">
+      <div class="cutrow"><span class="cl">길이</span>
+        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="32" class="on">32초</button><button data-len="60">60초</button></div>
+      </div>
+      <div class="cutrow"><span class="cl">어디부터</span><b id="offV">0:00</b><span class="cdim" id="offTo"></span></div>
+      <input type="range" id="offset" min="0" max="0" step="0.5" value="0" aria-label="시작점">
+      <div class="two"><button class="pill ghost" id="offStart">처음부터</button><button class="pill ghost" id="offChorus">후렴부터</button></div>
+      <p class="hint" id="cutHint"></p>
+    </div>
     <button class="opt lyr" id="lyricsBtn" data-open="lyrics">
       <svg width="22" height="22"><use href="#i-type"/></svg>
       <span class="t"><b>글 넣기 · 가사나 한마디</b><span id="lyricsBtnSub">붙여넣고 톡톡 눌러 맞춰요</span></span>
@@ -227,7 +261,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     </div>
     <div class="lyredit">
       <textarea id="lyrics" rows="6" placeholder="한 줄에 한 마디씩 써요&#10;가사도 좋고, 그날의 한마디도 좋아요&#10;예) 첫 눈 / 첫 활강 / 오늘은 우리 둘이"></textarea>
-      <p class="hint" id="lhint">「탭으로 맞추기」를 누르면 노래가 처음부터 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡.</p>
+      <p class="hint" id="lhint">「탭으로 맞추기」를 누르면 고른 시작점부터 노래가 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡.</p>
       <button class="pill" id="tapStart">탭으로 맞추기</button>
       <button class="pill ghost done" data-close>확인</button>
     </div>

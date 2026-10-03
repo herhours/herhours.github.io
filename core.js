@@ -330,14 +330,18 @@ export async function decodeAudio(arrayBuffer) {
   const ac = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
   try { return await ac.decodeAudioData(arrayBuffer); } finally { try { await ac.close(); } catch {} }
 }
-export function trimBuffer(buf, seconds) {
-  const frames = Math.min(buf.length, Math.round(seconds * buf.sampleRate));
+// `from` (seconds) lets the short start anywhere in the song — the chorus, usually (영샘 10-03)
+export function trimBuffer(buf, seconds, from = 0) {
+  const start = Math.max(0, Math.min(buf.length - 1, Math.round(from * buf.sampleRate)));
+  const frames = Math.min(buf.length - start, Math.round(seconds * buf.sampleRate));
   const ch = Math.min(2, buf.numberOfChannels);
   const outB = new AudioBuffer({ length: frames, numberOfChannels: ch, sampleRate: buf.sampleRate });
   for (let c = 0; c < ch; c++) {
-    const src = buf.getChannelData(c).subarray(0, frames);
+    const src = buf.getChannelData(c).subarray(start, start + frames);
     const dst = outB.getChannelData(c);
     dst.set(src);
+    // cut in mid-song: 30ms fade-in so the first sample does not click
+    if (start > 0) { const fi = Math.min(frames, Math.round(buf.sampleRate * 0.03)); for (let i = 0; i < fi; i++) dst[i] *= i / fi; }
     // 1s fade-out at the end so a cut song does not click
     const fade = Math.min(frames, buf.sampleRate);
     for (let i = 0; i < fade; i++) dst[frames - fade + i] *= 1 - i / fade;
