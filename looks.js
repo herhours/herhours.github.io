@@ -899,13 +899,22 @@ function drawLyricBloom(ctx, f, N, d) {
   const line = lines[idx];
   const ground = BLOOM_GROUNDS[idx % BLOOM_GROUNDS.length], accent = BLOOM_ACCENTS[idx % BLOOM_ACCENTS.length];
   const place = BLOOM_PLACE[idx % BLOOM_PLACE.length];
-  const since = f - line.from;
+  let since = f - line.from;
   const master = out(clamp(f / 10)) * (1 - inOut(clamp((f - (N - 18)) / 18)));
   const outro = clamp((f - (N - outroLen)) / (outroLen * 0.4));
   ctx.fillStyle = ground; ctx.fillRect(0, 0, W, H);
 
+  // a line that holds long (an intro, a slow verse) cuts to a new photo on the bar once its
+  // words have all landed, with its own smaller wipe — a held frame is what made the open flat
+  const settle = line.chunks[line.chunks.length - 1].t - line.from + 18;
+  let sub = 0, wipeK = 0.9;
+  if (since > settle + d.period * 0.5) {
+    sub = Math.floor((since - settle) / d.period);
+    if (sub > 0) { since = (since - settle) % d.period; wipeK = 0.5; }
+  }
+
   // the photograph: bright, full frame, slowly pushing in
-  const src = images[idx % images.length];
+  const src = images[(idx + sub) % images.length];
   const img = src.live ? src : gradedImage(src, 'brightness(1.10) contrast(1.06)');
   const push = 1.04 + 0.10 * out(clamp(since / 70)), drift = Math.sin(f / 52) * 10;
   const s = Math.max(W / img.width, H / img.height) * push, dw = img.width * s, dh = img.height * s;
@@ -922,7 +931,7 @@ function drawLyricBloom(ctx, f, N, d) {
   ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H);
 
   // the bar that wipes the screen as the line arrives
-  const wipe = clamp(since / 9), wa = 0.9 * (1 - clamp((since - 4) / 8));
+  const wipe = clamp(since / 9), wa = wipeK * (1 - clamp((since - 4) / 8));
   if (wa > 0.01 && wipe > 0) {
     ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = master * wa; ctx.fillStyle = accent;
     const h = H * wipe;
@@ -1073,14 +1082,25 @@ export const LOOKS = [
   {
     id: 'lyricbloom', name: 'Lyric Bloom', sub: '가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리 · EP05',
     draw: drawLyricBloom,
-    build: (base) => {
+    build: (base, beat) => {
       const N = base.N ?? 960, outroLen = Math.min(80, Math.round(N * 0.1));
       const ps = base.phrases.length ? base.phrases : bloomFallback(base, N - outroLen);
-      return {
-        ...base, outroLen,
-        title: `${base.title1} ${base.title2}`.trim(),
-        lines: ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, chunks: bloomChunks(p) })),
-      };
+      const lines = ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, chunks: bloomChunks(p) }));
+      // 영샘 10-04: before the first sung line the frame was just a photo — flat. The song's name
+      // opens in the same grammar (stacked, last word cut from the photo), and a long intro gets
+      // a second card with the brand, so the look speaks from the first second.
+      const first = lines.length ? lines[0].from : N;
+      if (first > 45) {
+        const intro = [];
+        const say = (start, text) => {
+          const words = text.split(/\s+/).filter(Boolean);
+          intro.push({ from: start, chunks: bloomChunks({ start, text, words: words.map((w, k) => ({ t: start + 4 + k * 7, w })) }) });
+        };
+        say(6, `${base.title1} ${base.title2}`.trim());
+        if (first > 210) say(Math.round(first / 2), base.brand);
+        lines.unshift(...intro);
+      }
+      return { ...base, outroLen, title: `${base.title1} ${base.title2}`.trim(), lines, period: beatStep(beat, 60) };   // ~2s, on the beat
     },
   },
 ];
