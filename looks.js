@@ -847,6 +847,179 @@ const clockface = (id, name, sub, v) => ({
 });
 
 // =====================================================================================
+// LYRIC BLOOM — EP05 Nobody's Waiting (09-09 승인).
+// The lyric IS the picture. Every line lands in its own corner as a stack of words that slam
+// in with an overshoot; the last of them is huge and cut out of the photograph; a coloured bar
+// wipes the screen as each line arrives. (v1 was "just an image with BGM" — dim photo, quiet type.)
+// In the app the words are the ones the user tapped in, so this is the look where their own
+// lyric or 한마디 is the star.
+// =====================================================================================
+const BLOOM_GROUNDS = ['#0d1230', '#7a1338', '#0f2a1c', '#2a1348', '#0b1c2e', '#3a1410'];
+const BLOOM_ACCENTS = ['#b9f0d8', '#ffd58a', '#8fb3ff', '#ff7ad9', '#b9f0d8', '#ffd58a'];
+// v = where the stack sits top-to-bottom, h = which side it hugs; pads keep it inside the
+// Shorts safe area (y 170~1750)
+const BLOOM_PLACE = [
+  { v: 'bottom', h: 'left', pad: 260 }, { v: 'top', h: 'right', pad: 230 }, { v: 'center', h: 'center', pad: 0 },
+  { v: 'bottom', h: 'right', pad: 280 }, { v: 'top', h: 'left', pad: 240 }, { v: 'bottom', h: 'center', pad: 270 },
+];
+const F_BLOOM = `"HHDisplay","Gaegu","HHKrSans",${KR},sans-serif`;
+let bloomLayer = null;
+
+function bloomChunks(p) {
+  const words = p.words?.length ? p.words : p.text.split(/\s+/).map((w, i) => ({ t: p.start + i * 8, w }));
+  if (words.length <= 4) return words.map((w) => ({ t: w.t, w: w.w }));
+  // four stacked pieces at most, the original's shape: three that set it up, one that lands
+  const out = [], per = Math.ceil((words.length - 1) / 3);
+  for (let i = 0; i < words.length - 1; i += per) {
+    const g = words.slice(i, Math.min(i + per, words.length - 1));
+    out.push({ t: g[0].t, w: g.map((x) => x.w).join(' ') });
+  }
+  out.push({ t: words[words.length - 1].t, w: words[words.length - 1].w });
+  return out;
+}
+
+// no words from the user: the song's own name, said four ways, so the look still has a voice
+function bloomFallback(base, until) {
+  const say = [base.title1, base.title2, `${base.title1} ${base.title2}`, base.brand].filter((s) => s && s.trim());
+  const step = Math.floor((until - 20) / say.length);
+  return say.map((text, i) => {
+    const start = 20 + i * step, words = text.split(/\s+/);
+    return { start, end: start + step, text, words: words.map((w, k) => ({ t: start + 6 + k * 9, w })) };
+  });
+}
+
+function drawLyricBloom(ctx, f, N, d) {
+  const { images, lines, outroLen } = d;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.letterSpacing = '0px'; ctx.textBaseline = 'alphabetic';
+
+  let idx = 0;
+  for (let i = 0; i < lines.length; i++) if (f >= lines[i].from) idx = i;
+  const line = lines[idx];
+  const ground = BLOOM_GROUNDS[idx % BLOOM_GROUNDS.length], accent = BLOOM_ACCENTS[idx % BLOOM_ACCENTS.length];
+  const place = BLOOM_PLACE[idx % BLOOM_PLACE.length];
+  const since = f - line.from;
+  const master = out(clamp(f / 10)) * (1 - inOut(clamp((f - (N - 18)) / 18)));
+  const outro = clamp((f - (N - outroLen)) / (outroLen * 0.4));
+  ctx.fillStyle = ground; ctx.fillRect(0, 0, W, H);
+
+  // the photograph: bright, full frame, slowly pushing in
+  const src = images[idx % images.length];
+  const img = src.live ? src : gradedImage(src, 'brightness(1.10) contrast(1.06)');
+  const push = 1.04 + 0.10 * out(clamp(since / 70)), drift = Math.sin(f / 52) * 10;
+  const s = Math.max(W / img.width, H / img.height) * push, dw = img.width * s, dh = img.height * s;
+  ctx.globalAlpha = master;
+  if (src.live) ctx.filter = 'brightness(1.10) contrast(1.06)';
+  ctx.drawImage(img, (W - dw) / 2, (H - dh) * 0.38 + drift, dw, dh);
+  ctx.filter = 'none';
+  // only enough of the line's colour to bind the frame — never enough to hide the picture
+  ctx.globalCompositeOperation = 'color'; ctx.globalAlpha = master * 0.42;
+  ctx.fillStyle = ground; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = master;
+  const dark = ctx.createLinearGradient(idx % 2 ? W : 0, 0, idx % 2 ? 0 : W, H * 0.5);
+  dark.addColorStop(0, 'rgba(0,0,0,0.46)'); dark.addColorStop(0.46, 'rgba(0,0,0,0)');
+  ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H);
+
+  // the bar that wipes the screen as the line arrives
+  const wipe = clamp(since / 9), wa = 0.9 * (1 - clamp((since - 4) / 8));
+  if (wa > 0.01 && wipe > 0) {
+    ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = master * wa; ctx.fillStyle = accent;
+    const h = H * wipe;
+    ctx.fillRect(0, idx % 2 === 0 ? 0 : H - h, W, h);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // the words, stacked in this line's corner
+  const shown = line.chunks.map((c, i) => ({ ...c, i, key: i === line.chunks.length - 1 })).filter((c) => f >= c.t);
+  if (shown.length && outro < 1) {
+    const maxW = W - 84;
+    // the original's 118/205px filled the frame only because its lines were long; a user's
+    // two-word line sat small in a corner. The whole line now grows until its widest piece nearly
+    // spans the frame (up to 2.6x), every piece keeping its proportion to the others.
+    ctx.letterSpacing = '-5px';
+    const meas = (text, size) => { ctx.font = `${size}px ${F_BLOOM}`; return ctx.measureText(text).width * 0.84; };
+    const all = line.chunks.map((c, i) => {
+      const text = c.w.toUpperCase(), base = (i === line.chunks.length - 1 ? 205 : 118) * krScale(text);
+      return { text, base, w: meas(text, base) };
+    });
+    let grow = Math.max(1, Math.min(2.6, (maxW * 0.92) / Math.max(...all.map((a) => a.w))));
+    const tall = all.reduce((s, a) => s + a.base * 0.9, 0) * grow;
+    if (tall > H * 0.6) grow *= (H * 0.6) / tall;   // the stack stays inside the safe area
+    grow *= 0.5;   // 영샘 10-04: half the full-frame size reads better — big, but the picture breathes
+    for (const c of shown) {
+      const a = all[c.i];
+      let size = a.base * grow;
+      const w0 = a.w * grow;
+      if (w0 > maxW) size *= maxW / w0;
+      c.size = size; c.text = a.text; c.w0 = meas(a.text, size);
+    }
+    const total = shown.reduce((a, c) => a + c.size * 0.9, 0);
+    let y = place.v === 'top' ? place.pad : place.v === 'bottom' ? H - place.pad - total : (H - total) / 2;
+    for (const c of shown) {
+      const e = clamp((f - c.t) / 11), k = back(e);
+      const x = place.h === 'left' ? 42 : place.h === 'right' ? W - 42 - c.w0 : (W - c.w0) / 2;
+      const ox = place.h === 'right' ? x + c.w0 : x;   // grow from the side it hugs
+      const base = y + c.size * 0.78;
+      ctx.save();
+      ctx.globalAlpha = master * e * (1 - outro);
+      ctx.translate(ox + (1 - e) * (c.i % 2 ? 60 : -60), base - c.size * 0.35);
+      ctx.scale(0.86 + 0.14 * k, 0.86 + 0.14 * k); ctx.translate(-ox, -(base - c.size * 0.35));
+      ctx.translate(x, base); ctx.scale(0.84, 1);
+      ctx.font = `${c.size}px ${F_BLOOM}`; ctx.letterSpacing = '-5px'; ctx.textAlign = 'left';
+      if (c.key) {
+        // the last word is cut out of the photograph, with a coloured edge
+        ctx.lineJoin = 'round'; ctx.strokeStyle = accent; ctx.lineWidth = 8;
+        ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 10;
+        ctx.strokeText(c.text, 0, 0);
+        ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        // wider than the frame: the word is drawn unsqueezed here and narrowed by 0.84 on the way in
+        if (!bloomLayer) { bloomLayer = document.createElement('canvas'); bloomLayer.width = 1400; bloomLayer.height = 420; }
+        const g = bloomLayer.getContext('2d');
+        const lw = Math.min(1400, Math.ceil(c.w0 / 0.84) + 40);
+        g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1400, 420);
+        g.font = ctx.font; g.letterSpacing = '-5px'; g.textBaseline = 'alphabetic'; g.fillStyle = '#fff';
+        g.fillText(c.text, 20, 330);
+        g.globalCompositeOperation = 'source-in';
+        const pic = src.live ? src : gradedImage(src, 'contrast(1.45) brightness(2.0) saturate(1.35)');
+        if (src.live) g.filter = 'contrast(1.45) brightness(2.0) saturate(1.35)';
+        const ps = Math.max(lw * 2.3 / pic.width, 420 / pic.height);
+        g.drawImage(pic, (lw - pic.width * ps) / 2, (420 - pic.height * ps) * 0.34, pic.width * ps, pic.height * ps);
+        g.filter = 'none';
+        ctx.drawImage(bloomLayer, 0, 0, lw, 420, -20, -330, lw, 420);
+      } else {
+        ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 10;
+        ctx.fillStyle = c.i % 3 === 1 ? accent : LYRIC;
+        ctx.fillText(c.text, 0, 0);
+      }
+      ctx.restore();
+      y += c.size * 0.9;
+    }
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; ctx.letterSpacing = '0px';
+  }
+
+  // close
+  if (outro > 0) {
+    ctx.globalAlpha = master * outro;
+    ctx.fillStyle = 'rgba(8,8,14,0.82)'; ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = 'center'; ctx.letterSpacing = '0px';
+    const ts = fit(ctx, d.title, 100, F_DISPLAY, W - 120);
+    ctx.fillStyle = '#f1eade'; ctx.fillText(d.title, W / 2, 800 + ts * 0.9);
+    ctx.letterSpacing = '7px'; fit(ctx, d.tag, 29, F_SANS, W - 144);
+    ctx.fillStyle = '#b9f0d8'; ctx.fillText(d.tag, W / 2, 800 + ts * 0.9 + 24 + 29);
+    ctx.letterSpacing = '4px'; fit(ctx, d.footR, 25, F_SANS, W - 144);
+    ctx.fillStyle = '#8f97a6'; ctx.fillText(d.footR, W / 2, 800 + ts * 0.9 + 24 + 29 + 50 + 25);
+    ctx.letterSpacing = '0px';
+  }
+
+  // grain 0.07
+  ctx.globalAlpha = 0.07; ctx.globalCompositeOperation = 'overlay';
+  const shift = (f % 7) * 13;
+  ctx.save(); ctx.translate(shift, -shift); ctx.fillStyle = grainPattern(ctx); ctx.fillRect(-shift, shift, W, H); ctx.restore();
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
+// =====================================================================================
 // registry. `build` turns the shared inputs into what that look's draw() reads.
 // Colours are fixed per look on purpose (영샘 09-13): presets, not a colour picker.
 // =====================================================================================
@@ -897,6 +1070,19 @@ export const LOOKS = [
     { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
   clockface('clockface-night', 'Clockface · 밤', '밤 열 시간 · 가사가 시계 자리에 · 다음 장면 창 · EP06',
     { shot: 57, startMinute: 1200, spanMinutes: 600, night: true }),
+  {
+    id: 'lyricbloom', name: 'Lyric Bloom', sub: '가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리 · EP05',
+    draw: drawLyricBloom,
+    build: (base) => {
+      const N = base.N ?? 960, outroLen = Math.min(80, Math.round(N * 0.1));
+      const ps = base.phrases.length ? base.phrases : bloomFallback(base, N - outroLen);
+      return {
+        ...base, outroLen,
+        title: `${base.title1} ${base.title2}`.trim(),
+        lines: ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, chunks: bloomChunks(p) })),
+      };
+    },
+  },
 ];
 // How many photos each look actually shows for this song, and which shape suits it.
 // slots = distinct picture places in N frames; fewer photos than `min` and the repeats show.
@@ -908,6 +1094,7 @@ const PHOTO = {
   pulse: { min: 4, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) },
   'clockface-day': { min: 10, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
   'clockface-night': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
+  lyricbloom: { min: 4, shape: 'tall', slots: (d) => Math.max(1, d.lines.length) },
 };
 for (const l of LOOKS) l.photo = PHOTO[l.id];
 

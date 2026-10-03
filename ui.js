@@ -333,6 +333,7 @@ $('tapStart').onclick = async () => {
   S.tap = { lines, taps: [] };
   S.userPhrases = []; rebuild();
   document.body.classList.add('is-tapping');
+  document.activeElement?.blur();   // a focused button would take the Space key as a second tap
   tapShow();
   S.started = true; pv.currentTime = S.offset; S.vf = 0;
   try { await pv.play(); } catch {}
@@ -355,6 +356,12 @@ function tapEnd() {
   if (S.tap) $('lhint').textContent = S.userPhrases.length ? `${S.userPhrases.length}줄 맞췄어요. 위 영상에서 확인해 보세요.` : '맞춘 줄이 없어요.';
 }
 $('tapStop').onclick = tapEnd;
+// on a computer the big button is a mouse trip away from the video; Space (or Enter) taps instead
+document.addEventListener('keydown', (e) => {
+  if (!document.body.classList.contains('is-tapping') || e.repeat) return;
+  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); $('tapBtn').click(); }
+  else if (e.code === 'Backspace') { e.preventDefault(); $('tapUndo').click(); }
+});
 pv.addEventListener('timeupdate', () => { if (document.body.classList.contains('is-tapping') && pv.currentTime >= S.offset + S.seconds) tapEnd(); });
 $('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.userPhrases = []; rebuild(); lyricHint(); $('lhint').textContent = '글을 고쳤어요. 「탭으로 맞추기」로 다시 맞춰 주세요.'; } });
 
