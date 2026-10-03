@@ -575,7 +575,9 @@ function drawClockface(ctx, f, N, d) {
   const mm = String(Math.floor(minute) % 60).padStart(2, '0');
   const ground = skyAtMinute(minute);
   const master = out(clamp(f / 12)) * (1 - inOut(clamp((f - (N - 24)) / 24)));
-  const outro = clamp((f - (N - 96)) / 40);
+  // the closing card takes 3.2s of a 32s short; at 15s that was a fifth of it, and it ran over Midnight
+  const outroLen = Math.min(96, Math.round(N * 0.12));
+  const outro = clamp((f - (N - outroLen)) / (outroLen * 0.42));
 
   const idx = Math.min(slots - 1, Math.floor(f / shot)), local = f - idx * shot, cross = 7;
   const still = (i) => {
@@ -693,7 +695,7 @@ function drawClockface(ctx, f, N, d) {
     for (const [hour, word, stamp] of DAY_TURNS) {
       const at = ((hour * 60 - startMinute) / spanMinutes) * N;
       const k = f - at;
-      if (k < 0 || k > 60) continue;
+      if (k < 0 || k > 60 || at > N - outroLen - 30) continue;   // no turn card under the closing card
       const flash = 0.55 * (1 - out(clamp(k / 14)));
       if (flash > 0.01) {
         ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = master * flash;
