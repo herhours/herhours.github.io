@@ -365,8 +365,9 @@ export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFr
   }
   const output = new Output({ format: new Mp4OutputFormat({ fastStart: 'in-memory' }), target: new BufferTarget() });
   // Chrome refuses to share more than 50MB ("Permission denied", 영샘's phone 10-04), so a long short gets a
-  // lower video bitrate to land near 42MB. 32s and shorter keep the full 9Mbps; Instagram re-encodes to less anyway.
-  const vbr = Math.min(9_000_000, Math.floor((42 * 8_000_000) / (N / FPS)) - 192_000);
+  // lower video bitrate. Aimed at 36MB: a phone encoder overshoots (42MB aimed came out 47.8MB on 영샘's Android).
+  // 32s and shorter keep the full 9Mbps; Instagram re-encodes to less anyway.
+  const vbr = Math.min(9_000_000, Math.floor((36 * 8_000_000) / (N / FPS)) - 192_000);
   const vsrc = new CanvasSource(canvas, { codec: 'avc', bitrate: vbr, keyFrameInterval: 2 });
   const asrc = new AudioBufferSource({ codec: 'aac', bitrate: 192_000 });
   output.addVideoTrack(vsrc, { frameRate: FPS });
