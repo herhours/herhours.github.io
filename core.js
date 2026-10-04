@@ -406,4 +406,11 @@ export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases
 
 export const DEMO = ['L11', 'L03', 'L02', 'L07', 'L06', 'L13'];
 export const loadDemo = () => Promise.all(DEMO.map((id) => loadImage(`assets/demo/${id}.jpg`)));
-export const loadTemplate = async () => (await fetch('assets/green_light.json')).json();
+// Our own songs, each with its lyric timing. Green Light is the original EP01 short; the other two were
+// chosen for launch by 영샘 and 영샘's girlfriend (10-04).
+export const SONGS = [
+  { id: 'green', name: 'Green Light on the Window', json: 'assets/green_light.json', file: 'assets/green_light.mp3' },
+  { id: 'wings', name: 'Wings Over the Market', json: 'assets/songs/wings_over_the_market.json', file: 'assets/songs/wings_over_the_market.mp3' },
+  { id: 'angels', name: 'Angels in the Alleyway', json: 'assets/songs/angels_in_the_alleyway.json', file: 'assets/songs/angels_in_the_alleyway.mp3', lyrics: false },
+];
+export const loadTemplate = async (song = SONGS[0]) => (await fetch(song.json)).json();

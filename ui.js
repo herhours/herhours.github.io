@@ -2,7 +2,7 @@
 // The shell supplies the markup and two hooks (window.hhOpen / window.hhClose); everything
 // below is identical in both so the two designs cannot drift apart in behaviour.
 import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, trimBuffer,
-         encode, buildData, loadDemo, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady } from './core.js';
+         encode, buildData, loadDemo, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS } from './core.js';
 import { LOOKS, lookById } from './looks.js';
 import { analyze, findChorus } from './beats.js';
 import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
@@ -12,7 +12,7 @@ const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart
 
 const S = {
   tpl: null, images: [], photoFiles: [], demo: [],
-  useOurs: true, audioFile: null,
+  useOurs: true, song: SONGS[0], audioFile: null,
   d: null, N: 960, seconds: MAX_SEC,
   vf: 0,            // virtual frame shown while the song is not playing
   started: false,   // has the user pressed play at least once
@@ -120,7 +120,7 @@ function chips() {
   // Shell B has no menu pane, so every label is optional.
   const nv = S.photoFiles.filter(isVideoFile).length, np = S.photoFiles.length - nv;
   const photo = S.photoFiles.length ? [np && T(`내 사진 ${np}장`, `${np} photos`), nv && T(`영상 ${nv}개`, `${nv} videos`)].filter(Boolean).join(' · ') : T('데모 사진 6장', '6 demo photos');
-  const song = S.useOurs ? 'Green Light on the Window' : (S.audioFile?.name || T('내 음악', 'My song'));
+  const song = S.useOurs ? S.song.name : (S.audioFile?.name || T('내 음악', 'My song'));
   const text = `${$('brand').value} · ${$('t1').value}`;
   const set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
   set('vPhoto', photo); set('vSong', song); set('vText', text); set('vLook', S.look.name);
@@ -263,20 +263,28 @@ $('useDemo').onclick = () => {
   rebuild(); chips(); renderLooks();
 };
 
-$('useOurs').onclick = () => {
-  S.useOurs = true; S.audioFile = null; $('audio').value = '';
+function renderSongs() {
+  $('ourSongs').innerHTML = SONGS.map((s) => `<button class="opt${S.useOurs && s.id === S.song.id ? ' on' : ''}" data-song="${s.id}">
+      <svg width="22" height="22"><use href="#i-music"/></svg>
+      <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('Her Hours · 곡 제목이 글자로 나와요', 'Her Hours · the title becomes the type') : T('Her Hours · 가사가 박자에 맞춰 켜져요', 'Her Hours · lyrics light up on the beat')}</span></span></button>`).join('');
+  $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song)); });
+}
+async function pickSong(song) {
+  S.useOurs = true; S.song = song; S.audioFile = null; $('audio').value = '';
   document.body.classList.remove('mine-song');
-  pv.pause(); pv.src = 'assets/green_light.mp3';
+  renderSongs();
+  pv.pause(); pv.src = song.file;
+  S.tpl = await loadTemplate(song);
   S.offset = 0; S.chorusAt = null; S.songDur = MAX_SEC; applyCut();
-  $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
+  $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
   $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작점은 아래에서.', 'Pick a song file. Length and start point below.');
   rebuild(); chips(); syncPlay();
-  fetch('assets/green_light.mp3').then((r) => r.arrayBuffer()).then(listen);
-};
+  fetch(song.file).then((r) => r.arrayBuffer()).then(listen);
+}
 
 $('audio').onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  S.useOurs = false; S.audioFile = f;
+  S.useOurs = false; S.audioFile = f; renderSongs();
   document.body.classList.add('mine-song');
   pv.pause();
   pv.src = URL.createObjectURL(f);
@@ -388,7 +396,7 @@ async function make() {
   S.blob = null; fill(0); status(T('준비 중…', 'Getting ready…'));
   try {
     status(T('노래 읽는 중…', 'Reading the song…'));
-    const ab = S.useOurs ? await (await fetch('assets/green_light.mp3')).arrayBuffer() : await S.audioFile.arrayBuffer();
+    const ab = S.useOurs ? await (await fetch(S.song.file)).arrayBuffer() : await S.audioFile.arrayBuffer();
     const decoded = await decodeAudio(ab);
     const seconds = Math.min(S.seconds, decoded.duration - S.offset);
     const audioBuf = trimBuffer(decoded, seconds, S.offset);
@@ -461,10 +469,11 @@ async function caps() {
     $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
     await loadFonts();
     S.demo = await loadDemo();
-    pv.src = 'assets/green_light.mp3';
+    pv.src = S.song.file;
+    renderSongs();
     applyCut();
     rebuild(); chips(); renderLooks();
-    await listen(await (await fetch('assets/green_light.mp3')).arrayBuffer());
+    await listen(await (await fetch(S.song.file)).arrayBuffer());
     document.body.classList.add('ready');
     S.vf = 120;                       // open on a frame where the look is fully on screen
     requestAnimationFrame(loop);

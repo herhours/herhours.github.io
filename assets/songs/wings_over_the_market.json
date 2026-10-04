@@ -1,0 +1,333 @@
+{
+ "name": "Wings Over the Market",
+ "file": "assets/songs/wings_over_the_market.mp3",
+ "phrases": [
+  {
+   "start": 7,
+   "end": 164,
+   "text": "Every stall is calling softly",
+   "words": [
+    {
+     "t": 7,
+     "w": "Every"
+    },
+    {
+     "t": 39,
+     "w": "stall"
+    },
+    {
+     "t": 54,
+     "w": "is"
+    },
+    {
+     "t": 64,
+     "w": "calling"
+    },
+    {
+     "t": 79,
+     "w": "softly"
+    }
+   ]
+  },
+  {
+   "start": 164,
+   "end": 334,
+   "text": "Every voice is climbing higher",
+   "words": [
+    {
+     "t": 164,
+     "w": "Every"
+    },
+    {
+     "t": 202,
+     "w": "voice"
+    },
+    {
+     "t": 218,
+     "w": "is"
+    },
+    {
+     "t": 227,
+     "w": "climbing"
+    },
+    {
+     "t": 245,
+     "w": "higher"
+    }
+   ]
+  },
+  {
+   "start": 334,
+   "end": 497,
+   "text": "Ribbons blue around my basket",
+   "words": [
+    {
+     "t": 334,
+     "w": "Ribbons"
+    },
+    {
+     "t": 371,
+     "w": "blue"
+    },
+    {
+     "t": 383,
+     "w": "around"
+    },
+    {
+     "t": 402,
+     "w": "my"
+    },
+    {
+     "t": 414,
+     "w": "basket"
+    }
+   ]
+  },
+  {
+   "start": 497,
+   "end": 669,
+   "text": "Pigeons waiting for the bell",
+   "words": [
+    {
+     "t": 497,
+     "w": "Pigeons"
+    },
+    {
+     "t": 535,
+     "w": "waiting"
+    },
+    {
+     "t": 553,
+     "w": "for"
+    },
+    {
+     "t": 572,
+     "w": "the"
+    },
+    {
+     "t": 580,
+     "w": "bell"
+    }
+   ]
+  },
+  {
+   "start": 669,
+   "end": 820,
+   "text": "Hear the market turn to music",
+   "words": [
+    {
+     "t": 669,
+     "w": "Hear"
+    },
+    {
+     "t": 693,
+     "w": "the"
+    },
+    {
+     "t": 700,
+     "w": "market"
+    },
+    {
+     "t": 717,
+     "w": "turn"
+    },
+    {
+     "t": 733,
+     "w": "to"
+    },
+    {
+     "t": 740,
+     "w": "music"
+    }
+   ]
+  },
+  {
+   "start": 820,
+   "end": 1009,
+   "text": "Let the rooftops learn our names",
+   "words": [
+    {
+     "t": 820,
+     "w": "Let"
+    },
+    {
+     "t": 857,
+     "w": "the"
+    },
+    {
+     "t": 866,
+     "w": "rooftops"
+    },
+    {
+     "t": 888,
+     "w": "learn"
+    },
+    {
+     "t": 900,
+     "w": "our"
+    },
+    {
+     "t": 912,
+     "w": "names"
+    }
+   ]
+  },
+  {
+   "start": 1009,
+   "end": 1156,
+   "text": "Wings are rising over the market",
+   "words": [
+    {
+     "t": 1009,
+     "w": "Wings"
+    },
+    {
+     "t": 1024,
+     "w": "are"
+    },
+    {
+     "t": 1033,
+     "w": "rising"
+    },
+    {
+     "t": 1048,
+     "w": "over"
+    },
+    {
+     "t": 1063,
+     "w": "the"
+    },
+    {
+     "t": 1070,
+     "w": "market"
+    }
+   ]
+  },
+  {
+   "start": 1156,
+   "end": 1330,
+   "text": "And the noon is all aflame",
+   "words": [
+    {
+     "t": 1156,
+     "w": "And"
+    },
+    {
+     "t": 1187,
+     "w": "the"
+    },
+    {
+     "t": 1193,
+     "w": "noon"
+    },
+    {
+     "t": 1206,
+     "w": "is"
+    },
+    {
+     "t": 1221,
+     "w": "all"
+    },
+    {
+     "t": 1235,
+     "w": "aflame"
+    }
+   ]
+  },
+  {
+   "start": 1330,
+   "end": 1489,
+   "text": "Fountain spray is full of rainbows",
+   "words": [
+    {
+     "t": 1330,
+     "w": "Fountain"
+    },
+    {
+     "t": 1361,
+     "w": "spray"
+    },
+    {
+     "t": 1373,
+     "w": "is"
+    },
+    {
+     "t": 1381,
+     "w": "full"
+    },
+    {
+     "t": 1391,
+     "w": "of"
+    },
+    {
+     "t": 1399,
+     "w": "rainbows"
+    }
+   ]
+  },
+  {
+   "start": 1489,
+   "end": 1657,
+   "text": "Children dancing through the mist",
+   "words": [
+    {
+     "t": 1489,
+     "w": "Children"
+    },
+    {
+     "t": 1520,
+     "w": "dancing"
+    },
+    {
+     "t": 1543,
+     "w": "through"
+    },
+    {
+     "t": 1556,
+     "w": "the"
+    },
+    {
+     "t": 1571,
+     "w": "mist"
+    }
+   ]
+  },
+  {
+   "start": 1657,
+   "end": 1804,
+   "text": "Bakers singing to the morning",
+   "words": [
+    {
+     "t": 1657,
+     "w": "Bakers"
+    },
+    {
+     "t": 1688,
+     "w": "singing"
+    },
+    {
+     "t": 1703,
+     "w": "to"
+    },
+    {
+     "t": 1719,
+     "w": "the"
+    },
+    {
+     "t": 1730,
+     "w": "morning"
+    }
+   ]
+  }
+ ],
+ "title1": "WINGS OVER",
+ "title2": "THE MARKET",
+ "tag": "♪ WINGS OVER THE MARKET",
+ "label": "HER HOURS · ANIME EDITION",
+ "brand": "HER HOURS",
+ "accent": "#FFC46B",
+ "ink": "#0d0a10",
+ "cream": "#f6efe2",
+ "shot": 80,
+ "crossfade": 12
+}

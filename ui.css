@@ -142,6 +142,8 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .opt .t span{display:block;font-size:var(--t-xs);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opt.on{border-color:var(--accent);background:rgba(140,255,176,.08)}
 .opt.on .t b{color:var(--accent)}
+body.mine-song label.opt[for="audio"]{border-color:var(--accent);background:rgba(140,255,176,.08)}
+body.mine-song label.opt[for="audio"] .t b{color:var(--accent)}
 
 /* text pane */
 .row{display:flex;align-items:center;gap:12px;min-height:var(--hit);border-bottom:1px solid var(--line)}
