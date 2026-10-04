@@ -26,7 +26,18 @@ export async function fileToClip(file) {
   video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'auto';
   video.src = URL.createObjectURL(file);
   video.addEventListener('timeupdate', () => { if (video.currentTime > dur) video.currentTime = 0; });
-  canvas.clip = { input, track, start, dur, video, file, audio: undefined };
+  canvas.clip = { input, track, start, dur, video, file, audio: undefined, videoOk: null };
+  // Android Chrome plays some phones' HEVC through its own player, and painting that <video> onto a canvas
+  // taints it - every canvas it touches can then never become a VideoFrame, and the export fails (영샘's
+  // phone, 10-04). So the <video> is painted only after a throwaway canvas proves it is clean; otherwise
+  // the preview decodes the clip itself, the way the export already does.
+  video.addEventListener('loadeddata', () => {
+    try {
+      const probe = document.createElement('canvas'); probe.width = probe.height = 2;
+      const g = probe.getContext('2d'); g.drawImage(video, 0, 0, 2, 2); g.getImageData(0, 0, 1, 1);
+      canvas.clip.videoOk = true;
+    } catch { canvas.clip.videoOk = false; }
+  }, { once: true });
 
   // paint the first frame now, so the clip is never an empty rectangle
   const first = await new CanvasSink(track, { width: canvas.width, height: canvas.height, fit: 'fill' }).getCanvas(start);
@@ -41,8 +52,28 @@ export function tickPreview(sources) {
     if (!c.live) continue;
     const v = c.clip.video;
     if (v.paused) v.play().catch(() => {});
-    if (v.readyState >= 2) c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    if (c.clip.videoOk === true) { if (v.readyState >= 2) c.getContext('2d').drawImage(v, 0, 0, c.width, c.height); }
+    else if (c.clip.videoOk === false) decodedTick(c);
   }
+}
+
+// preview for a clip whose <video> would taint the canvas: decode frames in step with the clock
+function decodedTick(c) {
+  const k = c.clip;
+  if (k.busy) return;
+  k.busy = true;
+  const t = ((performance.now() - (k.t0 ??= performance.now())) / 1000) % k.dur;
+  (async () => {
+    if (!k.it || t < k.lastT) {
+      await k.it?.return?.();
+      k.it = new CanvasSink(k.track, { width: c.width, height: c.height, fit: 'fill', poolSize: 2 }).canvases(k.start, k.start + k.dur);
+      k.nxt = (await k.it.next()).value ?? null;
+    }
+    let cur = null;
+    while (k.nxt && k.nxt.timestamp - k.start <= t) { cur = k.nxt; k.nxt = (await k.it.next()).value ?? null; }
+    if (cur) c.getContext('2d').drawImage(cur.canvas, 0, 0);
+    k.lastT = t;
+  })().catch(() => {}).finally(() => { k.busy = false; });
 }
 
 export function pausePreview(sources) { for (const c of sources) if (c.live) c.clip.video.pause(); }

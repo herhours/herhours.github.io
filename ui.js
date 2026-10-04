@@ -402,7 +402,7 @@ async function make() {
   if (S.busy) return; S.busy = true;
   pv.pause(); window.hhClose(); pausePreview(S.images);
   document.body.classList.remove('is-done'); document.body.classList.add('is-making');
-  S.blob = null; fill(0); status(T('준비 중…', 'Getting ready…'));
+  S.blob = null; fill(0); $('failMsg').textContent = ''; status(T('준비 중…', 'Getting ready…'));
   try {
     status(T('노래 읽는 중…', 'Reading the song…'));
     // the song was already decoded when it was chosen; decoding it a second time is what stalled on a phone
@@ -441,7 +441,7 @@ async function make() {
     console.error(e); rlog(`make failed ${e.stack || e}`);
     document.body.classList.remove('is-making');
     status(`${T('실패', 'Failed')}: ${e.message || e}`, true);
-    window.hhOpen?.('status');
+    $('failMsg').textContent = T(`만들기에 실패했어요. 다시 눌러 주세요. (${e.message || e})`, `Couldn’t make it. Please try again. (${e.message || e})`);
   } finally { S.busy = false; }
 }
 $('make').onclick = make;

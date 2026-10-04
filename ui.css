@@ -186,5 +186,8 @@ body.mine-song label.opt[for="audio"] .t b{color:var(--accent)}
   animation:boot-spin .9s linear infinite}
 @keyframes boot-spin{to{transform:rotate(360deg)}}
 body.ready .boot{opacity:0;pointer-events:none}
+/* a failed make used to leave nothing on screen; the reason sits above the button until the next try */
+.failmsg{margin:0 0 8px;font-size:var(--t-s);color:#ffb4a8;text-shadow:0 1px 5px rgba(0,0,0,.9)}
+.failmsg:empty{display:none}
 body:not(.ready) .tap{visibility:hidden}
 @media (prefers-reduced-motion: reduce){.boot i{animation:none}}
