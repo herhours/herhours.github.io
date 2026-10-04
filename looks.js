@@ -864,6 +864,9 @@ const BLOOM_PLACE = [
 ];
 const F_BLOOM = `"HHDisplay","Gaegu","HHKrSans",${KR},sans-serif`;
 let bloomLayer = null;
+// 10-04 candidate fixes for Hangul lines, behind ?bloomfix=1 until 영샘 picks A or B
+const BLOOM_FIX = new URLSearchParams(location.search).get('bloomfix') === '1';
+const HANGUL = /[가-힣]/;
 
 function bloomChunks(p) {
   const words = p.words?.length ? p.words : p.text.split(/\s+/).map((w, i) => ({ t: p.start + i * 8, w }));
@@ -953,7 +956,10 @@ function drawLyricBloom(ctx, f, N, d) {
     ctx.letterSpacing = LS;
     const meas = (text, size) => { ctx.font = `${size}px ${FONT}`; return ctx.measureText(text).width * SX; };
     const all = line.chunks.map((c, i) => {
-      const text = intro ? titleCase(c.w, true) : c.w.toUpperCase(), base = (i === line.chunks.length - 1 ? 205 : 118) * krScale(text);
+      const text = intro ? titleCase(c.w, true) : c.w.toUpperCase();
+      // a Hangul piece is one or two syllables where an English one is three words — at 118 it shrank to a speck
+      const piece = BLOOM_FIX && HANGUL.test(text) ? 158 : 118;
+      const base = (i === line.chunks.length - 1 ? 205 : piece) * krScale(text);
       return { text, base, w: meas(text, base) };
     });
     let grow = Math.max(1, Math.min(2.6, (maxW * 0.92) / Math.max(...all.map((a) => a.w))));
@@ -969,6 +975,17 @@ function drawLyricBloom(ctx, f, N, d) {
     }
     const total = shown.reduce((a, c) => a + c.size * LH, 0);
     let y = place.v === 'top' ? place.pad : place.v === 'bottom' ? H - place.pad - total : (H - total) / 2;
+    if (BLOOM_FIX && !intro) {
+      // pale words on a bright photo (snow, sky) lost their edges; a soft shade under the stack keeps them
+      const wMax = Math.max(...shown.map((c) => c.w0));
+      const cx = place.h === 'left' ? 42 + wMax / 2 : place.h === 'right' ? W - 42 - wMax / 2 : W / 2, cy = y + total / 2;
+      const r = Math.max(wMax, total) * 0.75;
+      const bed = ctx.createRadialGradient(cx, cy, r * 0.15, cx, cy, r);
+      bed.addColorStop(0, 'rgba(0,0,0,0.42)'); bed.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save(); ctx.globalAlpha = master * (1 - outro); ctx.fillStyle = bed;
+      ctx.translate(cx, cy); ctx.scale(Math.max(1, wMax / total) * 0.9, 1); ctx.translate(-cx, -cy);
+      ctx.fillRect(cx - r, cy - r, r * 2, r * 2); ctx.restore();
+    }
     for (const c of shown) {
       const e = clamp((f - c.t) / 11), k = back(e);
       const x = place.h === 'left' ? 42 : place.h === 'right' ? W - 42 - c.w0 : (W - c.w0) / 2;
@@ -980,8 +997,9 @@ function drawLyricBloom(ctx, f, N, d) {
       ctx.scale(0.86 + 0.14 * k, 0.86 + 0.14 * k); ctx.translate(-ox, -(base - c.size * 0.35));
       ctx.translate(x, base); ctx.scale(SX, 1);
       ctx.font = `${c.size}px ${FONT}`; ctx.letterSpacing = LS; ctx.textAlign = 'left';
-      if (intro) {
-        // script strokes are too thin to hold a photograph; the last word is lit in gold instead
+      if (intro || (BLOOM_FIX && c.key && HANGUL.test(c.text))) {
+        // script strokes are too thin to hold a photograph; the last word is lit in gold instead.
+        // Gaegu's handwriting is just as thin, so a Hangul last word goes gold too.
         ctx.shadowColor = c.key ? accent : 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.key ? 30 : 40; ctx.shadowOffsetY = c.key ? 0 : 10;
         ctx.fillStyle = c.key ? LYRIC : '#fff8ec';
         ctx.fillText(c.text, 0, 0);

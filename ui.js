@@ -24,6 +24,8 @@ const S = {
   len: 32, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
 };
 const LENGTHS = [15, 32, 60];
+// ?debug exposes state for frame-by-frame checks (contact sheets) from the console
+if (new URLSearchParams(location.search).has('debug')) Object.assign(window, { hhS: S, hhRebuild: () => rebuild() });
 
 const stage = $('stage');
 const ctx = stage.getContext('2d', { alpha: false });
