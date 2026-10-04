@@ -1,0 +1,71 @@
+// Screen language follows the phone: Korean phones get Korean, everyone else English (영샘 10-04).
+// ?lang=en / ?lang=ko overrides it, for testing on one machine.
+(() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  const lang = q === 'en' || q === 'ko' ? q : (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  self.HH_LANG = lang;
+  // Dynamic strings keep both languages side by side at the call site: T('한국어', 'English').
+  self.T = (ko, en) => (lang === 'ko' ? ko : en);
+  document.documentElement.lang = lang;
+  if (lang === 'ko') return;
+
+  // Static page text, keyed by the Korean exactly as written in index.html.
+  const EN = {
+    '정보': 'Info',
+    '미리보기': 'Preview',
+    '룩': 'Look',
+    '사진': 'Photos',
+    '노래': 'Song',
+    '글자': 'Text',
+    '쇼츠 만들기': 'Make my Short',
+    '인스타에 올리기': 'Share to Instagram',
+    '저장': 'Save',
+    '다시 만들기': 'Make another',
+    '옆으로 밀어서 골라요. 고르는 즉시 위 영상이 바뀌어요.': 'Swipe to choose. The video above changes as soon as you pick.',
+    '확인': 'Done',
+    '사진 · 영상': 'Photos · Videos',
+    '사진·영상 고르기': 'Choose photos·videos',
+    '데모로': 'Use demo',
+    '고르는 즉시 위 미리보기에 들어갑니다.': 'They go straight into the preview above.',
+    '영상 소리': 'Video sound',
+    '영상이 화면에 나올 때만 노래 밑에 깔려요.': 'Plays under the song only while that video is on screen.',
+    'Her Hours · 가사가 박자에 맞춰 켜져요': 'Her Hours · lyrics light up on the beat',
+    '내 음악 파일': 'My own song',
+    '내 노래 파일을 골라요. 길이와 시작점은 아래에서.': 'Pick a song file. Length and start point below.',
+    '길이': 'Length',
+    '15초': '15s', '32초': '32s', '60초': '60s',
+    '어디부터': 'Start at',
+    '처음부터': 'From the top',
+    '후렴부터': 'From the chorus',
+    '글 넣기 · 가사나 한마디': 'Add words · lyrics or a line',
+    '붙여넣고 톡톡 눌러 맞춰요': 'Paste, then tap along to time them',
+    '글 · 가사나 한마디': 'Words · lyrics or a line',
+    '톡 — 지금 이 줄': 'Tap — this line now',
+    '한 줄 뒤로': 'Back one line',
+    '끝': 'Finish',
+    '「탭으로 맞추기」를 누르면 고른 시작점부터 노래가 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡. 컴퓨터에선 스페이스바(한 줄 뒤로는 백스페이스).':
+      'Press “Tap to time” and the song plays from your start point. Tap the big button when each line should appear. On a computer: Space (Backspace to go back a line).',
+    '탭으로 맞추기': 'Tap to time',
+    '이름': 'Name',
+    '제목 1': 'Title 1',
+    '제목 2': 'Title 2',
+    '치는 대로 위 영상에 바로 반영돼요.': 'What you type shows up in the video right away.',
+    '기기 정보': 'Device info',
+    '닫기': 'Close',
+    '재생 / 멈춤': 'Play / pause',
+    '구간 이동': 'Seek',
+    '시작점': 'Start point',
+    '한 줄에 한 마디씩 써요\n가사도 좋고, 그날의 한마디도 좋아요\n예) 첫 눈 / 첫 활강 / 오늘은 우리 둘이':
+      'One line per phrase\nLyrics, or just a word about the day\ne.g. first snow / first run / just the two of us',
+  };
+  self.HH_EN = EN;
+  const tr = (s) => { const k = s.trim(); return k && EN[k] ? s.replace(k, EN[k]) : s; };
+  const run = () => {
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) n.nodeValue = tr(n.nodeValue);
+    document.querySelectorAll('[aria-label],[placeholder]').forEach((el) => {
+      for (const a of ['aria-label', 'placeholder']) if (el.hasAttribute(a)) el.setAttribute(a, tr(el.getAttribute(a)));
+    });
+  };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', run) : run();
+})();

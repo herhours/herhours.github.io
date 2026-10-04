@@ -1043,12 +1043,12 @@ function drawLyricBloom(ctx, f, N, d) {
 // =====================================================================================
 export const LOOKS = [
   {
-    id: 'windowband', name: 'Window Band', sub: '창문 띠 · 가사가 박자에 켜짐 · EP01',
+    id: 'windowband', name: 'Window Band', sub: T('창문 띠 · 가사가 박자에 켜짐 · EP01', 'window band · lyrics light on the beat · EP01'),
     draw: drawWindowBand,
     build: (base) => base,
   },
   {
-    id: 'triptych', name: 'Triptych', sub: '3단 컷 · 박자마다 따로 끊김 · 불티 · EP02',
+    id: 'triptych', name: 'Triptych', sub: T('3단 컷 · 박자마다 따로 끊김 · 불티 · EP02', 'three panels · each cuts on its own beat · embers · EP02'),
     draw: drawTriptych,
     build: (base, beat) => {
       const title = `${base.title1} ${base.title2}`.trim();
@@ -1066,16 +1066,16 @@ export const LOOKS = [
       };
     },
   },
-  blackCut('blackcut-room', 'Black Cut · 실내', '검은 컷 · 화면 전체가 움직임 · 가사 아래 · EP06', {
+  blackCut('blackcut-room', T('Black Cut · 실내', 'Black Cut · Indoors'), T('검은 컷 · 화면 전체가 움직임 · 가사 아래 · EP06', 'black cuts · the whole frame moves · lyrics below · EP06'), {
     accent: '#ffb063', grade: 'saturate(0.92) contrast(1.06) brightness(0.97)',
     motions: ['push', 'tilt', 'hold-snap', 'pull', 'rise', 'slideL'], lyricPos: 'lower', lyricWords: false, lyricFont: 'italic', lyricSize: 72,
   }),
-  blackCut('blackcut-road', 'Black Cut · 길 위', '검은 컷 · 낱말이 하나씩 · 가사 위 · EP07', {
+  blackCut('blackcut-road', T('Black Cut · 길 위', 'Black Cut · On the Road'), T('검은 컷 · 낱말이 하나씩 · 가사 위 · EP07', 'black cuts · one word at a time · lyrics above · EP07'), {
     accent: '#ffd58a', grade: 'saturate(1.02) contrast(1.05) brightness(1.02)',
     motions: ['slideR', 'rise', 'slideL', 'push', 'tilt', 'slideR', 'pull'], lyricPos: 'upper', lyricWords: true, lyricFont: 'caps', lyricSize: 50,
   }),
   {
-    id: 'pulse', name: 'Pulse', sub: '음악에 반응하는 링 · 4번 모양이 바뀜 · EP07',
+    id: 'pulse', name: 'Pulse', sub: T('음악에 반응하는 링 · 4번 모양이 바뀜 · EP07', 'a ring that moves with the music · changes shape 4 times · EP07'),
     draw: drawPulse,
     build: (base, beat) => ({
       ...base,
@@ -1084,12 +1084,12 @@ export const LOOKS = [
       step: beatStep(beat, 122), spec: beat?.spec ?? null, bands: 128,
     }),
   },
-  clockface('clockface-day', 'Clockface · 하루', '하루가 32초 · 시간 따라 색이 바뀜 · 큰 시계 · EP05',
+  clockface('clockface-day', T('Clockface · 하루', 'Clockface · Day'), T('하루가 32초 · 시간 따라 색이 바뀜 · 큰 시계 · EP05', 'a whole day in one video · colour follows the hour · big clock · EP05'),
     { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
-  clockface('clockface-night', 'Clockface · 밤', '밤 열 시간 · 가사가 시계 자리에 · 다음 장면 창 · EP06',
+  clockface('clockface-night', T('Clockface · 밤', 'Clockface · Night'), T('밤 열 시간 · 가사가 시계 자리에 · 다음 장면 창 · EP06', 'ten hours of night · lyrics where the clock was · next-scene window · EP06'),
     { shot: 57, startMinute: 1200, spanMinutes: 600, night: true }),
   {
-    id: 'lyricbloom', name: 'Lyric Bloom', sub: '가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리 · EP05',
+    id: 'lyricbloom', name: 'Lyric Bloom', sub: T('가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리 · EP05', 'lyrics fill the screen · the last word holds a photo · a new corner each line · EP05'),
     draw: drawLyricBloom,
     build: (base, beat) => {
       const N = base.N ?? 960, outroLen = Math.min(80, Math.round(N * 0.1));

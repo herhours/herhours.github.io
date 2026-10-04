@@ -13,7 +13,7 @@ export async function fileToClip(file) {
   const input = new Input({ source: new BlobSource(file), formats: ALL_FORMATS });
   const track = await input.getPrimaryVideoTrack();
   if (!track) throw new Error('no video track');
-  if (!(await track.canDecode())) throw new Error('이 브라우저가 못 여는 영상 형식');
+  if (!(await track.canDecode())) throw new Error(T('이 브라우저가 못 여는 영상 형식', 'a video format this browser can’t open'));
   const start = await track.getFirstTimestamp();
   const dur = Math.min(MAX_CLIP, (await track.computeDuration()) - start);
   const w0 = track.displayWidth, h0 = track.displayHeight;

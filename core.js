@@ -353,7 +353,7 @@ export function trimBuffer(buf, seconds, from = 0) {
 // Draws N frames of `d` onto `canvas` (1080x1920) and muxes them with `audioBuf` into an mp4 Blob.
 export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFrame, beforeFrame }) {
   const ctx = canvas.getContext('2d', { alpha: false });
-  if (!(await canEncodeVideo('avc'))) throw new Error('이 브라우저는 H.264 인코딩을 지원하지 않아요. 크롬으로 열어주세요.');
+  if (!(await canEncodeVideo('avc'))) throw new Error(T('이 브라우저는 H.264 인코딩을 지원하지 않아요. 크롬으로 열어주세요.', 'This browser can’t encode H.264 video. Please open it in Chrome.'));
   if (!(await canEncodeAudio('aac'))) {
     const m = await import('./vendor/mediabunny-aac-encoder.min.mjs');
     m.registerAacEncoder();

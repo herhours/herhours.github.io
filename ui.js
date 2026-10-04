@@ -78,13 +78,15 @@ function advice(look) {
   const slots = look.photo.slots(look.build(base, S.beat), S.N);
   const min = Math.min(look.photo.min, slots);
   const wide = look.photo.shape === 'wide';
-  const lines = [`사진 ${min}장 이상 추천 · ${slots}장까지 다 쓰여요 · ${wide ? '가로' : '세로'} 사진이 잘 맞아요`];
+  const lines = [T(`사진 ${min}장 이상 추천 · ${slots}장까지 다 쓰여요 · ${wide ? '가로' : '세로'} 사진이 잘 맞아요`,
+    `${min}+ photos recommended · up to ${slots} are used · ${wide ? 'landscape' : 'portrait'} photos fit best`)];
   const n = S.images.length;
   if (n) {
-    let now = n < min ? `지금 ${n}장 — 같은 사진이 반복돼요` : n > slots ? `지금 ${n}장 — 앞 ${slots}장만 쓰여요` : `지금 ${n}장 — 딱 좋아요`;
+    let now = n < min ? T(`지금 ${n}장 — 같은 사진이 반복돼요`, `${n} now — some photos will repeat`)
+      : n > slots ? T(`지금 ${n}장 — 앞 ${slots}장만 쓰여요`, `${n} now — only the first ${slots} are used`) : T(`지금 ${n}장 — 딱 좋아요`, `${n} now — just right`);
     const tall = S.images.filter((im) => im.height > im.width * 1.1).length;
-    if (wide && tall > n / 2) now += ' · 세로 사진은 위쪽 위주로 잘려요';
-    if (!wide && tall < n / 2) now += ' · 가로 사진은 양옆이 잘려요';
+    if (wide && tall > n / 2) now += T(' · 세로 사진은 위쪽 위주로 잘려요', ' · portrait photos are cropped to their upper part');
+    if (!wide && tall < n / 2) now += T(' · 가로 사진은 양옆이 잘려요', ' · landscape photos lose their sides');
     lines.push(now);
   }
   return { slots, min, lines, ok: !n || (n >= min && n <= slots) };
@@ -117,8 +119,8 @@ function renderLooks() {
 function chips() {
   // Shell B has no menu pane, so every label is optional.
   const nv = S.photoFiles.filter(isVideoFile).length, np = S.photoFiles.length - nv;
-  const photo = S.photoFiles.length ? [np && `내 사진 ${np}장`, nv && `영상 ${nv}개`].filter(Boolean).join(' · ') : '데모 사진 6장';
-  const song = S.useOurs ? 'Green Light on the Window' : (S.audioFile?.name || '내 음악');
+  const photo = S.photoFiles.length ? [np && T(`내 사진 ${np}장`, `${np} photos`), nv && T(`영상 ${nv}개`, `${nv} videos`)].filter(Boolean).join(' · ') : T('데모 사진 6장', '6 demo photos');
+  const song = S.useOurs ? 'Green Light on the Window' : (S.audioFile?.name || T('내 음악', 'My song'));
   const text = `${$('brand').value} · ${$('t1').value}`;
   const set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
   set('vPhoto', photo); set('vSong', song); set('vText', text); set('vLook', S.look.name);
@@ -195,20 +197,21 @@ function applyCut() {
   off.max = Math.max(0, dur - S.seconds); off.value = S.offset;
   off.disabled = +off.max === 0;
   $('offV').textContent = mmss(S.offset);
-  $('offTo').textContent = `~ ${mmss(S.offset + S.seconds)} · 곡 ${mmss(dur)}`;
+  $('offTo').textContent = `~ ${mmss(S.offset + S.seconds)} · ${T('곡', 'song')} ${mmss(dur)}`;
   document.querySelectorAll('#lenSeg [data-len]').forEach((b) => {
     b.classList.toggle('on', +b.dataset.len === S.len);
     b.disabled = +b.dataset.len > LENGTHS[0] && dur <= LENGTHS[LENGTHS.indexOf(+b.dataset.len) - 1];   // song too short for this length
   });
   $('offChorus').disabled = S.chorusAt == null || +off.max === 0;
-  $('cutHint').textContent = +off.max === 0 ? `곡이 ${Math.round(dur)}초라 처음부터 끝까지 써요.`
-    : S.chorusAt != null && Math.abs(S.offset - S.chorusAt) < 0.6 ? '후렴이 시작되는 곳부터예요.' : '막대를 밀어 시작점을 골라요. 놓으면 그 부분을 들려줘요.';
+  $('cutHint').textContent = +off.max === 0 ? T(`곡이 ${Math.round(dur)}초라 처음부터 끝까지 써요.`, `The song is ${Math.round(dur)}s, so all of it is used.`)
+    : S.chorusAt != null && Math.abs(S.offset - S.chorusAt) < 0.6 ? T('후렴이 시작되는 곳부터예요.', 'Starts where the chorus kicks in.')
+    : T('막대를 밀어 시작점을 골라요. 놓으면 그 부분을 들려줘요.', 'Slide to choose the start. Let go to hear that part.');
 }
 // lyrics tapped against the old start no longer line up; say so instead of showing them wrong
 function cutMoved(startMoved) {
   if (startMoved && !S.useOurs && S.userPhrases.length) {
     S.userPhrases = []; lyricHint();
-    $('lhint').textContent = '시작점이 바뀌어서 글을 다시 맞춰야 해요. 「탭으로 맞추기」를 눌러 주세요.';
+    $('lhint').textContent = T('시작점이 바뀌어서 글을 다시 맞춰야 해요. 「탭으로 맞추기」를 눌러 주세요.', 'The start point moved, so the words need timing again. Press “Tap to time”.');
   }
   S.vf = 0; S.started = true;
   pv.currentTime = S.offset;
@@ -239,7 +242,7 @@ $('photos').onchange = async (e) => {
     th.appendChild(el);
   }
   chips();
-  $('phint').textContent = '사진·영상 읽는 중…';
+  $('phint').textContent = T('사진·영상 읽는 중…', 'Reading photos·videos…');
   const r = await Promise.allSettled(files.map((f) => (isVideoFile(f) ? fileToClip(f) : fileToBitmap(f))));
   const ok = r.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   const bad = r.map((x, i) => (x.status === 'rejected' ? files[i].name : null)).filter(Boolean);
@@ -247,14 +250,16 @@ $('photos').onchange = async (e) => {
   $('clipGainRow').hidden = !ok.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
   $('phint').textContent = bad.length
-    ? `${ok.length}개 적용. 못 읽은 파일: ${bad.join(', ')} (HEIC면 갤러리에서 JPG로 저장해 주세요)`
-    : `${ok.length}개 적용됐어요${ok.some((x) => x.live) ? ` (영상 ${ok.filter((x) => x.live).length}개 — 앞 12초까지 반복해서 써요)` : ''}. 위 미리보기에서 바로 돌아가요.`;
+    ? T(`${ok.length}개 적용. 못 읽은 파일: ${bad.join(', ')} (HEIC면 갤러리에서 JPG로 저장해 주세요)`,
+        `${ok.length} added. Couldn’t read: ${bad.join(', ')} (if HEIC, save it as JPG from your gallery)`)
+    : T(`${ok.length}개 적용됐어요${ok.some((x) => x.live) ? ` (영상 ${ok.filter((x) => x.live).length}개 — 앞 12초까지 반복해서 써요)` : ''}. 위 미리보기에서 바로 돌아가요.`,
+        `${ok.length} added${ok.some((x) => x.live) ? ` (${ok.filter((x) => x.live).length} videos — the first 12s loop)` : ''}. They’re playing in the preview above.`);
 };
 
 $('useDemo').onclick = () => {
   pausePreview(S.images);
   S.photoFiles = []; S.images = []; $('thumbs').innerHTML = ''; $('clipGainRow').hidden = true;
-  $('photos').value = ''; $('phint').textContent = '데모 사진 6장으로 보여주는 중.';
+  $('photos').value = ''; $('phint').textContent = T('데모 사진 6장으로 보여주는 중.', 'Showing the 6 demo photos.');
   rebuild(); chips(); renderLooks();
 };
 
@@ -264,7 +269,7 @@ $('useOurs').onclick = () => {
   pv.pause(); pv.src = 'assets/green_light.mp3';
   S.offset = 0; S.chorusAt = null; S.songDur = MAX_SEC; applyCut();
   $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
-  $('shint').textContent = '내 노래 파일을 골라요. 길이와 시작점은 아래에서.';
+  $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작점은 아래에서.', 'Pick a song file. Length and start point below.');
   rebuild(); chips(); syncPlay();
   fetch('assets/green_light.mp3').then((r) => r.arrayBuffer()).then(listen);
 };
@@ -281,7 +286,7 @@ $('audio').onchange = async (e) => {
   $('t1').value = base.slice(0, Math.ceil(base.length / 2)).join(' ').slice(0, 14) || 'MY SONG';
   $('t2').value = base.slice(Math.ceil(base.length / 2)).join(' ').slice(0, 18) || 'ON MY PHONE';
   S.userPhrases = []; S.tap = null; lyricHint();
-  $('shint').textContent = '아래에서 길이와 시작점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.';
+  $('shint').textContent = T('아래에서 길이와 시작점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.', 'Choose length and start below. “Add words” puts in lyrics or a line.');
   rebuild(); chips(); syncPlay();
   listen(await f.arrayBuffer());
 };
@@ -310,13 +315,13 @@ function phrasesFromTaps(lines, taps, N) {
 
 function lyricHint() {
   const n = S.userPhrases.length;
-  $('lyricsBtnSub').textContent = n ? `${n}줄 맞춰짐 · 다시 맞추려면 눌러요` : '붙여넣고 톡톡 눌러 맞춰요';
+  $('lyricsBtnSub').textContent = n ? T(`${n}줄 맞춰짐 · 다시 맞추려면 눌러요`, `${n} lines timed · tap to redo`) : T('붙여넣고 톡톡 눌러 맞춰요', 'Paste, then tap along to time them');
 }
 
 function tapShow() {
   const { lines, taps } = S.tap;
-  $('tapNow').textContent = lines[taps.length] ?? '다 맞췄어요 ✓';
-  $('tapNext').textContent = lines[taps.length + 1] ? `다음: ${lines[taps.length + 1]}` : '';
+  $('tapNow').textContent = lines[taps.length] ?? T('다 맞췄어요 ✓', 'All timed ✓');
+  $('tapNext').textContent = lines[taps.length + 1] ? `${T('다음', 'Next')}: ${lines[taps.length + 1]}` : '';
   $('tapCount').textContent = `${taps.length} / ${lines.length}`;
   $('tapBtn').disabled = taps.length >= lines.length;
 }
@@ -329,7 +334,7 @@ function tapApply() {
 
 $('tapStart').onclick = async () => {
   const lines = lyricLines();
-  if (!lines.length) { $('lhint').textContent = '먼저 글을 써 주세요. 한 줄에 한 마디씩.'; return; }
+  if (!lines.length) { $('lhint').textContent = T('먼저 글을 써 주세요. 한 줄에 한 마디씩.', 'Write something first. One phrase per line.'); return; }
   S.tap = { lines, taps: [] };
   S.userPhrases = []; rebuild();
   document.body.classList.add('is-tapping');
@@ -342,7 +347,7 @@ $('tapBtn').onclick = () => {
   if (!S.tap || S.tap.taps.length >= S.tap.lines.length) return;
   S.tap.taps.push(Math.max(0, pv.currentTime - S.offset - REACT));   // taps count from the short's start
   tapApply(); tapShow();
-  if (S.tap.taps.length >= S.tap.lines.length) $('tapNow').textContent = '다 맞췄어요 ✓ 끝까지 들어보고 「끝」';
+  if (S.tap.taps.length >= S.tap.lines.length) $('tapNow').textContent = T('다 맞췄어요 ✓ 끝까지 들어보고 「끝」', 'All timed ✓ Listen to the end, then “Finish”');
 };
 $('tapUndo').onclick = () => {
   if (!S.tap?.taps.length) return;
@@ -353,7 +358,7 @@ $('tapUndo').onclick = () => {
 function tapEnd() {
   document.body.classList.remove('is-tapping');
   pv.pause();
-  if (S.tap) $('lhint').textContent = S.userPhrases.length ? `${S.userPhrases.length}줄 맞췄어요. 위 영상에서 확인해 보세요.` : '맞춘 줄이 없어요.';
+  if (S.tap) $('lhint').textContent = S.userPhrases.length ? T(`${S.userPhrases.length}줄 맞췄어요. 위 영상에서 확인해 보세요.`, `${S.userPhrases.length} lines timed. Check them in the video above.`) : T('맞춘 줄이 없어요.', 'No lines timed.');
 }
 $('tapStop').onclick = tapEnd;
 // on a computer the big button is a mouse trip away from the video; Space (or Enter) taps instead
@@ -363,7 +368,7 @@ document.addEventListener('keydown', (e) => {
   else if (e.code === 'Backspace') { e.preventDefault(); $('tapUndo').click(); }
 });
 pv.addEventListener('timeupdate', () => { if (document.body.classList.contains('is-tapping') && pv.currentTime >= S.offset + S.seconds) tapEnd(); });
-$('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.userPhrases = []; rebuild(); lyricHint(); $('lhint').textContent = '글을 고쳤어요. 「탭으로 맞추기」로 다시 맞춰 주세요.'; } });
+$('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.userPhrases = []; rebuild(); lyricHint(); $('lhint').textContent = T('글을 고쳤어요. 「탭으로 맞추기」로 다시 맞춰 주세요.', 'You changed the words. Time them again with “Tap to time”.'); } });
 
 $('clipGain').addEventListener('input', (e) => { S.clipGain = e.target.value / 100; $('clipGainV').textContent = `${e.target.value}%`; });
 
@@ -380,9 +385,9 @@ async function make() {
   if (S.busy) return; S.busy = true;
   pv.pause(); window.hhClose(); pausePreview(S.images);
   document.body.classList.remove('is-done'); document.body.classList.add('is-making');
-  S.blob = null; fill(0); status('준비 중…');
+  S.blob = null; fill(0); status(T('준비 중…', 'Getting ready…'));
   try {
-    status('노래 읽는 중…');
+    status(T('노래 읽는 중…', 'Reading the song…'));
     const ab = S.useOurs ? await (await fetch('assets/green_light.mp3')).arrayBuffer() : await S.audioFile.arrayBuffer();
     const decoded = await decodeAudio(ab);
     const seconds = Math.min(S.seconds, decoded.duration - S.offset);
@@ -393,30 +398,30 @@ async function make() {
     const stepper = exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
-      status('영상 소리 맞추는 중…');
+      status(T('영상 소리 맞추는 중…', 'Mixing video sound…'));
       const vis = scanVisibility(S.look.draw, ctx, seen, S.d, N);
       mixed = await mixClipSound(audioBuf, S.d.images, vis, S.clipGain, FPS);
     }
-    status('만드는 중');
+    status(T('만드는 중', 'Making'));
     const { blob, elapsed } = await encode({
       canvas: stage, d: S.d, N, audioBuf: mixed, draw: S.look.draw, beforeFrame: stepper,
-      onProgress: (p, el) => { fill(p); status(`만드는 중 · ${el.toFixed(0)}초`); },
+      onProgress: (p, el) => { fill(p); status(T(`만드는 중 · ${el.toFixed(0)}초`, `Making · ${el.toFixed(0)}s`)); },
     });
     await stepper.close();
     S.blob = blob;
-    status('파일 마무리 중…');
+    status(T('파일 마무리 중…', 'Finishing the file…'));
     const url = URL.createObjectURL(blob);
     $('out').src = url;
     $('out').muted = false; $('out').volume = 1;   // the finished short is always heard
     $('save').href = url; $('save').download = `herhours_${Date.now()}.mp4`;
-    $('doneMeta').textContent = `${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`;
+    $('doneMeta').textContent = T(`${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`, `${seconds.toFixed(0)}s · ${(blob.size / 1048576).toFixed(0)}MB · made in ${elapsed.toFixed(0)}s`);
     document.body.classList.remove('is-making'); document.body.classList.add('is-done');
     $('out').play?.().catch(() => {});
     status('');
   } catch (e) {
     console.error(e);
     document.body.classList.remove('is-making');
-    status(`실패: ${e.message || e}`, true);
+    status(`${T('실패', 'Failed')}: ${e.message || e}`, true);
     window.hhOpen?.('status');
   } finally { S.busy = false; }
 }
@@ -432,9 +437,9 @@ $('share').onclick = async () => {
   const file = new File([S.blob], `herhours_${Date.now()}.mp4`, { type: 'video/mp4' });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: 'Her Hours Shorts' }); }
-    catch (e) { if (e.name !== 'AbortError') $('doneMeta').textContent = `공유 실패: ${e.message}`; }
+    catch (e) { if (e.name !== 'AbortError') $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; }
   } else {
-    $('doneMeta').textContent = '이 브라우저는 바로 공유가 안 돼요. 「저장」으로 받아서 인스타에서 올려주세요.';
+    $('doneMeta').textContent = T('이 브라우저는 바로 공유가 안 돼요. 「저장」으로 받아서 인스타에서 올려주세요.', 'This browser can’t share directly. Tap “Save”, then post it from Instagram.');
   }
 };
 
@@ -464,5 +469,5 @@ async function caps() {
     S.vf = 120;                       // open on a frame where the look is fully on screen
     requestAnimationFrame(loop);
     caps();
-  } catch (e) { status(`준비 실패: ${e.message}`, true); }
+  } catch (e) { status(`${T('준비 실패', 'Setup failed')}: ${e.message}`, true); }
 })();
