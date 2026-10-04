@@ -52,6 +52,7 @@
     '치는 대로 위 영상에 바로 반영돼요.': 'What you type shows up in the video right away.',
     '기기 정보': 'Device info',
     '닫기': 'Close',
+    '불러오는 중…': 'Loading…',
     '사용법': 'How it works',
     '안내 · 개인정보': 'About · Privacy',
     '사진 + 노래 하나 → 쇼츠': 'Your photos + one song → a Short',

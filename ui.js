@@ -469,5 +469,10 @@ async function caps() {
     S.vf = 120;                       // open on a frame where the look is fully on screen
     requestAnimationFrame(loop);
     caps();
-  } catch (e) { status(`${T('준비 실패', 'Setup failed')}: ${e.message}`, true); }
+  } catch (e) {
+    status(`${T('준비 실패', 'Setup failed')}: ${e.message}`, true);
+    // the loading card would otherwise spin forever over a blank stage
+    document.querySelector('.boot span').textContent = `${T('준비 실패', 'Setup failed')}: ${e.message}`;
+    document.querySelector('.boot i').hidden = true;
+  }
 })();
