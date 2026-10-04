@@ -25,11 +25,15 @@ export async function loadFonts() {
     document.fonts.add(f);
   }
   // Hangul faces are 1-1.5MB each, so they load behind the first frame instead of before it
-  for (const [name, url] of [['HHKr', 'assets/fonts/MaruBuri-Light.otf'], ['HHKrSans', 'assets/fonts/Pretendard-Bold.otf']]) {
+  krReady = Promise.all([['HHKr', 'assets/fonts/MaruBuri-Light.otf'], ['HHKrSans', 'assets/fonts/Pretendard-Bold.otf']].map(([name, url]) => {
     const f = new FontFace(name, `url(${url})`);
-    f.load().then(() => document.fonts.add(f)).catch(() => {});
-  }
+    return f.load().then(() => document.fonts.add(f)).catch(() => {});
+  }));
 }
+let krReady = Promise.resolve();
+// The preview may draw a Korean title in a system face for a moment; the export must not, or the
+// face switches a few seconds into the video on a slow phone. A dead connection still gets its video.
+export const hangulReady = () => Promise.race([krReady, new Promise((r) => setTimeout(r, 8000))]);
 
 // Lyric type. The approved shorts set lyrics in Georgia italic, which may not be shipped;
 // Instrument Serif Italic carries that voice, MaruBuri the Hangul beside it.
@@ -91,11 +95,12 @@ grain.width = 256; grain.height = 256;
 }
 
 // ---------- type ----------
-// Pinyon Script / Josefin Sans / Tinos carry no Hangul, so every canvas font names a
-// Korean fallback after them. Those faces are already on the phone - nothing is downloaded.
+// Pinyon Script / Josefin Sans / Tinos carry no Hangul, so every canvas font names a bundled
+// Korean face after them (system faces only if those failed to load).
 const KR = '"HHKr","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR"';
 const F_TITLE = `"HHTitle",${KR},cursive`;
-const F_SANS = `"HHSans",${KR},sans-serif`;
+// the brand line is spaced sans capitals, so its Hangul is a sans too
+const F_SANS = `"HHSans","HHKrSans",${KR},sans-serif`;
 const F_SERIF = `"HHSerif",${KR},serif`;
 
 // Josefin Sans reads smaller than Bahnschrift at the same px, so the small type went up ~20%.

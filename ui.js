@@ -2,7 +2,7 @@
 // The shell supplies the markup and two hooks (window.hhOpen / window.hhClose); everything
 // below is identical in both so the two designs cannot drift apart in behaviour.
 import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, trimBuffer,
-         encode, buildData, loadDemo, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont } from './core.js';
+         encode, buildData, loadDemo, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady } from './core.js';
 import { LOOKS, lookById } from './looks.js';
 import { analyze, findChorus } from './beats.js';
 import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
@@ -394,7 +394,7 @@ async function make() {
     const audioBuf = trimBuffer(decoded, seconds, S.offset);
     const N = Math.round(seconds * FPS);
     rebuild();
-    await ensureLyricFont(S.d.phrases.map((p) => p.text).join(' ') + ' ' + (S.d.boxText || ''));
+    await Promise.all([hangulReady(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]);
     const stepper = exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
