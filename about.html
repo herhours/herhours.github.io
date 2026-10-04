@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06070B">
+<title>Her Hours Shorts · 안내</title>
+<link rel="icon" href="./assets/icons/favicon-32.png" sizes="32x32">
+<script src="./version.js"></script>
+<script src="./i18n.js"></script>
+<link rel="stylesheet" href="./ui.css">
+<style>
+body{position:static;overflow:auto;height:auto}
+main{max-width:620px;margin:0 auto;padding:24px 18px calc(40px + var(--safe-b))}
+h1{font-size:var(--t-xl);margin:8px 0 6px}
+h2{font-size:var(--t-l);margin:30px 0 8px}
+p,li{font-size:var(--t-m);line-height:1.6;color:var(--cream)}
+ul{padding-left:22px;margin:6px 0}
+.dim{color:var(--dim);font-size:var(--t-s)}
+a{color:var(--accent)}
+.back{display:inline-flex;align-items:center;min-height:44px;font-size:var(--t-s)}
+[data-lang]{display:none}
+html[lang="ko"] [data-lang="ko"], html[lang="en"] [data-lang="en"]{display:block}
+html[lang="ko"] span[data-lang="ko"], html[lang="en"] span[data-lang="en"]{display:inline}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="./">← <span data-lang="ko">앱으로</span><span data-lang="en">Back to the app</span></a>
+
+<section data-lang="ko">
+  <h1>Her Hours Shorts</h1>
+  <p>내 사진과 노래 하나로 Her Hours 룩의 세로 쇼츠를 만드는 무료 웹앱이에요. 가입이 필요 없어요.</p>
+
+  <h2>개인정보</h2>
+  <ul>
+    <li>고른 사진·영상·노래는 <b>이 폰(브라우저) 안에서만</b> 쓰여요. 어떤 서버로도 보내지 않아요.</li>
+    <li>영상도 폰 안에서 만들어지고, 저장하거나 공유하는 것은 직접 고를 때만이에요.</li>
+    <li>계정·이름·이메일을 받지 않아요. 앱은 처음 안내를 봤는지만 이 브라우저에 기억해요.</li>
+  </ul>
+
+  <h2>노래와 사진의 권리</h2>
+  <ul>
+    <li>넣는 노래와 사진은 <b>쓸 권리가 있는 것</b>만 넣어 주세요. 만든 영상을 올릴 때는 그 플랫폼(인스타그램·유튜브 등)의 저작권 규칙이 적용돼요.</li>
+    <li>기본 곡 「Green Light on the Window」와 데모 사진은 Her Hours 의 것이에요. 이 앱으로 만든 영상에 써도 돼요.</li>
+  </ul>
+
+  <h2>만든 영상</h2>
+  <p>만든 영상은 만든 사람의 것이에요. 영상 안의 <i>MADE WITH HER HOURS</i> 표시를 남겨 주시면 큰 힘이 돼요.</p>
+
+  <h2>글꼴과 오픈소스</h2>
+  <p class="dim">Pinyon Script · Josefin Sans · Tinos · Anton · Barlow · Instrument Serif · MaruBuri · Pretendard · Gaegu — SIL Open Font License 1.1.
+  영상 인코딩 mediabunny — Mozilla Public License 2.0.</p>
+
+  <h2>연락</h2>
+  <p id="contact-ko" class="dim">준비 중이에요.</p>
+</section>
+
+<section data-lang="en">
+  <h1>Her Hours Shorts</h1>
+  <p>A free web app that turns your photos and one song into a vertical Short in the Her Hours look. No sign-up.</p>
+
+  <h2>Privacy</h2>
+  <ul>
+    <li>The photos, clips and songs you pick are used <b>only inside this phone’s browser</b>. Nothing is sent to any server.</li>
+    <li>The video is made on your phone, and it’s only saved or shared when you choose to.</li>
+    <li>No account, name or email is collected. The app only remembers, in this browser, that you’ve seen the welcome steps.</li>
+  </ul>
+
+  <h2>Rights to songs and photos</h2>
+  <ul>
+    <li>Please only add songs and photos <b>you have the right to use</b>. When you post a video, that platform’s copyright rules (Instagram, YouTube…) apply.</li>
+    <li>The default song “Green Light on the Window” and the demo photos belong to Her Hours. You’re welcome to use them in videos made with this app.</li>
+  </ul>
+
+  <h2>Your videos</h2>
+  <p>The videos you make are yours. Keeping the <i>MADE WITH HER HOURS</i> mark in them helps us a lot.</p>
+
+  <h2>Fonts and open source</h2>
+  <p class="dim">Pinyon Script · Josefin Sans · Tinos · Anton · Barlow · Instrument Serif · MaruBuri · Pretendard · Gaegu — SIL Open Font License 1.1.
+  Video encoding by mediabunny — Mozilla Public License 2.0.</p>
+
+  <h2>Contact</h2>
+  <p id="contact-en" class="dim">Coming soon.</p>
+</section>
+
+<p class="dim" id="ver" style="margin-top:28px"></p>
+</main>
+<script>document.getElementById('ver').textContent = 'Her Hours Shorts ' + self.HH_VERSION; document.title = T('Her Hours Shorts · 안내', 'Her Hours Shorts · About');</script>
+</body>
+</html>

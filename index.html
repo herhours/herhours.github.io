@@ -290,7 +290,23 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <h2>기기 정보</h2>
     <div id="caps"></div>
     <p class="hint" id="ver"></p>
+    <div class="two" style="margin-top:12px">
+      <button class="pill ghost" data-open="welcome">사용법</button>
+      <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
+    </div>
     <button class="pill ghost done" data-close>닫기</button>
+  </div>
+
+  <div class="pane pane-welcome">
+    <h2 class="wtitle">사진 + 노래 하나 → 쇼츠</h2>
+    <ol class="steps">
+      <li><span class="b"><svg width="24" height="24"><use href="#i-look"/></svg></span><span><b>룩</b>영상 모양을 골라요</span></li>
+      <li><span class="b"><svg width="24" height="24"><use href="#i-photo"/></svg></span><span><b>사진</b>내 사진이나 영상을 넣어요</span></li>
+      <li><span class="b"><svg width="24" height="24"><use href="#i-music"/></svg></span><span><b>노래</b>내 노래를 고르고, 후렴부터 시작할 수도 있어요</span></li>
+    </ol>
+    <p class="wgo">그다음 「쇼츠 만들기」. 폰 안에서 바로 만들어져요.</p>
+    <p class="hint">사진과 노래는 이 폰 밖으로 나가지 않아요.</p>
+    <button class="pill done" data-close>시작하기</button>
   </div>
 </section>
 
@@ -300,6 +316,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   window.hhClose = () => document.body.classList.remove('panel-open');
   document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  // First visit only: three steps over the already-playing preview. Storage can be blocked - then it just shows again.
+  try { if (!localStorage.getItem('hh-welcomed')) { hhOpen('welcome'); localStorage.setItem('hh-welcomed', '1'); } } catch (e) { hhOpen('welcome'); }
 </script>
 <script type="module" src="./ui.js"></script>
 </body>

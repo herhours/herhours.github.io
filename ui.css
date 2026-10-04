@@ -124,7 +124,8 @@ body[data-pane="menu"] .pane-menu,
 body[data-pane="photo"] .pane-photo,
 body[data-pane="song"] .pane-song,
 body[data-pane="text"] .pane-text,
-body[data-pane="info"] .pane-info{display:block}
+body[data-pane="info"] .pane-info,
+body[data-pane="welcome"] .pane-welcome{display:block}
 
 /* photo pane */
 input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -166,3 +167,12 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 }
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- first visit: three steps ---------- */
+.pane-welcome .wtitle{font-size:var(--t-l);margin-bottom:14px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.steps li{display:flex;align-items:center;gap:14px;font-size:var(--t-s);color:var(--dim)}
+.steps li .b{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid var(--line-2);color:var(--accent)}
+.steps li b{display:block;font-size:var(--t-m);color:var(--cream)}
+.wgo{font-size:var(--t-m);font-weight:700;margin:16px 0 4px}
