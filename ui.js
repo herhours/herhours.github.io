@@ -272,7 +272,7 @@ function renderSongs() {
   $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song)); });
 }
 async function pickSong(song) {
-  S.useOurs = true; S.song = song; S.audioFile = null; $('audio').value = '';
+  S.useOurs = true; S.song = song; S.audioFile = null; S.fullBuf = null; $('audio').value = '';
   document.body.classList.remove('mine-song');
   renderSongs();
   pv.pause(); pv.src = song.file;
@@ -286,7 +286,7 @@ async function pickSong(song) {
 
 $('audio').onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  S.useOurs = false; S.audioFile = f; renderSongs();
+  S.useOurs = false; S.audioFile = f; S.fullBuf = null; renderSongs();
   document.body.classList.add('mine-song');
   pv.pause();
   pv.src = URL.createObjectURL(f);
@@ -388,7 +388,14 @@ document.querySelectorAll('[data-open]').forEach((el) => { el.onclick = () => wi
 document.querySelectorAll('[data-close]').forEach((el) => { el.onclick = () => window.hhClose(); });
 
 // ---------- make ----------
-const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); };
+// Phone tests run through a temporary tunnel; there each step and error is also sent to the PC, which
+// cannot see the phone's console. Nothing is sent from the real site.
+const REMOTE_LOG = location.hostname.endsWith('.trycloudflare.com');
+const rlog = (m) => { if (REMOTE_LOG) fetch('/log', { method: 'POST', body: `${new Date().toISOString().slice(11, 19)} ${navigator.userAgent.slice(0, 80)} | ${m}`.slice(0, 1500) }).catch(() => {}); };
+addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
+addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
+const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
+const within = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
 const fill = (p) => { $('fill').style.width = `${Math.round(p * 100)}%`; $('pct').textContent = `${Math.round(p * 100)}%`; };
 
 async function make() {
@@ -398,13 +405,15 @@ async function make() {
   S.blob = null; fill(0); status(T('준비 중…', 'Getting ready…'));
   try {
     status(T('노래 읽는 중…', 'Reading the song…'));
-    const ab = S.useOurs ? await (await fetch(S.song.file)).arrayBuffer() : await S.audioFile.arrayBuffer();
-    const decoded = await decodeAudio(ab);
+    // the song was already decoded when it was chosen; decoding it a second time is what stalled on a phone
+    const decoded = S.fullBuf || await decodeAudio(S.useOurs ? await (await fetch(S.song.file)).arrayBuffer() : await S.audioFile.arrayBuffer());
+    rlog(`song ${decoded.duration.toFixed(1)}s ${decoded.sampleRate}Hz reused=${decoded === S.fullBuf}`);
     const seconds = Math.min(S.seconds, decoded.duration - S.offset);
     const audioBuf = trimBuffer(decoded, seconds, S.offset);
     const N = Math.round(seconds * FPS);
     rebuild();
-    await Promise.all([hangulReady(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]);
+    status(T('글꼴 준비 중…', 'Loading fonts…'));
+    await within(Promise.all([hangulReady(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
     const stepper = exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
@@ -429,7 +438,7 @@ async function make() {
     $('out').play?.().catch(() => {});
     status('');
   } catch (e) {
-    console.error(e);
+    console.error(e); rlog(`make failed ${e.stack || e}`);
     document.body.classList.remove('is-making');
     status(`${T('실패', 'Failed')}: ${e.message || e}`, true);
     window.hhOpen?.('status');
