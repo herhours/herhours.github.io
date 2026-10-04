@@ -1,0 +1,17 @@
+{
+  "name": "Her Hours Shorts",
+  "short_name": "HH Shorts",
+  "description": "사진과 노래 하나로 Her Hours 룩 쇼츠를 만들어요.",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06070B",
+  "theme_color": "#06070B",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

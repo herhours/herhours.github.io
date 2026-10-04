@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#06070B">
 <title>Her Hours Shorts</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HH Shorts">
+<script src="./version.js"></script>
 <link rel="stylesheet" href="./ui.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -281,6 +288,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <div class="pane pane-info">
     <h2>기기 정보</h2>
     <div id="caps"></div>
+    <p class="hint" id="ver"></p>
     <button class="pill ghost done" data-close>닫기</button>
   </div>
 </section>
@@ -289,6 +297,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <script>
   window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); };
   window.hhClose = () => document.body.classList.remove('panel-open');
+  document.getElementById('ver').textContent = '버전 ' + self.HH_VERSION;
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
 <script type="module" src="./ui.js"></script>
 </body>
