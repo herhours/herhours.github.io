@@ -434,6 +434,8 @@ async function make() {
     $('out').muted = false; $('out').volume = 1;   // the finished short is always heard
     $('save').href = url; $('save').download = `herhours_${Date.now()}.mp4`;
     $('doneMeta').textContent = T(`${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`, `${seconds.toFixed(0)}s · ${(blob.size / 1048576).toFixed(0)}MB · made in ${elapsed.toFixed(0)}s`);
+    // an iPhone saves a download to Files, not Photos — the share sheet's 'Save Video' is the way to Photos
+    if (/iPhone|iPad/.test(navigator.userAgent)) $('doneMeta').textContent += T(' · 사진 앱에 넣으려면 「인스타에 올리기」 → 「동영상 저장」', ' · For Photos: “Share to Instagram” → “Save Video”');
     document.body.classList.remove('is-making'); document.body.classList.add('is-done');
     $('out').play?.().catch(() => {});
     status('');
