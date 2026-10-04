@@ -864,8 +864,7 @@ const BLOOM_PLACE = [
 ];
 const F_BLOOM = `"HHDisplay","Gaegu","HHKrSans",${KR},sans-serif`;
 let bloomLayer = null;
-// 10-04 candidate fixes for Hangul lines, behind ?bloomfix=1 until 영샘 picks A or B
-const BLOOM_FIX = new URLSearchParams(location.search).get('bloomfix') === '1';
+// Hangul lines (영샘 10-04 picked B over A): gold last word, bigger pieces, a shade under the stack
 const HANGUL = /[가-힣]/;
 
 function bloomChunks(p) {
@@ -958,7 +957,7 @@ function drawLyricBloom(ctx, f, N, d) {
     const all = line.chunks.map((c, i) => {
       const text = intro ? titleCase(c.w, true) : c.w.toUpperCase();
       // a Hangul piece is one or two syllables where an English one is three words — at 118 it shrank to a speck
-      const piece = BLOOM_FIX && HANGUL.test(text) ? 158 : 118;
+      const piece = HANGUL.test(text) ? 158 : 118;
       const base = (i === line.chunks.length - 1 ? 205 : piece) * krScale(text);
       return { text, base, w: meas(text, base) };
     });
@@ -975,7 +974,7 @@ function drawLyricBloom(ctx, f, N, d) {
     }
     const total = shown.reduce((a, c) => a + c.size * LH, 0);
     let y = place.v === 'top' ? place.pad : place.v === 'bottom' ? H - place.pad - total : (H - total) / 2;
-    if (BLOOM_FIX && !intro) {
+    if (!intro) {
       // pale words on a bright photo (snow, sky) lost their edges; a soft shade under the stack keeps them
       const wMax = Math.max(...shown.map((c) => c.w0));
       const cx = place.h === 'left' ? 42 + wMax / 2 : place.h === 'right' ? W - 42 - wMax / 2 : W / 2, cy = y + total / 2;
@@ -997,7 +996,7 @@ function drawLyricBloom(ctx, f, N, d) {
       ctx.scale(0.86 + 0.14 * k, 0.86 + 0.14 * k); ctx.translate(-ox, -(base - c.size * 0.35));
       ctx.translate(x, base); ctx.scale(SX, 1);
       ctx.font = `${c.size}px ${FONT}`; ctx.letterSpacing = LS; ctx.textAlign = 'left';
-      if (intro || (BLOOM_FIX && c.key && HANGUL.test(c.text))) {
+      if (intro || (c.key && HANGUL.test(c.text))) {
         // script strokes are too thin to hold a photograph; the last word is lit in gold instead.
         // Gaegu's handwriting is just as thin, so a Hangul last word goes gold too.
         ctx.shadowColor = c.key ? accent : 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.key ? 30 : 40; ctx.shadowOffsetY = c.key ? 0 : 10;
