@@ -454,9 +454,13 @@ $('again').onclick = () => {
 $('share').onclick = async () => {
   if (!S.blob) return;
   const file = new File([S.blob], `herhours_${Date.now()}.mp4`, { type: 'video/mp4' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+  rlog(`share ${(S.blob.size / 1048576).toFixed(1)}MB`);
+  // canShare() says yes to any size, but Chrome then refuses files over 50MB
+  if (S.blob.size > 49 * 1048576) {
+    $('doneMeta').textContent = T('영상이 커서 바로 공유가 안 돼요. 「저장」으로 받아서 인스타에서 올려주세요.', 'The video is too large to share directly. Tap “Save”, then post it from Instagram.');
+  } else if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: 'Her Hours Shorts' }); }
-    catch (e) { if (e.name !== 'AbortError') $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; }
+    catch (e) { rlog(`share failed ${e.name} ${e.message}`); if (e.name !== 'AbortError') $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; }
   } else {
     $('doneMeta').textContent = T('이 브라우저는 바로 공유가 안 돼요. 「저장」으로 받아서 인스타에서 올려주세요.', 'This browser can’t share directly. Tap “Save”, then post it from Instagram.');
   }
