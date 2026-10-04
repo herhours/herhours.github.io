@@ -112,8 +112,13 @@ body.panel-open .scrim{opacity:1;pointer-events:auto}
   border-top:1px solid var(--line);border-radius:24px 24px 0 0;
   padding:8px 18px calc(20px + var(--safe-b));
   transform:translateY(101%);transition:transform .26s cubic-bezier(.22,.9,.28,1);
-  max-height:74vh;overflow:auto}
+  max-height:64vh;overflow:auto}
 body.panel-open .panel{transform:translateY(0)}
+/* while a sheet is open the video shrinks into the space above it instead of sitting dimmed underneath */
+.stage{transition:bottom .26s cubic-bezier(.22,.9,.28,1),top .26s}
+body.panel-open .stage{top:8px;bottom:calc(var(--sheet-h,60vh) + 8px)}
+body.panel-open .scrim{background:transparent}
+body.panel-open .rail,body.panel-open .transport,body.panel-open .top,body.panel-open .live{opacity:0;pointer-events:none}
 .grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.3);margin:2px auto 12px}
 .panel h2{font-size:var(--t-m);font-weight:800;margin:0 0 12px}
 .panel .done{position:sticky;bottom:0;margin-top:16px}

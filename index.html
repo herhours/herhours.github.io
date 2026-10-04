@@ -313,6 +313,10 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <script>
   window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); };
   window.hhClose = () => document.body.classList.remove('panel-open');
+  // the video moves up into the space above the sheet, so a choice is seen as it is made (여자친구 10-04:
+  // the sheets hid the video). The sheet's height follows its content.
+  new ResizeObserver(([e]) => document.body.style.setProperty('--sheet-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
+    .observe(document.querySelector('.panel'));
   document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
   // First visit only: three steps over the already-playing preview. Storage can be blocked - then it just shows again.
