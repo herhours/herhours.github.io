@@ -402,7 +402,7 @@ async function make() {
   if (S.busy) return; S.busy = true;
   pv.pause(); window.hhClose(); pausePreview(S.images);
   document.body.classList.remove('is-done'); document.body.classList.add('is-making');
-  S.blob = null; fill(0); $('failMsg').textContent = ''; status(T('준비 중…', 'Getting ready…'));
+  S.blob = null; S.logQ = -1; fill(0); $('failMsg').textContent = ''; status(T('준비 중…', 'Getting ready…'));
   try {
     status(T('노래 읽는 중…', 'Reading the song…'));
     // the song was already decoded when it was chosen; decoding it a second time is what stalled on a phone
@@ -424,7 +424,7 @@ async function make() {
     status(T('만드는 중', 'Making'));
     const { blob, elapsed } = await encode({
       canvas: stage, d: S.d, N, audioBuf: mixed, draw: S.look.draw, beforeFrame: stepper,
-      onProgress: (p, el) => { fill(p); status(T(`만드는 중 · ${el.toFixed(0)}초`, `Making · ${el.toFixed(0)}s`)); },
+      onProgress: (p, el) => { fill(p); status(T(`만드는 중 · ${el.toFixed(0)}초`, `Making · ${el.toFixed(0)}s`)); const q = Math.floor(p * 4); if (q > (S.logQ ?? -1)) { S.logQ = q; rlog(`progress ${q * 25}% ${el.toFixed(1)}s`); } },
     });
     await stepper.close();
     S.blob = blob;

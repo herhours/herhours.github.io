@@ -28,7 +28,7 @@ button,input,a{font-family:inherit; color:inherit}
 button{border:0;background:none;cursor:pointer}
 
 /* ---------- top bar ---------- */
-.top{display:flex;align-items:center;justify-content:space-between;height:46px;padding:0 16px;flex:0 0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;height:calc(46px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 16px 0;flex:0 0 auto}
 .mark{font-size:14px;font-weight:700;letter-spacing:2.5px;color:var(--cream);opacity:.92}
 .mark i{color:var(--accent);font-style:normal}
 .top .lnk{font-size:var(--t-xs);color:var(--dim);text-decoration:none;border:1px solid var(--line);
