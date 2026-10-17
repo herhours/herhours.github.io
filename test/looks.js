@@ -1069,7 +1069,7 @@ function drawLyricBloom(ctx, f, N, d) {
 // 10-17 시험자 의견("창이 작아 사진이 답답 · 제목 칸 줄여도 돼"): 창 폭 78% → 85%, 위아래도 키우고 명판은 얇게.
 // 맨 아래 ~350px 는 일부러 비운다 — 쇼츠·릴스가 제목·설명·버튼으로 덮는 자리.
 const HW_CARD = { x: 80, y: 290, w: 920, h: 1015 };
-const HW_PLATE = { x0: 140, y0: 1410, x1: 940, y1: 1565 };
+const HW_PLATE = { x0: 73, y0: 1410, x1: 1007, y1: 1565 };   // 10-17 시험자 2차: 창 바깥 테두리(±7)와 같은 폭 — 균형
 const HW_PULSE_Y = 1357;
 const HW_KINDS = ['ghost', 'flicker', 'big', 'ghost', 'fairy'];
 const HW_LYRIC_Y = [0.80, 0.71, 0.84, 0.75, 0.80];
@@ -1297,9 +1297,9 @@ function drawHalloween(ctx, f, N, d) {
       ctx.fillStyle = '#fff2cc'; ctx.beginPath(); ctx.arc(rx - 2, ry - 2, 2, 0, Math.PI * 2); ctx.fill();
     }
     ctx.textAlign = 'center';
-    ctx.letterSpacing = '3px'; fit(ctx, d.title, 44, F_SERIF, P.x1 - P.x0 - 110);
+    ctx.letterSpacing = '3px'; fit(ctx, d.title, 44, F_SERIF, 780);   // 글자는 가운데 780 안 — 릴스 오른쪽 버튼 줄에 안 걸리게
     ctx.fillStyle = '#FFE2B0'; ctx.fillText(d.title, W / 2, P.y0 + 72);
-    ctx.letterSpacing = '1px'; fit(ctx, d.role, 32, F_LYRIC, P.x1 - P.x0 - 130);
+    ctx.letterSpacing = '1px'; fit(ctx, d.role, 32, F_LYRIC, 740);
     ctx.fillStyle = 'rgba(255,255,255,0.86)'; ctx.fillText(d.role, W / 2, P.y0 + 122);
     ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
 
