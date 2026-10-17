@@ -1066,9 +1066,11 @@ function drawLyricBloom(ctx, f, N, d) {
 // inside the arch and changes its manner every line (ghost · flicker · big · ghost · fairy).
 // Opens on the whole photo with the HALLOWEEN SPECIAL sign, then folds into the window.
 // =====================================================================================
-const HW_CARD = { x: 120, y: 300, w: 840, h: 960 };
-const HW_PLATE = { x0: 110, y0: 1380, x1: 970, y1: 1595 };
-const HW_PULSE_Y = 1320;
+// 10-17 시험자 의견("창이 작아 사진이 답답 · 제목 칸 줄여도 돼"): 창 폭 78% → 85%, 위아래도 키우고 명판은 얇게.
+// 맨 아래 ~350px 는 일부러 비운다 — 쇼츠·릴스가 제목·설명·버튼으로 덮는 자리.
+const HW_CARD = { x: 80, y: 290, w: 920, h: 1015 };
+const HW_PLATE = { x0: 140, y0: 1410, x1: 940, y1: 1565 };
+const HW_PULSE_Y = 1357;
 const HW_KINDS = ['ghost', 'flicker', 'big', 'ghost', 'fairy'];
 const HW_LYRIC_Y = [0.80, 0.71, 0.84, 0.75, 0.80];
 const HW_MOVES = ['drift', 'push', 'pull', 'slideL', 'slideR', 'drift', 'push'];
@@ -1278,7 +1280,7 @@ function drawHalloween(ctx, f, N, d) {
       const v = spec ? band(bi) : 0.03 + 0.03 * Math.abs(Math.sin(f * 0.13 + i));
       const taper = 1 - 0.65 * Math.abs(i - (nb - 1) / 2) / (nb / 2);   // tall in the middle, like the approved shorts
       const hgt = 4 + Math.min(46, v * 300) * taper;
-      const x = 150 + (i / (nb - 1)) * 780;
+      const x = 125 + (i / (nb - 1)) * 830;
       ctx.globalAlpha = 0.45 + Math.min(0.5, v * 3);
       ctx.strokeStyle = i % 2 ? '#FFE2B0' : c1;
       ctx.beginPath(); ctx.moveTo(x, HW_PULSE_Y - hgt); ctx.lineTo(x, HW_PULSE_Y + hgt); ctx.stroke();
@@ -1290,15 +1292,15 @@ function drawHalloween(ctx, f, N, d) {
     ctx.globalAlpha = 0.84; ctx.fillStyle = '#120f0d'; ctx.fillRect(P.x0, P.y0, P.x1 - P.x0, P.y1 - P.y0); ctx.globalAlpha = 1;
     ctx.strokeStyle = frame; ctx.lineWidth = 3; ctx.strokeRect(P.x0, P.y0, P.x1 - P.x0, P.y1 - P.y0);
     ctx.strokeStyle = 'rgba(201,161,90,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(P.x0 + 14, P.y0 + 14, P.x1 - P.x0 - 28, P.y1 - P.y0 - 28);
-    for (const [rx, ry] of [[P.x0 + 26, P.y0 + 26], [P.x1 - 26, P.y0 + 26], [P.x0 + 26, P.y1 - 26], [P.x1 - 26, P.y1 - 26]]) {
-      ctx.fillStyle = frame; ctx.beginPath(); ctx.arc(rx, ry, 7, 0, Math.PI * 2); ctx.fill();
+    for (const [rx, ry] of [[P.x0 + 22, P.y0 + 22], [P.x1 - 22, P.y0 + 22], [P.x0 + 22, P.y1 - 22], [P.x1 - 22, P.y1 - 22]]) {
+      ctx.fillStyle = frame; ctx.beginPath(); ctx.arc(rx, ry, 6, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fff2cc'; ctx.beginPath(); ctx.arc(rx - 2, ry - 2, 2, 0, Math.PI * 2); ctx.fill();
     }
     ctx.textAlign = 'center';
-    ctx.letterSpacing = '3px'; fit(ctx, d.title, 50, F_SERIF, P.x1 - P.x0 - 120);
-    ctx.fillStyle = '#FFE2B0'; ctx.fillText(d.title, W / 2, P.y0 + 98);
-    ctx.letterSpacing = '1px'; fit(ctx, d.role, 36, F_LYRIC, P.x1 - P.x0 - 140);
-    ctx.fillStyle = 'rgba(255,255,255,0.86)'; ctx.fillText(d.role, W / 2, P.y0 + 160);
+    ctx.letterSpacing = '3px'; fit(ctx, d.title, 44, F_SERIF, P.x1 - P.x0 - 110);
+    ctx.fillStyle = '#FFE2B0'; ctx.fillText(d.title, W / 2, P.y0 + 72);
+    ctx.letterSpacing = '1px'; fit(ctx, d.role, 32, F_LYRIC, P.x1 - P.x0 - 130);
+    ctx.fillStyle = 'rgba(255,255,255,0.86)'; ctx.fillText(d.role, W / 2, P.y0 + 122);
     ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
 
     // the sign above the window
