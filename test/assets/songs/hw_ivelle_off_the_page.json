@@ -1,0 +1,2034 @@
+{
+ "name": "Off the Page",
+ "file": "assets/songs/hw_ivelle_off_the_page.mp3",
+ "phrases": [
+  {
+   "start": 487,
+   "end": 626,
+   "text": "I was drawn in a doorway with one hand raised,",
+   "words": [
+    {
+     "t": 487,
+     "w": "I"
+    },
+    {
+     "t": 493,
+     "w": "was"
+    },
+    {
+     "t": 505,
+     "w": "drawn"
+    },
+    {
+     "t": 522,
+     "w": "in"
+    },
+    {
+     "t": 531,
+     "w": "a"
+    },
+    {
+     "t": 537,
+     "w": "doorway"
+    },
+    {
+     "t": 561,
+     "w": "with"
+    },
+    {
+     "t": 576,
+     "w": "one"
+    },
+    {
+     "t": 588,
+     "w": "hand"
+    },
+    {
+     "t": 602,
+     "w": "raised,"
+    }
+   ]
+  },
+  {
+   "start": 629,
+   "end": 762,
+   "text": "looking left at a castle I never could reach;",
+   "words": [
+    {
+     "t": 629,
+     "w": "looking"
+    },
+    {
+     "t": 652,
+     "w": "left"
+    },
+    {
+     "t": 667,
+     "w": "at"
+    },
+    {
+     "t": 675,
+     "w": "a"
+    },
+    {
+     "t": 681,
+     "w": "castle"
+    },
+    {
+     "t": 701,
+     "w": "I"
+    },
+    {
+     "t": 707,
+     "w": "never"
+    },
+    {
+     "t": 724,
+     "w": "could"
+    },
+    {
+     "t": 742,
+     "w": "reach;"
+    }
+   ]
+  },
+  {
+   "start": 764,
+   "end": 898,
+   "text": "a hundred years of bedtimes on the very same page,",
+   "words": [
+    {
+     "t": 764,
+     "w": "a"
+    },
+    {
+     "t": 769,
+     "w": "hundred"
+    },
+    {
+     "t": 790,
+     "w": "years"
+    },
+    {
+     "t": 806,
+     "w": "of"
+    },
+    {
+     "t": 814,
+     "w": "bedtimes"
+    },
+    {
+     "t": 838,
+     "w": "on"
+    },
+    {
+     "t": 845,
+     "w": "the"
+    },
+    {
+     "t": 856,
+     "w": "very"
+    },
+    {
+     "t": 869,
+     "w": "same"
+    },
+    {
+     "t": 882,
+     "w": "page,"
+    }
+   ]
+  },
+  {
+   "start": 900,
+   "end": 1029,
+   "text": "the very same smile and the very same speech.",
+   "words": [
+    {
+     "t": 900,
+     "w": "the"
+    },
+    {
+     "t": 911,
+     "w": "very"
+    },
+    {
+     "t": 925,
+     "w": "same"
+    },
+    {
+     "t": 939,
+     "w": "smile"
+    },
+    {
+     "t": 956,
+     "w": "and"
+    },
+    {
+     "t": 967,
+     "w": "the"
+    },
+    {
+     "t": 979,
+     "w": "very"
+    },
+    {
+     "t": 993,
+     "w": "same"
+    },
+    {
+     "t": 1007,
+     "w": "speech."
+    }
+   ]
+  },
+  {
+   "start": 1031,
+   "end": 1148,
+   "text": "Then the clock struck the hour when the lanterns go wild,",
+   "words": [
+    {
+     "t": 1031,
+     "w": "Then"
+    },
+    {
+     "t": 1041,
+     "w": "the"
+    },
+    {
+     "t": 1049,
+     "w": "clock"
+    },
+    {
+     "t": 1061,
+     "w": "struck"
+    },
+    {
+     "t": 1075,
+     "w": "the"
+    },
+    {
+     "t": 1083,
+     "w": "hour"
+    },
+    {
+     "t": 1094,
+     "w": "when"
+    },
+    {
+     "t": 1104,
+     "w": "the"
+    },
+    {
+     "t": 1112,
+     "w": "lanterns"
+    },
+    {
+     "t": 1130,
+     "w": "go"
+    },
+    {
+     "t": 1136,
+     "w": "wild,"
+    }
+   ]
+  },
+  {
+   "start": 1151,
+   "end": 1300,
+   "text": "and a draft from the window came turning the leaves,",
+   "words": [
+    {
+     "t": 1151,
+     "w": "and"
+    },
+    {
+     "t": 1162,
+     "w": "a"
+    },
+    {
+     "t": 1168,
+     "w": "draft"
+    },
+    {
+     "t": 1185,
+     "w": "from"
+    },
+    {
+     "t": 1199,
+     "w": "the"
+    },
+    {
+     "t": 1210,
+     "w": "window"
+    },
+    {
+     "t": 1230,
+     "w": "came"
+    },
+    {
+     "t": 1244,
+     "w": "turning"
+    },
+    {
+     "t": 1266,
+     "w": "the"
+    },
+    {
+     "t": 1278,
+     "w": "leaves,"
+    }
+   ]
+  },
+  {
+   "start": 1302,
+   "end": 1408,
+   "text": "and the ink of my hem gave a shiver, a sigh,",
+   "words": [
+    {
+     "t": 1302,
+     "w": "and"
+    },
+    {
+     "t": 1311,
+     "w": "the"
+    },
+    {
+     "t": 1321,
+     "w": "ink"
+    },
+    {
+     "t": 1330,
+     "w": "of"
+    },
+    {
+     "t": 1337,
+     "w": "my"
+    },
+    {
+     "t": 1344,
+     "w": "hem"
+    },
+    {
+     "t": 1354,
+     "w": "gave"
+    },
+    {
+     "t": 1366,
+     "w": "a"
+    },
+    {
+     "t": 1370,
+     "w": "shiver,"
+    },
+    {
+     "t": 1389,
+     "w": "a"
+    },
+    {
+     "t": 1394,
+     "w": "sigh,"
+    }
+   ]
+  },
+  {
+   "start": 1417,
+   "end": 1544,
+   "text": "and a thread came undone at the end of my sleeve.",
+   "words": [
+    {
+     "t": 1417,
+     "w": "and"
+    },
+    {
+     "t": 1427,
+     "w": "a"
+    },
+    {
+     "t": 1432,
+     "w": "thread"
+    },
+    {
+     "t": 1450,
+     "w": "came"
+    },
+    {
+     "t": 1463,
+     "w": "undone"
+    },
+    {
+     "t": 1481,
+     "w": "at"
+    },
+    {
+     "t": 1488,
+     "w": "the"
+    },
+    {
+     "t": 1498,
+     "w": "end"
+    },
+    {
+     "t": 1508,
+     "w": "of"
+    },
+    {
+     "t": 1516,
+     "w": "my"
+    },
+    {
+     "t": 1524,
+     "w": "sleeve."
+    }
+   ]
+  },
+  {
+   "start": 1546,
+   "end": 1687,
+   "text": "One page, then two pages, then ten in the air,",
+   "words": [
+    {
+     "t": 1546,
+     "w": "One"
+    },
+    {
+     "t": 1558,
+     "w": "page,"
+    },
+    {
+     "t": 1576,
+     "w": "then"
+    },
+    {
+     "t": 1591,
+     "w": "two"
+    },
+    {
+     "t": 1603,
+     "w": "pages,"
+    },
+    {
+     "t": 1624,
+     "w": "then"
+    },
+    {
+     "t": 1639,
+     "w": "ten"
+    },
+    {
+     "t": 1651,
+     "w": "in"
+    },
+    {
+     "t": 1660,
+     "w": "the"
+    },
+    {
+     "t": 1672,
+     "w": "air,"
+    }
+   ]
+  },
+  {
+   "start": 1689,
+   "end": 1816,
+   "text": "my gown coming loose like a flock from a field;",
+   "words": [
+    {
+     "t": 1689,
+     "w": "my"
+    },
+    {
+     "t": 1697,
+     "w": "gown"
+    },
+    {
+     "t": 1710,
+     "w": "coming"
+    },
+    {
+     "t": 1729,
+     "w": "loose"
+    },
+    {
+     "t": 1745,
+     "w": "like"
+    },
+    {
+     "t": 1758,
+     "w": "a"
+    },
+    {
+     "t": 1763,
+     "w": "flock"
+    },
+    {
+     "t": 1779,
+     "w": "from"
+    },
+    {
+     "t": 1792,
+     "w": "a"
+    },
+    {
+     "t": 1797,
+     "w": "field;"
+    }
+   ]
+  },
+  {
+   "start": 1818,
+   "end": 1943,
+   "text": "every fold of my skirt was a chapter I'd worn,",
+   "words": [
+    {
+     "t": 1818,
+     "w": "every"
+    },
+    {
+     "t": 1834,
+     "w": "fold"
+    },
+    {
+     "t": 1847,
+     "w": "of"
+    },
+    {
+     "t": 1855,
+     "w": "my"
+    },
+    {
+     "t": 1863,
+     "w": "skirt"
+    },
+    {
+     "t": 1879,
+     "w": "was"
+    },
+    {
+     "t": 1890,
+     "w": "a"
+    },
+    {
+     "t": 1895,
+     "w": "chapter"
+    },
+    {
+     "t": 1916,
+     "w": "I'd"
+    },
+    {
+     "t": 1927,
+     "w": "worn,"
+    }
+   ]
+  },
+  {
+   "start": 1945,
+   "end": 2128,
+   "text": "now they're wings, now they're sails, now they're real.",
+   "words": [
+    {
+     "t": 1945,
+     "w": "now"
+    },
+    {
+     "t": 1958,
+     "w": "they're"
+    },
+    {
+     "t": 1984,
+     "w": "wings,"
+    },
+    {
+     "t": 2007,
+     "w": "now"
+    },
+    {
+     "t": 2020,
+     "w": "they're"
+    },
+    {
+     "t": 2046,
+     "w": "sails,"
+    },
+    {
+     "t": 2069,
+     "w": "now"
+    },
+    {
+     "t": 2082,
+     "w": "they're"
+    },
+    {
+     "t": 2108,
+     "w": "real."
+    }
+   ]
+  },
+  {
+   "start": 2172,
+   "end": 2303,
+   "text": "I'm off the page, I'm off the page,",
+   "words": [
+    {
+     "t": 2172,
+     "w": "I'm"
+    },
+    {
+     "t": 2187,
+     "w": "off"
+    },
+    {
+     "t": 2201,
+     "w": "the"
+    },
+    {
+     "t": 2216,
+     "w": "page,"
+    },
+    {
+     "t": 2238,
+     "w": "I'm"
+    },
+    {
+     "t": 2252,
+     "w": "off"
+    },
+    {
+     "t": 2267,
+     "w": "the"
+    },
+    {
+     "t": 2281,
+     "w": "page,"
+    }
+   ]
+  },
+  {
+   "start": 2306,
+   "end": 2468,
+   "text": "paper flying from my hem like birds from a cage;",
+   "words": [
+    {
+     "t": 2306,
+     "w": "paper"
+    },
+    {
+     "t": 2326,
+     "w": "flying"
+    },
+    {
+     "t": 2349,
+     "w": "from"
+    },
+    {
+     "t": 2366,
+     "w": "my"
+    },
+    {
+     "t": 2375,
+     "w": "hem"
+    },
+    {
+     "t": 2389,
+     "w": "like"
+    },
+    {
+     "t": 2405,
+     "w": "birds"
+    },
+    {
+     "t": 2425,
+     "w": "from"
+    },
+    {
+     "t": 2442,
+     "w": "a"
+    },
+    {
+     "t": 2448,
+     "w": "cage;"
+    }
+   ]
+  },
+  {
+   "start": 2470,
+   "end": 2525,
+   "text": "no more ink to hold my pose,",
+   "words": [
+    {
+     "t": 2470,
+     "w": "no"
+    },
+    {
+     "t": 2476,
+     "w": "more"
+    },
+    {
+     "t": 2485,
+     "w": "ink"
+    },
+    {
+     "t": 2493,
+     "w": "to"
+    },
+    {
+     "t": 2498,
+     "w": "hold"
+    },
+    {
+     "t": 2508,
+     "w": "my"
+    },
+    {
+     "t": 2514,
+     "w": "pose,"
+    }
+   ]
+  },
+  {
+   "start": 2527,
+   "end": 2593,
+   "text": "I'm running where the river goes,",
+   "words": [
+    {
+     "t": 2527,
+     "w": "I'm"
+    },
+    {
+     "t": 2535,
+     "w": "running"
+    },
+    {
+     "t": 2550,
+     "w": "where"
+    },
+    {
+     "t": 2562,
+     "w": "the"
+    },
+    {
+     "t": 2570,
+     "w": "river"
+    },
+    {
+     "t": 2581,
+     "w": "goes,"
+    }
+   ]
+  },
+  {
+   "start": 2596,
+   "end": 2764,
+   "text": "I'm off the page tonight.",
+   "words": [
+    {
+     "t": 2596,
+     "w": "I'm"
+    },
+    {
+     "t": 2622,
+     "w": "off"
+    },
+    {
+     "t": 2648,
+     "w": "the"
+    },
+    {
+     "t": 2674,
+     "w": "page"
+    },
+    {
+     "t": 2706,
+     "w": "tonight."
+    }
+   ]
+  },
+  {
+   "start": 2860,
+   "end": 2975,
+   "text": "There's a hill I was never allowed to climb,",
+   "words": [
+    {
+     "t": 2860,
+     "w": "There's"
+    },
+    {
+     "t": 2880,
+     "w": "a"
+    },
+    {
+     "t": 2886,
+     "w": "hill"
+    },
+    {
+     "t": 2898,
+     "w": "I"
+    },
+    {
+     "t": 2903,
+     "w": "was"
+    },
+    {
+     "t": 2914,
+     "w": "never"
+    },
+    {
+     "t": 2929,
+     "w": "allowed"
+    },
+    {
+     "t": 2949,
+     "w": "to"
+    },
+    {
+     "t": 2957,
+     "w": "climb,"
+    }
+   ]
+  },
+  {
+   "start": 2977,
+   "end": 3109,
+   "text": "it was only a pencil-gray smudge in the back;",
+   "words": [
+    {
+     "t": 2977,
+     "w": "it"
+    },
+    {
+     "t": 2986,
+     "w": "was"
+    },
+    {
+     "t": 2997,
+     "w": "only"
+    },
+    {
+     "t": 3011,
+     "w": "a"
+    },
+    {
+     "t": 3017,
+     "w": "pencil-gray"
+    },
+    {
+     "t": 3052,
+     "w": "smudge"
+    },
+    {
+     "t": 3072,
+     "w": "in"
+    },
+    {
+     "t": 3080,
+     "w": "the"
+    },
+    {
+     "t": 3092,
+     "w": "back;"
+    }
+   ]
+  },
+  {
+   "start": 3112,
+   "end": 3214,
+   "text": "now it's wet under bare feet, it's thistle and thyme,",
+   "words": [
+    {
+     "t": 3112,
+     "w": "now"
+    },
+    {
+     "t": 3120,
+     "w": "it's"
+    },
+    {
+     "t": 3129,
+     "w": "wet"
+    },
+    {
+     "t": 3137,
+     "w": "under"
+    },
+    {
+     "t": 3148,
+     "w": "bare"
+    },
+    {
+     "t": 3157,
+     "w": "feet,"
+    },
+    {
+     "t": 3169,
+     "w": "it's"
+    },
+    {
+     "t": 3178,
+     "w": "thistle"
+    },
+    {
+     "t": 3193,
+     "w": "and"
+    },
+    {
+     "t": 3201,
+     "w": "thyme,"
+    }
+   ]
+  },
+  {
+   "start": 3237,
+   "end": 3368,
+   "text": "and the smudge is a chapel, the gray is a track.",
+   "words": [
+    {
+     "t": 3237,
+     "w": "and"
+    },
+    {
+     "t": 3248,
+     "w": "the"
+    },
+    {
+     "t": 3258,
+     "w": "smudge"
+    },
+    {
+     "t": 3277,
+     "w": "is"
+    },
+    {
+     "t": 3285,
+     "w": "a"
+    },
+    {
+     "t": 3290,
+     "w": "chapel,"
+    },
+    {
+     "t": 3312,
+     "w": "the"
+    },
+    {
+     "t": 3323,
+     "w": "gray"
+    },
+    {
+     "t": 3336,
+     "w": "is"
+    },
+    {
+     "t": 3344,
+     "w": "a"
+    },
+    {
+     "t": 3349,
+     "w": "track."
+    }
+   ]
+  },
+  {
+   "start": 3370,
+   "end": 3501,
+   "text": "The bats in the margin have dropped from the frame,",
+   "words": [
+    {
+     "t": 3370,
+     "w": "The"
+    },
+    {
+     "t": 3380,
+     "w": "bats"
+    },
+    {
+     "t": 3393,
+     "w": "in"
+    },
+    {
+     "t": 3400,
+     "w": "the"
+    },
+    {
+     "t": 3410,
+     "w": "margin"
+    },
+    {
+     "t": 3428,
+     "w": "have"
+    },
+    {
+     "t": 3441,
+     "w": "dropped"
+    },
+    {
+     "t": 3461,
+     "w": "from"
+    },
+    {
+     "t": 3473,
+     "w": "the"
+    },
+    {
+     "t": 3483,
+     "w": "frame,"
+    }
+   ]
+  },
+  {
+   "start": 3503,
+   "end": 3629,
+   "text": "the pumpkin I carried is lit from inside,",
+   "words": [
+    {
+     "t": 3503,
+     "w": "the"
+    },
+    {
+     "t": 3515,
+     "w": "pumpkin"
+    },
+    {
+     "t": 3539,
+     "w": "I"
+    },
+    {
+     "t": 3545,
+     "w": "carried"
+    },
+    {
+     "t": 3569,
+     "w": "is"
+    },
+    {
+     "t": 3578,
+     "w": "lit"
+    },
+    {
+     "t": 3590,
+     "w": "from"
+    },
+    {
+     "t": 3605,
+     "w": "inside,"
+    }
+   ]
+  },
+  {
+   "start": 3632,
+   "end": 3748,
+   "text": "and the castle I stared at through every bedtime",
+   "words": [
+    {
+     "t": 3632,
+     "w": "and"
+    },
+    {
+     "t": 3641,
+     "w": "the"
+    },
+    {
+     "t": 3651,
+     "w": "castle"
+    },
+    {
+     "t": 3668,
+     "w": "I"
+    },
+    {
+     "t": 3672,
+     "w": "stared"
+    },
+    {
+     "t": 3689,
+     "w": "at"
+    },
+    {
+     "t": 3696,
+     "w": "through"
+    },
+    {
+     "t": 3715,
+     "w": "every"
+    },
+    {
+     "t": 3729,
+     "w": "bedtime"
+    }
+   ]
+  },
+  {
+   "start": 3764,
+   "end": 3943,
+   "text": "has its windows all gold and its gates open wide.",
+   "words": [
+    {
+     "t": 3764,
+     "w": "has"
+    },
+    {
+     "t": 3778,
+     "w": "its"
+    },
+    {
+     "t": 3793,
+     "w": "windows"
+    },
+    {
+     "t": 3821,
+     "w": "all"
+    },
+    {
+     "t": 3836,
+     "w": "gold"
+    },
+    {
+     "t": 3854,
+     "w": "and"
+    },
+    {
+     "t": 3868,
+     "w": "its"
+    },
+    {
+     "t": 3882,
+     "w": "gates"
+    },
+    {
+     "t": 3904,
+     "w": "open"
+    },
+    {
+     "t": 3922,
+     "w": "wide."
+    }
+   ]
+  },
+  {
+   "start": 3985,
+   "end": 4116,
+   "text": "I'm off the page, I'm off the page,",
+   "words": [
+    {
+     "t": 3985,
+     "w": "I'm"
+    },
+    {
+     "t": 4000,
+     "w": "off"
+    },
+    {
+     "t": 4014,
+     "w": "the"
+    },
+    {
+     "t": 4029,
+     "w": "page,"
+    },
+    {
+     "t": 4051,
+     "w": "I'm"
+    },
+    {
+     "t": 4065,
+     "w": "off"
+    },
+    {
+     "t": 4080,
+     "w": "the"
+    },
+    {
+     "t": 4094,
+     "w": "page,"
+    }
+   ]
+  },
+  {
+   "start": 4118,
+   "end": 4282,
+   "text": "paper flying from my hem like birds from a cage;",
+   "words": [
+    {
+     "t": 4118,
+     "w": "paper"
+    },
+    {
+     "t": 4138,
+     "w": "flying"
+    },
+    {
+     "t": 4162,
+     "w": "from"
+    },
+    {
+     "t": 4178,
+     "w": "my"
+    },
+    {
+     "t": 4188,
+     "w": "hem"
+    },
+    {
+     "t": 4202,
+     "w": "like"
+    },
+    {
+     "t": 4218,
+     "w": "birds"
+    },
+    {
+     "t": 4238,
+     "w": "from"
+    },
+    {
+     "t": 4255,
+     "w": "a"
+    },
+    {
+     "t": 4262,
+     "w": "cage;"
+    }
+   ]
+  },
+  {
+   "start": 4284,
+   "end": 4340,
+   "text": "no more ink to hold my pose,",
+   "words": [
+    {
+     "t": 4284,
+     "w": "no"
+    },
+    {
+     "t": 4290,
+     "w": "more"
+    },
+    {
+     "t": 4299,
+     "w": "ink"
+    },
+    {
+     "t": 4307,
+     "w": "to"
+    },
+    {
+     "t": 4313,
+     "w": "hold"
+    },
+    {
+     "t": 4323,
+     "w": "my"
+    },
+    {
+     "t": 4328,
+     "w": "pose,"
+    }
+   ]
+  },
+  {
+   "start": 4343,
+   "end": 4409,
+   "text": "I'm running where the river goes,",
+   "words": [
+    {
+     "t": 4343,
+     "w": "I'm"
+    },
+    {
+     "t": 4351,
+     "w": "running"
+    },
+    {
+     "t": 4366,
+     "w": "where"
+    },
+    {
+     "t": 4378,
+     "w": "the"
+    },
+    {
+     "t": 4386,
+     "w": "river"
+    },
+    {
+     "t": 4397,
+     "w": "goes,"
+    }
+   ]
+  },
+  {
+   "start": 4411,
+   "end": 4572,
+   "text": "I'm off the page tonight.",
+   "words": [
+    {
+     "t": 4411,
+     "w": "I'm"
+    },
+    {
+     "t": 4436,
+     "w": "off"
+    },
+    {
+     "t": 4461,
+     "w": "the"
+    },
+    {
+     "t": 4485,
+     "w": "page"
+    },
+    {
+     "t": 4516,
+     "w": "tonight."
+    }
+   ]
+  },
+  {
+   "start": 4663,
+   "end": 4787,
+   "text": "But a book with no princess is a sky with no star,",
+   "words": [
+    {
+     "t": 4663,
+     "w": "But"
+    },
+    {
+     "t": 4673,
+     "w": "a"
+    },
+    {
+     "t": 4678,
+     "w": "book"
+    },
+    {
+     "t": 4690,
+     "w": "with"
+    },
+    {
+     "t": 4702,
+     "w": "no"
+    },
+    {
+     "t": 4709,
+     "w": "princess"
+    },
+    {
+     "t": 4731,
+     "w": "is"
+    },
+    {
+     "t": 4738,
+     "w": "a"
+    },
+    {
+     "t": 4743,
+     "w": "sky"
+    },
+    {
+     "t": 4753,
+     "w": "with"
+    },
+    {
+     "t": 4765,
+     "w": "no"
+    },
+    {
+     "t": 4772,
+     "w": "star,"
+    }
+   ]
+  },
+  {
+   "start": 4790,
+   "end": 4921,
+   "text": "and I hear the wind riffling the spine down below;",
+   "words": [
+    {
+     "t": 4790,
+     "w": "and"
+    },
+    {
+     "t": 4800,
+     "w": "I"
+    },
+    {
+     "t": 4805,
+     "w": "hear"
+    },
+    {
+     "t": 4818,
+     "w": "the"
+    },
+    {
+     "t": 4829,
+     "w": "wind"
+    },
+    {
+     "t": 4841,
+     "w": "riffling"
+    },
+    {
+     "t": 4864,
+     "w": "the"
+    },
+    {
+     "t": 4875,
+     "w": "spine"
+    },
+    {
+     "t": 4890,
+     "w": "down"
+    },
+    {
+     "t": 4903,
+     "w": "below;"
+    }
+   ]
+  },
+  {
+   "start": 4924,
+   "end": 5045,
+   "text": "all the pages I lost are still turning in flight,",
+   "words": [
+    {
+     "t": 4924,
+     "w": "all"
+    },
+    {
+     "t": 4934,
+     "w": "the"
+    },
+    {
+     "t": 4943,
+     "w": "pages"
+    },
+    {
+     "t": 4958,
+     "w": "I"
+    },
+    {
+     "t": 4963,
+     "w": "lost"
+    },
+    {
+     "t": 4975,
+     "w": "are"
+    },
+    {
+     "t": 4984,
+     "w": "still"
+    },
+    {
+     "t": 4999,
+     "w": "turning"
+    },
+    {
+     "t": 5018,
+     "w": "in"
+    },
+    {
+     "t": 5026,
+     "w": "flight,"
+    }
+   ]
+  },
+  {
+   "start": 5048,
+   "end": 5183,
+   "text": "and they circle and wait to see which way I'll go.",
+   "words": [
+    {
+     "t": 5048,
+     "w": "and"
+    },
+    {
+     "t": 5059,
+     "w": "they"
+    },
+    {
+     "t": 5072,
+     "w": "circle"
+    },
+    {
+     "t": 5090,
+     "w": "and"
+    },
+    {
+     "t": 5101,
+     "w": "wait"
+    },
+    {
+     "t": 5114,
+     "w": "to"
+    },
+    {
+     "t": 5122,
+     "w": "see"
+    },
+    {
+     "t": 5133,
+     "w": "which"
+    },
+    {
+     "t": 5149,
+     "w": "way"
+    },
+    {
+     "t": 5159,
+     "w": "I'll"
+    },
+    {
+     "t": 5172,
+     "w": "go."
+    }
+   ]
+  },
+  {
+   "start": 5186,
+   "end": 5318,
+   "text": "So I catch the last page as it flies past my chin,",
+   "words": [
+    {
+     "t": 5186,
+     "w": "So"
+    },
+    {
+     "t": 5194,
+     "w": "I"
+    },
+    {
+     "t": 5199,
+     "w": "catch"
+    },
+    {
+     "t": 5214,
+     "w": "the"
+    },
+    {
+     "t": 5225,
+     "w": "last"
+    },
+    {
+     "t": 5238,
+     "w": "page"
+    },
+    {
+     "t": 5251,
+     "w": "as"
+    },
+    {
+     "t": 5258,
+     "w": "it"
+    },
+    {
+     "t": 5266,
+     "w": "flies"
+    },
+    {
+     "t": 5282,
+     "w": "past"
+    },
+    {
+     "t": 5295,
+     "w": "my"
+    },
+    {
+     "t": 5302,
+     "w": "chin,"
+    }
+   ]
+  },
+  {
+   "start": 5320,
+   "end": 5443,
+   "text": "it says The End in a hand neat and thin;",
+   "words": [
+    {
+     "t": 5320,
+     "w": "it"
+    },
+    {
+     "t": 5329,
+     "w": "says"
+    },
+    {
+     "t": 5344,
+     "w": "The"
+    },
+    {
+     "t": 5356,
+     "w": "End"
+    },
+    {
+     "t": 5368,
+     "w": "in"
+    },
+    {
+     "t": 5377,
+     "w": "a"
+    },
+    {
+     "t": 5383,
+     "w": "hand"
+    },
+    {
+     "t": 5398,
+     "w": "neat"
+    },
+    {
+     "t": 5413,
+     "w": "and"
+    },
+    {
+     "t": 5425,
+     "w": "thin;"
+    }
+   ]
+  },
+  {
+   "start": 5445,
+   "end": 5565,
+   "text": "and I lick my thumb, and I rub it away,",
+   "words": [
+    {
+     "t": 5445,
+     "w": "and"
+    },
+    {
+     "t": 5457,
+     "w": "I"
+    },
+    {
+     "t": 5463,
+     "w": "lick"
+    },
+    {
+     "t": 5478,
+     "w": "my"
+    },
+    {
+     "t": 5487,
+     "w": "thumb,"
+    },
+    {
+     "t": 5508,
+     "w": "and"
+    },
+    {
+     "t": 5520,
+     "w": "I"
+    },
+    {
+     "t": 5526,
+     "w": "rub"
+    },
+    {
+     "t": 5538,
+     "w": "it"
+    },
+    {
+     "t": 5547,
+     "w": "away,"
+    }
+   ]
+  },
+  {
+   "start": 5567,
+   "end": 5748,
+   "text": "and I write in my own crooked letters: Begin.",
+   "words": [
+    {
+     "t": 5567,
+     "w": "and"
+    },
+    {
+     "t": 5583,
+     "w": "I"
+    },
+    {
+     "t": 5591,
+     "w": "write"
+    },
+    {
+     "t": 5614,
+     "w": "in"
+    },
+    {
+     "t": 5626,
+     "w": "my"
+    },
+    {
+     "t": 5638,
+     "w": "own"
+    },
+    {
+     "t": 5654,
+     "w": "crooked"
+    },
+    {
+     "t": 5685,
+     "w": "letters:"
+    },
+    {
+     "t": 5720,
+     "w": "Begin."
+    }
+   ]
+  },
+  {
+   "start": 5806,
+   "end": 5945,
+   "text": "I'm off the page, I'm off the page,",
+   "words": [
+    {
+     "t": 5806,
+     "w": "I'm"
+    },
+    {
+     "t": 5821,
+     "w": "off"
+    },
+    {
+     "t": 5837,
+     "w": "the"
+    },
+    {
+     "t": 5852,
+     "w": "page,"
+    },
+    {
+     "t": 5876,
+     "w": "I'm"
+    },
+    {
+     "t": 5891,
+     "w": "off"
+    },
+    {
+     "t": 5906,
+     "w": "the"
+    },
+    {
+     "t": 5922,
+     "w": "page,"
+    }
+   ]
+  },
+  {
+   "start": 5947,
+   "end": 6086,
+   "text": "and the book was never a cage;",
+   "words": [
+    {
+     "t": 5947,
+     "w": "and"
+    },
+    {
+     "t": 5965,
+     "w": "the"
+    },
+    {
+     "t": 5983,
+     "w": "book"
+    },
+    {
+     "t": 6005,
+     "w": "was"
+    },
+    {
+     "t": 6023,
+     "w": "never"
+    },
+    {
+     "t": 6050,
+     "w": "a"
+    },
+    {
+     "t": 6059,
+     "w": "cage;"
+    }
+   ]
+  },
+  {
+   "start": 6103,
+   "end": 6161,
+   "text": "it held its breath a hundred years",
+   "words": [
+    {
+     "t": 6103,
+     "w": "it"
+    },
+    {
+     "t": 6108,
+     "w": "held"
+    },
+    {
+     "t": 6116,
+     "w": "its"
+    },
+    {
+     "t": 6123,
+     "w": "breath"
+    },
+    {
+     "t": 6134,
+     "w": "a"
+    },
+    {
+     "t": 6138,
+     "w": "hundred"
+    },
+    {
+     "t": 6151,
+     "w": "years"
+    }
+   ]
+  },
+  {
+   "start": 6163,
+   "end": 6225,
+   "text": "for the girl who'd walk out of here,",
+   "words": [
+    {
+     "t": 6163,
+     "w": "for"
+    },
+    {
+     "t": 6170,
+     "w": "the"
+    },
+    {
+     "t": 6176,
+     "w": "girl"
+    },
+    {
+     "t": 6185,
+     "w": "who'd"
+    },
+    {
+     "t": 6195,
+     "w": "walk"
+    },
+    {
+     "t": 6203,
+     "w": "out"
+    },
+    {
+     "t": 6210,
+     "w": "of"
+    },
+    {
+     "t": 6215,
+     "w": "here,"
+    }
+   ]
+  },
+  {
+   "start": 6227,
+   "end": 6388,
+   "text": "I'm off the page tonight.",
+   "words": [
+    {
+     "t": 6227,
+     "w": "I'm"
+    },
+    {
+     "t": 6252,
+     "w": "off"
+    },
+    {
+     "t": 6277,
+     "w": "the"
+    },
+    {
+     "t": 6301,
+     "w": "page"
+    },
+    {
+     "t": 6332,
+     "w": "tonight."
+    }
+   ]
+  },
+  {
+   "start": 6442,
+   "end": 6617,
+   "text": "And the bedtime child who turns to my page",
+   "words": [
+    {
+     "t": 6442,
+     "w": "And"
+    },
+    {
+     "t": 6458,
+     "w": "the"
+    },
+    {
+     "t": 6475,
+     "w": "bedtime"
+    },
+    {
+     "t": 6507,
+     "w": "child"
+    },
+    {
+     "t": 6532,
+     "w": "who"
+    },
+    {
+     "t": 6548,
+     "w": "turns"
+    },
+    {
+     "t": 6572,
+     "w": "to"
+    },
+    {
+     "t": 6584,
+     "w": "my"
+    },
+    {
+     "t": 6597,
+     "w": "page"
+    }
+   ]
+  },
+  {
+   "start": 6620,
+   "end": 6741,
+   "text": "will find only a doorway, and nobody there,",
+   "words": [
+    {
+     "t": 6620,
+     "w": "will"
+    },
+    {
+     "t": 6634,
+     "w": "find"
+    },
+    {
+     "t": 6648,
+     "w": "only"
+    },
+    {
+     "t": 6661,
+     "w": "a"
+    },
+    {
+     "t": 6667,
+     "w": "doorway,"
+    },
+    {
+     "t": 6692,
+     "w": "and"
+    },
+    {
+     "t": 6702,
+     "w": "nobody"
+    },
+    {
+     "t": 6722,
+     "w": "there,"
+    }
+   ]
+  },
+  {
+   "start": 6743,
+   "end": 6876,
+   "text": "just a hand-drawn hill and a trail of small feet,",
+   "words": [
+    {
+     "t": 6743,
+     "w": "just"
+    },
+    {
+     "t": 6756,
+     "w": "a"
+    },
+    {
+     "t": 6762,
+     "w": "hand-drawn"
+    },
+    {
+     "t": 6791,
+     "w": "hill"
+    },
+    {
+     "t": 6804,
+     "w": "and"
+    },
+    {
+     "t": 6815,
+     "w": "a"
+    },
+    {
+     "t": 6820,
+     "w": "trail"
+    },
+    {
+     "t": 6836,
+     "w": "of"
+    },
+    {
+     "t": 6844,
+     "w": "small"
+    },
+    {
+     "t": 6860,
+     "w": "feet,"
+    }
+   ]
+  },
+  {
+   "start": 6878,
+   "end": 7031,
+   "text": "and a lantern left lit on the stair.",
+   "words": [
+    {
+     "t": 6878,
+     "w": "and"
+    },
+    {
+     "t": 6895,
+     "w": "a"
+    },
+    {
+     "t": 6903,
+     "w": "lantern"
+    },
+    {
+     "t": 6936,
+     "w": "left"
+    },
+    {
+     "t": 6957,
+     "w": "lit"
+    },
+    {
+     "t": 6973,
+     "w": "on"
+    },
+    {
+     "t": 6986,
+     "w": "the"
+    },
+    {
+     "t": 7002,
+     "w": "stair."
+    }
+   ]
+  }
+ ],
+ "title1": "OFF THE",
+ "title2": "PAGE",
+ "tag": "♪ OFF THE PAGE",
+ "label": "HER HOURS · IVELLE",
+ "singer": "Ivelle",
+ "brand": "HER HOURS",
+ "accent": "#FF9A3C",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

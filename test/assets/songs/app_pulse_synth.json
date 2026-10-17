@@ -1,0 +1,15 @@
+{
+ "name": "Pulse Synth",
+ "file": "assets/songs/app_pulse_synth.mp3",
+ "phrases": [],
+ "title1": "PULSE",
+ "title2": "SYNTH",
+ "tag": "♪ PULSE SYNTH",
+ "label": "HER HOURS · TENSION",
+ "brand": "HER HOURS",
+ "accent": "#8AD8FF",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

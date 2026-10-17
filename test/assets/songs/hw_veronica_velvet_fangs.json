@@ -1,0 +1,2287 @@
+{
+ "name": "Velvet Fangs",
+ "file": "assets/songs/hw_veronica_velvet_fangs.mp3",
+ "phrases": [
+  {
+   "start": 313,
+   "end": 444,
+   "text": "I came down from the castle when the church bell tolled for nine,",
+   "words": [
+    {
+     "t": 313,
+     "w": "I"
+    },
+    {
+     "t": 317,
+     "w": "came"
+    },
+    {
+     "t": 327,
+     "w": "down"
+    },
+    {
+     "t": 337,
+     "w": "from"
+    },
+    {
+     "t": 347,
+     "w": "the"
+    },
+    {
+     "t": 355,
+     "w": "castle"
+    },
+    {
+     "t": 369,
+     "w": "when"
+    },
+    {
+     "t": 379,
+     "w": "the"
+    },
+    {
+     "t": 386,
+     "w": "church"
+    },
+    {
+     "t": 400,
+     "w": "bell"
+    },
+    {
+     "t": 410,
+     "w": "tolled"
+    },
+    {
+     "t": 424,
+     "w": "for"
+    },
+    {
+     "t": 432,
+     "w": "nine,"
+    }
+   ]
+  },
+  {
+   "start": 446,
+   "end": 572,
+   "text": "left a candle in the window and a cork in last year's wine;",
+   "words": [
+    {
+     "t": 446,
+     "w": "left"
+    },
+    {
+     "t": 456,
+     "w": "a"
+    },
+    {
+     "t": 461,
+     "w": "candle"
+    },
+    {
+     "t": 475,
+     "w": "in"
+    },
+    {
+     "t": 482,
+     "w": "the"
+    },
+    {
+     "t": 490,
+     "w": "window"
+    },
+    {
+     "t": 505,
+     "w": "and"
+    },
+    {
+     "t": 513,
+     "w": "a"
+    },
+    {
+     "t": 517,
+     "w": "cork"
+    },
+    {
+     "t": 528,
+     "w": "in"
+    },
+    {
+     "t": 534,
+     "w": "last"
+    },
+    {
+     "t": 545,
+     "w": "year's"
+    },
+    {
+     "t": 559,
+     "w": "wine;"
+    }
+   ]
+  },
+  {
+   "start": 574,
+   "end": 730,
+   "text": "the doorman at the Blue Moth asked, \"Who are you supposed to be?\"",
+   "words": [
+    {
+     "t": 574,
+     "w": "the"
+    },
+    {
+     "t": 583,
+     "w": "doorman"
+    },
+    {
+     "t": 602,
+     "w": "at"
+    },
+    {
+     "t": 609,
+     "w": "the"
+    },
+    {
+     "t": 619,
+     "w": "Blue"
+    },
+    {
+     "t": 631,
+     "w": "Moth"
+    },
+    {
+     "t": 643,
+     "w": "asked,"
+    },
+    {
+     "t": 659,
+     "w": "\"Who"
+    },
+    {
+     "t": 671,
+     "w": "are"
+    },
+    {
+     "t": 680,
+     "w": "you"
+    },
+    {
+     "t": 690,
+     "w": "supposed"
+    },
+    {
+     "t": 711,
+     "w": "to"
+    },
+    {
+     "t": 718,
+     "w": "be?\""
+    }
+   ]
+  },
+  {
+   "start": 790,
+   "end": 984,
+   "text": "I said, \"Someone very old, my dear,\" and he laughed and bowed to me.",
+   "words": [
+    {
+     "t": 790,
+     "w": "I"
+    },
+    {
+     "t": 796,
+     "w": "said,"
+    },
+    {
+     "t": 812,
+     "w": "\"Someone"
+    },
+    {
+     "t": 838,
+     "w": "very"
+    },
+    {
+     "t": 852,
+     "w": "old,"
+    },
+    {
+     "t": 866,
+     "w": "my"
+    },
+    {
+     "t": 874,
+     "w": "dear,\""
+    },
+    {
+     "t": 894,
+     "w": "and"
+    },
+    {
+     "t": 905,
+     "w": "he"
+    },
+    {
+     "t": 914,
+     "w": "laughed"
+    },
+    {
+     "t": 936,
+     "w": "and"
+    },
+    {
+     "t": 947,
+     "w": "bowed"
+    },
+    {
+     "t": 964,
+     "w": "to"
+    },
+    {
+     "t": 973,
+     "w": "me."
+    }
+   ]
+  },
+  {
+   "start": 1042,
+   "end": 1163,
+   "text": "The trumpet in the corner keeps a mute inside its bell,",
+   "words": [
+    {
+     "t": 1042,
+     "w": "The"
+    },
+    {
+     "t": 1051,
+     "w": "trumpet"
+    },
+    {
+     "t": 1068,
+     "w": "in"
+    },
+    {
+     "t": 1074,
+     "w": "the"
+    },
+    {
+     "t": 1083,
+     "w": "corner"
+    },
+    {
+     "t": 1098,
+     "w": "keeps"
+    },
+    {
+     "t": 1111,
+     "w": "a"
+    },
+    {
+     "t": 1115,
+     "w": "mute"
+    },
+    {
+     "t": 1126,
+     "w": "inside"
+    },
+    {
+     "t": 1141,
+     "w": "its"
+    },
+    {
+     "t": 1150,
+     "w": "bell,"
+    }
+   ]
+  },
+  {
+   "start": 1165,
+   "end": 1285,
+   "text": "like a gentleman who's sorry for a secret he can't tell;",
+   "words": [
+    {
+     "t": 1165,
+     "w": "like"
+    },
+    {
+     "t": 1176,
+     "w": "a"
+    },
+    {
+     "t": 1180,
+     "w": "gentleman"
+    },
+    {
+     "t": 1201,
+     "w": "who's"
+    },
+    {
+     "t": 1213,
+     "w": "sorry"
+    },
+    {
+     "t": 1226,
+     "w": "for"
+    },
+    {
+     "t": 1234,
+     "w": "a"
+    },
+    {
+     "t": 1239,
+     "w": "secret"
+    },
+    {
+     "t": 1253,
+     "w": "he"
+    },
+    {
+     "t": 1260,
+     "w": "can't"
+    },
+    {
+     "t": 1272,
+     "w": "tell;"
+    }
+   ]
+  },
+  {
+   "start": 1288,
+   "end": 1405,
+   "text": "I know that kind of music, I have hummed it through the stone,",
+   "words": [
+    {
+     "t": 1288,
+     "w": "I"
+    },
+    {
+     "t": 1292,
+     "w": "know"
+    },
+    {
+     "t": 1301,
+     "w": "that"
+    },
+    {
+     "t": 1310,
+     "w": "kind"
+    },
+    {
+     "t": 1320,
+     "w": "of"
+    },
+    {
+     "t": 1325,
+     "w": "music,"
+    },
+    {
+     "t": 1338,
+     "w": "I"
+    },
+    {
+     "t": 1342,
+     "w": "have"
+    },
+    {
+     "t": 1351,
+     "w": "hummed"
+    },
+    {
+     "t": 1364,
+     "w": "it"
+    },
+    {
+     "t": 1370,
+     "w": "through"
+    },
+    {
+     "t": 1385,
+     "w": "the"
+    },
+    {
+     "t": 1392,
+     "w": "stone,"
+    }
+   ]
+  },
+  {
+   "start": 1408,
+   "end": 1558,
+   "text": "a century of suppers at a table set for one.",
+   "words": [
+    {
+     "t": 1408,
+     "w": "a"
+    },
+    {
+     "t": 1415,
+     "w": "century"
+    },
+    {
+     "t": 1441,
+     "w": "of"
+    },
+    {
+     "t": 1451,
+     "w": "suppers"
+    },
+    {
+     "t": 1478,
+     "w": "at"
+    },
+    {
+     "t": 1488,
+     "w": "a"
+    },
+    {
+     "t": 1495,
+     "w": "table"
+    },
+    {
+     "t": 1515,
+     "w": "set"
+    },
+    {
+     "t": 1528,
+     "w": "for"
+    },
+    {
+     "t": 1541,
+     "w": "one."
+    }
+   ]
+  },
+  {
+   "start": 1643,
+   "end": 1765,
+   "text": "So hush now, little trumpet, let the spotlight find my chair,",
+   "words": [
+    {
+     "t": 1643,
+     "w": "So"
+    },
+    {
+     "t": 1649,
+     "w": "hush"
+    },
+    {
+     "t": 1659,
+     "w": "now,"
+    },
+    {
+     "t": 1669,
+     "w": "little"
+    },
+    {
+     "t": 1682,
+     "w": "trumpet,"
+    },
+    {
+     "t": 1700,
+     "w": "let"
+    },
+    {
+     "t": 1708,
+     "w": "the"
+    },
+    {
+     "t": 1716,
+     "w": "spotlight"
+    },
+    {
+     "t": 1735,
+     "w": "find"
+    },
+    {
+     "t": 1745,
+     "w": "my"
+    },
+    {
+     "t": 1751,
+     "w": "chair,"
+    }
+   ]
+  },
+  {
+   "start": 1767,
+   "end": 1888,
+   "text": "there's a pumpkin on the piano and a spider in my hair,",
+   "words": [
+    {
+     "t": 1767,
+     "w": "there's"
+    },
+    {
+     "t": 1784,
+     "w": "a"
+    },
+    {
+     "t": 1789,
+     "w": "pumpkin"
+    },
+    {
+     "t": 1806,
+     "w": "on"
+    },
+    {
+     "t": 1812,
+     "w": "the"
+    },
+    {
+     "t": 1821,
+     "w": "piano"
+    },
+    {
+     "t": 1834,
+     "w": "and"
+    },
+    {
+     "t": 1843,
+     "w": "a"
+    },
+    {
+     "t": 1847,
+     "w": "spider"
+    },
+    {
+     "t": 1862,
+     "w": "in"
+    },
+    {
+     "t": 1869,
+     "w": "my"
+    },
+    {
+     "t": 1875,
+     "w": "hair,"
+    }
+   ]
+  },
+  {
+   "start": 1891,
+   "end": 2004,
+   "text": "and the mirror by the bar shows an empty velvet gown —",
+   "words": [
+    {
+     "t": 1891,
+     "w": "and"
+    },
+    {
+     "t": 1899,
+     "w": "the"
+    },
+    {
+     "t": 1907,
+     "w": "mirror"
+    },
+    {
+     "t": 1922,
+     "w": "by"
+    },
+    {
+     "t": 1928,
+     "w": "the"
+    },
+    {
+     "t": 1936,
+     "w": "bar"
+    },
+    {
+     "t": 1944,
+     "w": "shows"
+    },
+    {
+     "t": 1957,
+     "w": "an"
+    },
+    {
+     "t": 1963,
+     "w": "empty"
+    },
+    {
+     "t": 1975,
+     "w": "velvet"
+    },
+    {
+     "t": 1990,
+     "w": "gown"
+    },
+    {
+     "t": 2000,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 2006,
+   "end": 2158,
+   "text": "they'll call it a clever trick, the cleverest in town.",
+   "words": [
+    {
+     "t": 2006,
+     "w": "they'll"
+    },
+    {
+     "t": 2028,
+     "w": "call"
+    },
+    {
+     "t": 2042,
+     "w": "it"
+    },
+    {
+     "t": 2050,
+     "w": "a"
+    },
+    {
+     "t": 2056,
+     "w": "clever"
+    },
+    {
+     "t": 2075,
+     "w": "trick,"
+    },
+    {
+     "t": 2094,
+     "w": "the"
+    },
+    {
+     "t": 2105,
+     "w": "cleverest"
+    },
+    {
+     "t": 2133,
+     "w": "in"
+    },
+    {
+     "t": 2141,
+     "w": "town."
+    }
+   ]
+  },
+  {
+   "start": 2266,
+   "end": 2364,
+   "text": "Velvet fangs, and the whole town wears a pair,",
+   "words": [
+    {
+     "t": 2266,
+     "w": "Velvet"
+    },
+    {
+     "t": 2281,
+     "w": "fangs,"
+    },
+    {
+     "t": 2295,
+     "w": "and"
+    },
+    {
+     "t": 2304,
+     "w": "the"
+    },
+    {
+     "t": 2312,
+     "w": "whole"
+    },
+    {
+     "t": 2324,
+     "w": "town"
+    },
+    {
+     "t": 2335,
+     "w": "wears"
+    },
+    {
+     "t": 2347,
+     "w": "a"
+    },
+    {
+     "t": 2351,
+     "w": "pair,"
+    }
+   ]
+  },
+  {
+   "start": 2366,
+   "end": 2485,
+   "text": "plastic from the corner shop, wax from the county fair;",
+   "words": [
+    {
+     "t": 2366,
+     "w": "plastic"
+    },
+    {
+     "t": 2383,
+     "w": "from"
+    },
+    {
+     "t": 2394,
+     "w": "the"
+    },
+    {
+     "t": 2402,
+     "w": "corner"
+    },
+    {
+     "t": 2417,
+     "w": "shop,"
+    },
+    {
+     "t": 2430,
+     "w": "wax"
+    },
+    {
+     "t": 2438,
+     "w": "from"
+    },
+    {
+     "t": 2449,
+     "w": "the"
+    },
+    {
+     "t": 2457,
+     "w": "county"
+    },
+    {
+     "t": 2472,
+     "w": "fair;"
+    }
+   ]
+  },
+  {
+   "start": 2487,
+   "end": 2602,
+   "text": "for a hundred years I smiled like a letter sealed in red,",
+   "words": [
+    {
+     "t": 2487,
+     "w": "for"
+    },
+    {
+     "t": 2495,
+     "w": "a"
+    },
+    {
+     "t": 2499,
+     "w": "hundred"
+    },
+    {
+     "t": 2515,
+     "w": "years"
+    },
+    {
+     "t": 2527,
+     "w": "I"
+    },
+    {
+     "t": 2531,
+     "w": "smiled"
+    },
+    {
+     "t": 2545,
+     "w": "like"
+    },
+    {
+     "t": 2554,
+     "w": "a"
+    },
+    {
+     "t": 2558,
+     "w": "letter"
+    },
+    {
+     "t": 2572,
+     "w": "sealed"
+    },
+    {
+     "t": 2586,
+     "w": "in"
+    },
+    {
+     "t": 2592,
+     "w": "red,"
+    }
+   ]
+  },
+  {
+   "start": 2605,
+   "end": 2726,
+   "text": "tonight I break the seal and grin with every tooth instead.",
+   "words": [
+    {
+     "t": 2605,
+     "w": "tonight"
+    },
+    {
+     "t": 2621,
+     "w": "I"
+    },
+    {
+     "t": 2625,
+     "w": "break"
+    },
+    {
+     "t": 2637,
+     "w": "the"
+    },
+    {
+     "t": 2645,
+     "w": "seal"
+    },
+    {
+     "t": 2655,
+     "w": "and"
+    },
+    {
+     "t": 2663,
+     "w": "grin"
+    },
+    {
+     "t": 2674,
+     "w": "with"
+    },
+    {
+     "t": 2684,
+     "w": "every"
+    },
+    {
+     "t": 2696,
+     "w": "tooth"
+    },
+    {
+     "t": 2708,
+     "w": "instead."
+    }
+   ]
+  },
+  {
+   "start": 2847,
+   "end": 2967,
+   "text": "A pirate with a paper sword bowed low and kissed my glove,",
+   "words": [
+    {
+     "t": 2847,
+     "w": "A"
+    },
+    {
+     "t": 2851,
+     "w": "pirate"
+    },
+    {
+     "t": 2865,
+     "w": "with"
+    },
+    {
+     "t": 2875,
+     "w": "a"
+    },
+    {
+     "t": 2880,
+     "w": "paper"
+    },
+    {
+     "t": 2892,
+     "w": "sword"
+    },
+    {
+     "t": 2904,
+     "w": "bowed"
+    },
+    {
+     "t": 2916,
+     "w": "low"
+    },
+    {
+     "t": 2924,
+     "w": "and"
+    },
+    {
+     "t": 2932,
+     "w": "kissed"
+    },
+    {
+     "t": 2947,
+     "w": "my"
+    },
+    {
+     "t": 2953,
+     "w": "glove,"
+    }
+   ]
+  },
+  {
+   "start": 2969,
+   "end": 3078,
+   "text": "and asked me where I learned to waltz like something from above;",
+   "words": [
+    {
+     "t": 2969,
+     "w": "and"
+    },
+    {
+     "t": 2976,
+     "w": "asked"
+    },
+    {
+     "t": 2986,
+     "w": "me"
+    },
+    {
+     "t": 2991,
+     "w": "where"
+    },
+    {
+     "t": 3001,
+     "w": "I"
+    },
+    {
+     "t": 3004,
+     "w": "learned"
+    },
+    {
+     "t": 3018,
+     "w": "to"
+    },
+    {
+     "t": 3023,
+     "w": "waltz"
+    },
+    {
+     "t": 3033,
+     "w": "like"
+    },
+    {
+     "t": 3041,
+     "w": "something"
+    },
+    {
+     "t": 3058,
+     "w": "from"
+    },
+    {
+     "t": 3066,
+     "w": "above;"
+    }
+   ]
+  },
+  {
+   "start": 3080,
+   "end": 3182,
+   "text": "I said, \"The minuet, my darling, back in seventeen-oh-two,\"",
+   "words": [
+    {
+     "t": 3080,
+     "w": "I"
+    },
+    {
+     "t": 3083,
+     "w": "said,"
+    },
+    {
+     "t": 3094,
+     "w": "\"The"
+    },
+    {
+     "t": 3102,
+     "w": "minuet,"
+    },
+    {
+     "t": 3116,
+     "w": "my"
+    },
+    {
+     "t": 3121,
+     "w": "darling,"
+    },
+    {
+     "t": 3136,
+     "w": "back"
+    },
+    {
+     "t": 3145,
+     "w": "in"
+    },
+    {
+     "t": 3150,
+     "w": "seventeen-oh-two,\""
+    }
+   ]
+  },
+  {
+   "start": 3199,
+   "end": 3358,
+   "text": "he said, \"Wow, method acting,\" and he spilled punch on his shoe.",
+   "words": [
+    {
+     "t": 3199,
+     "w": "he"
+    },
+    {
+     "t": 3206,
+     "w": "said,"
+    },
+    {
+     "t": 3221,
+     "w": "\"Wow,"
+    },
+    {
+     "t": 3236,
+     "w": "method"
+    },
+    {
+     "t": 3253,
+     "w": "acting,\""
+    },
+    {
+     "t": 3275,
+     "w": "and"
+    },
+    {
+     "t": 3285,
+     "w": "he"
+    },
+    {
+     "t": 3292,
+     "w": "spilled"
+    },
+    {
+     "t": 3312,
+     "w": "punch"
+    },
+    {
+     "t": 3326,
+     "w": "on"
+    },
+    {
+     "t": 3334,
+     "w": "his"
+    },
+    {
+     "t": 3343,
+     "w": "shoe."
+    }
+   ]
+  },
+  {
+   "start": 3445,
+   "end": 3562,
+   "text": "So hush now, little trumpet, there's a cowboy at the door,",
+   "words": [
+    {
+     "t": 3445,
+     "w": "So"
+    },
+    {
+     "t": 3451,
+     "w": "hush"
+    },
+    {
+     "t": 3461,
+     "w": "now,"
+    },
+    {
+     "t": 3471,
+     "w": "little"
+    },
+    {
+     "t": 3485,
+     "w": "trumpet,"
+    },
+    {
+     "t": 3503,
+     "w": "there's"
+    },
+    {
+     "t": 3518,
+     "w": "a"
+    },
+    {
+     "t": 3522,
+     "w": "cowboy"
+    },
+    {
+     "t": 3536,
+     "w": "at"
+    },
+    {
+     "t": 3542,
+     "w": "the"
+    },
+    {
+     "t": 3550,
+     "w": "door,"
+    }
+   ]
+  },
+  {
+   "start": 3565,
+   "end": 3684,
+   "text": "there's a mummy at the coat check dropping ribbons on the floor,",
+   "words": [
+    {
+     "t": 3565,
+     "w": "there's"
+    },
+    {
+     "t": 3580,
+     "w": "a"
+    },
+    {
+     "t": 3583,
+     "w": "mummy"
+    },
+    {
+     "t": 3594,
+     "w": "at"
+    },
+    {
+     "t": 3600,
+     "w": "the"
+    },
+    {
+     "t": 3607,
+     "w": "coat"
+    },
+    {
+     "t": 3616,
+     "w": "check"
+    },
+    {
+     "t": 3627,
+     "w": "dropping"
+    },
+    {
+     "t": 3644,
+     "w": "ribbons"
+    },
+    {
+     "t": 3658,
+     "w": "on"
+    },
+    {
+     "t": 3664,
+     "w": "the"
+    },
+    {
+     "t": 3671,
+     "w": "floor,"
+    }
+   ]
+  },
+  {
+   "start": 3686,
+   "end": 3800,
+   "text": "and the clock above the bar is running faster than it should —",
+   "words": [
+    {
+     "t": 3686,
+     "w": "and"
+    },
+    {
+     "t": 3693,
+     "w": "the"
+    },
+    {
+     "t": 3700,
+     "w": "clock"
+    },
+    {
+     "t": 3711,
+     "w": "above"
+    },
+    {
+     "t": 3722,
+     "w": "the"
+    },
+    {
+     "t": 3729,
+     "w": "bar"
+    },
+    {
+     "t": 3737,
+     "w": "is"
+    },
+    {
+     "t": 3742,
+     "w": "running"
+    },
+    {
+     "t": 3757,
+     "w": "faster"
+    },
+    {
+     "t": 3769,
+     "w": "than"
+    },
+    {
+     "t": 3778,
+     "w": "it"
+    },
+    {
+     "t": 3784,
+     "w": "should"
+    },
+    {
+     "t": 3796,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 3802,
+   "end": 3956,
+   "text": "I could stay here till the sunrise, and you know I never could.",
+   "words": [
+    {
+     "t": 3802,
+     "w": "I"
+    },
+    {
+     "t": 3807,
+     "w": "could"
+    },
+    {
+     "t": 3821,
+     "w": "stay"
+    },
+    {
+     "t": 3833,
+     "w": "here"
+    },
+    {
+     "t": 3845,
+     "w": "till"
+    },
+    {
+     "t": 3857,
+     "w": "the"
+    },
+    {
+     "t": 3867,
+     "w": "sunrise,"
+    },
+    {
+     "t": 3889,
+     "w": "and"
+    },
+    {
+     "t": 3898,
+     "w": "you"
+    },
+    {
+     "t": 3908,
+     "w": "know"
+    },
+    {
+     "t": 3920,
+     "w": "I"
+    },
+    {
+     "t": 3925,
+     "w": "never"
+    },
+    {
+     "t": 3939,
+     "w": "could."
+    }
+   ]
+  },
+  {
+   "start": 4093,
+   "end": 4164,
+   "text": "Velvet fangs, and the whole town wears a pair,",
+   "words": [
+    {
+     "t": 4093,
+     "w": "Velvet"
+    },
+    {
+     "t": 4104,
+     "w": "fangs,"
+    },
+    {
+     "t": 4114,
+     "w": "and"
+    },
+    {
+     "t": 4120,
+     "w": "the"
+    },
+    {
+     "t": 4126,
+     "w": "whole"
+    },
+    {
+     "t": 4135,
+     "w": "town"
+    },
+    {
+     "t": 4143,
+     "w": "wears"
+    },
+    {
+     "t": 4152,
+     "w": "a"
+    },
+    {
+     "t": 4155,
+     "w": "pair,"
+    }
+   ]
+  },
+  {
+   "start": 4166,
+   "end": 4282,
+   "text": "plastic from the corner shop, wax from the county fair;",
+   "words": [
+    {
+     "t": 4166,
+     "w": "plastic"
+    },
+    {
+     "t": 4183,
+     "w": "from"
+    },
+    {
+     "t": 4193,
+     "w": "the"
+    },
+    {
+     "t": 4201,
+     "w": "corner"
+    },
+    {
+     "t": 4216,
+     "w": "shop,"
+    },
+    {
+     "t": 4228,
+     "w": "wax"
+    },
+    {
+     "t": 4236,
+     "w": "from"
+    },
+    {
+     "t": 4247,
+     "w": "the"
+    },
+    {
+     "t": 4255,
+     "w": "county"
+    },
+    {
+     "t": 4270,
+     "w": "fair;"
+    }
+   ]
+  },
+  {
+   "start": 4284,
+   "end": 4402,
+   "text": "for a hundred years I smiled like a letter sealed in red,",
+   "words": [
+    {
+     "t": 4284,
+     "w": "for"
+    },
+    {
+     "t": 4292,
+     "w": "a"
+    },
+    {
+     "t": 4296,
+     "w": "hundred"
+    },
+    {
+     "t": 4312,
+     "w": "years"
+    },
+    {
+     "t": 4325,
+     "w": "I"
+    },
+    {
+     "t": 4329,
+     "w": "smiled"
+    },
+    {
+     "t": 4343,
+     "w": "like"
+    },
+    {
+     "t": 4353,
+     "w": "a"
+    },
+    {
+     "t": 4357,
+     "w": "letter"
+    },
+    {
+     "t": 4371,
+     "w": "sealed"
+    },
+    {
+     "t": 4386,
+     "w": "in"
+    },
+    {
+     "t": 4392,
+     "w": "red,"
+    }
+   ]
+  },
+  {
+   "start": 4404,
+   "end": 4526,
+   "text": "tonight I break the seal and grin with every tooth instead.",
+   "words": [
+    {
+     "t": 4404,
+     "w": "tonight"
+    },
+    {
+     "t": 4420,
+     "w": "I"
+    },
+    {
+     "t": 4424,
+     "w": "break"
+    },
+    {
+     "t": 4437,
+     "w": "the"
+    },
+    {
+     "t": 4445,
+     "w": "seal"
+    },
+    {
+     "t": 4455,
+     "w": "and"
+    },
+    {
+     "t": 4463,
+     "w": "grin"
+    },
+    {
+     "t": 4473,
+     "w": "with"
+    },
+    {
+     "t": 4483,
+     "w": "every"
+    },
+    {
+     "t": 4496,
+     "w": "tooth"
+    },
+    {
+     "t": 4508,
+     "w": "instead."
+    }
+   ]
+  },
+  {
+   "start": 4536,
+   "end": 4764,
+   "text": "Then the trumpet pulls its mute out for the final sixteen bars,",
+   "words": [
+    {
+     "t": 4536,
+     "w": "Then"
+    },
+    {
+     "t": 4554,
+     "w": "the"
+    },
+    {
+     "t": 4568,
+     "w": "trumpet"
+    },
+    {
+     "t": 4597,
+     "w": "pulls"
+    },
+    {
+     "t": 4618,
+     "w": "its"
+    },
+    {
+     "t": 4632,
+     "w": "mute"
+    },
+    {
+     "t": 4650,
+     "w": "out"
+    },
+    {
+     "t": 4664,
+     "w": "for"
+    },
+    {
+     "t": 4678,
+     "w": "the"
+    },
+    {
+     "t": 4693,
+     "w": "final"
+    },
+    {
+     "t": 4714,
+     "w": "sixteen"
+    },
+    {
+     "t": 4743,
+     "w": "bars,"
+    }
+   ]
+  },
+  {
+   "start": 4766,
+   "end": 4884,
+   "text": "and the brass comes out unbuttoned, all the way up to the stars;",
+   "words": [
+    {
+     "t": 4766,
+     "w": "and"
+    },
+    {
+     "t": 4773,
+     "w": "the"
+    },
+    {
+     "t": 4781,
+     "w": "brass"
+    },
+    {
+     "t": 4791,
+     "w": "comes"
+    },
+    {
+     "t": 4802,
+     "w": "out"
+    },
+    {
+     "t": 4810,
+     "w": "unbuttoned,"
+    },
+    {
+     "t": 4831,
+     "w": "all"
+    },
+    {
+     "t": 4839,
+     "w": "the"
+    },
+    {
+     "t": 4846,
+     "w": "way"
+    },
+    {
+     "t": 4853,
+     "w": "up"
+    },
+    {
+     "t": 4859,
+     "w": "to"
+    },
+    {
+     "t": 4864,
+     "w": "the"
+    },
+    {
+     "t": 4871,
+     "w": "stars;"
+    }
+   ]
+  },
+  {
+   "start": 4886,
+   "end": 4990,
+   "text": "now I learn what it was saying all the while it hummed so low —",
+   "words": [
+    {
+     "t": 4886,
+     "w": "now"
+    },
+    {
+     "t": 4892,
+     "w": "I"
+    },
+    {
+     "t": 4896,
+     "w": "learn"
+    },
+    {
+     "t": 4906,
+     "w": "what"
+    },
+    {
+     "t": 4914,
+     "w": "it"
+    },
+    {
+     "t": 4918,
+     "w": "was"
+    },
+    {
+     "t": 4925,
+     "w": "saying"
+    },
+    {
+     "t": 4936,
+     "w": "all"
+    },
+    {
+     "t": 4943,
+     "w": "the"
+    },
+    {
+     "t": 4949,
+     "w": "while"
+    },
+    {
+     "t": 4959,
+     "w": "it"
+    },
+    {
+     "t": 4964,
+     "w": "hummed"
+    },
+    {
+     "t": 4975,
+     "w": "so"
+    },
+    {
+     "t": 4980,
+     "w": "low"
+    },
+    {
+     "t": 4987,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 5014,
+   "end": 5155,
+   "text": "that a song kept sealed a century still remembers how to go.",
+   "words": [
+    {
+     "t": 5014,
+     "w": "that"
+    },
+    {
+     "t": 5026,
+     "w": "a"
+    },
+    {
+     "t": 5030,
+     "w": "song"
+    },
+    {
+     "t": 5042,
+     "w": "kept"
+    },
+    {
+     "t": 5053,
+     "w": "sealed"
+    },
+    {
+     "t": 5069,
+     "w": "a"
+    },
+    {
+     "t": 5074,
+     "w": "century"
+    },
+    {
+     "t": 5093,
+     "w": "still"
+    },
+    {
+     "t": 5106,
+     "w": "remembers"
+    },
+    {
+     "t": 5130,
+     "w": "how"
+    },
+    {
+     "t": 5139,
+     "w": "to"
+    },
+    {
+     "t": 5146,
+     "w": "go."
+    }
+   ]
+  },
+  {
+   "start": 5240,
+   "end": 5365,
+   "text": "So I stand up in the spotlight in my grandmother's black lace,",
+   "words": [
+    {
+     "t": 5240,
+     "w": "So"
+    },
+    {
+     "t": 5246,
+     "w": "I"
+    },
+    {
+     "t": 5250,
+     "w": "stand"
+    },
+    {
+     "t": 5262,
+     "w": "up"
+    },
+    {
+     "t": 5268,
+     "w": "in"
+    },
+    {
+     "t": 5274,
+     "w": "the"
+    },
+    {
+     "t": 5282,
+     "w": "spotlight"
+    },
+    {
+     "t": 5302,
+     "w": "in"
+    },
+    {
+     "t": 5307,
+     "w": "my"
+    },
+    {
+     "t": 5313,
+     "w": "grandmother's"
+    },
+    {
+     "t": 5341,
+     "w": "black"
+    },
+    {
+     "t": 5353,
+     "w": "lace,"
+    }
+   ]
+  },
+  {
+   "start": 5367,
+   "end": 5519,
+   "text": "and I let the whole room see it, all of it, across my face.",
+   "words": [
+    {
+     "t": 5367,
+     "w": "and"
+    },
+    {
+     "t": 5377,
+     "w": "I"
+    },
+    {
+     "t": 5382,
+     "w": "let"
+    },
+    {
+     "t": 5392,
+     "w": "the"
+    },
+    {
+     "t": 5402,
+     "w": "whole"
+    },
+    {
+     "t": 5418,
+     "w": "room"
+    },
+    {
+     "t": 5430,
+     "w": "see"
+    },
+    {
+     "t": 5440,
+     "w": "it,"
+    },
+    {
+     "t": 5451,
+     "w": "all"
+    },
+    {
+     "t": 5461,
+     "w": "of"
+    },
+    {
+     "t": 5468,
+     "w": "it,"
+    },
+    {
+     "t": 5478,
+     "w": "across"
+    },
+    {
+     "t": 5496,
+     "w": "my"
+    },
+    {
+     "t": 5504,
+     "w": "face."
+    }
+   ]
+  },
+  {
+   "start": 5637,
+   "end": 5724,
+   "text": "Velvet fangs, let the whole town wear a pair,",
+   "words": [
+    {
+     "t": 5637,
+     "w": "Velvet"
+    },
+    {
+     "t": 5650,
+     "w": "fangs,"
+    },
+    {
+     "t": 5663,
+     "w": "let"
+    },
+    {
+     "t": 5671,
+     "w": "the"
+    },
+    {
+     "t": 5679,
+     "w": "whole"
+    },
+    {
+     "t": 5690,
+     "w": "town"
+    },
+    {
+     "t": 5699,
+     "w": "wear"
+    },
+    {
+     "t": 5709,
+     "w": "a"
+    },
+    {
+     "t": 5713,
+     "w": "pair,"
+    }
+   ]
+  },
+  {
+   "start": 5726,
+   "end": 5838,
+   "text": "let the plastic ones go clacking down the cabaret stair;",
+   "words": [
+    {
+     "t": 5726,
+     "w": "let"
+    },
+    {
+     "t": 5734,
+     "w": "the"
+    },
+    {
+     "t": 5742,
+     "w": "plastic"
+    },
+    {
+     "t": 5757,
+     "w": "ones"
+    },
+    {
+     "t": 5767,
+     "w": "go"
+    },
+    {
+     "t": 5773,
+     "w": "clacking"
+    },
+    {
+     "t": 5791,
+     "w": "down"
+    },
+    {
+     "t": 5801,
+     "w": "the"
+    },
+    {
+     "t": 5809,
+     "w": "cabaret"
+    },
+    {
+     "t": 5824,
+     "w": "stair;"
+    }
+   ]
+  },
+  {
+   "start": 5843,
+   "end": 5962,
+   "text": "for a hundred years I kept my smile in velvet, under key —",
+   "words": [
+    {
+     "t": 5843,
+     "w": "for"
+    },
+    {
+     "t": 5851,
+     "w": "a"
+    },
+    {
+     "t": 5855,
+     "w": "hundred"
+    },
+    {
+     "t": 5871,
+     "w": "years"
+    },
+    {
+     "t": 5883,
+     "w": "I"
+    },
+    {
+     "t": 5887,
+     "w": "kept"
+    },
+    {
+     "t": 5897,
+     "w": "my"
+    },
+    {
+     "t": 5904,
+     "w": "smile"
+    },
+    {
+     "t": 5916,
+     "w": "in"
+    },
+    {
+     "t": 5922,
+     "w": "velvet,"
+    },
+    {
+     "t": 5938,
+     "w": "under"
+    },
+    {
+     "t": 5950,
+     "w": "key"
+    },
+    {
+     "t": 5958,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 5965,
+   "end": 6123,
+   "text": "tonight they'll swear the teeth are fake, but the smile is really me.",
+   "words": [
+    {
+     "t": 5965,
+     "w": "tonight"
+    },
+    {
+     "t": 5983,
+     "w": "they'll"
+    },
+    {
+     "t": 6001,
+     "w": "swear"
+    },
+    {
+     "t": 6015,
+     "w": "the"
+    },
+    {
+     "t": 6024,
+     "w": "teeth"
+    },
+    {
+     "t": 6037,
+     "w": "are"
+    },
+    {
+     "t": 6046,
+     "w": "fake,"
+    },
+    {
+     "t": 6060,
+     "w": "but"
+    },
+    {
+     "t": 6069,
+     "w": "the"
+    },
+    {
+     "t": 6078,
+     "w": "smile"
+    },
+    {
+     "t": 6091,
+     "w": "is"
+    },
+    {
+     "t": 6098,
+     "w": "really"
+    },
+    {
+     "t": 6114,
+     "w": "me."
+    }
+   ]
+  },
+  {
+   "start": 6200,
+   "end": 6319,
+   "text": "When the rooster clears his throat I'll climb the hill and bar the door,",
+   "words": [
+    {
+     "t": 6200,
+     "w": "When"
+    },
+    {
+     "t": 6208,
+     "w": "the"
+    },
+    {
+     "t": 6215,
+     "w": "rooster"
+    },
+    {
+     "t": 6228,
+     "w": "clears"
+    },
+    {
+     "t": 6239,
+     "w": "his"
+    },
+    {
+     "t": 6246,
+     "w": "throat"
+    },
+    {
+     "t": 6257,
+     "w": "I'll"
+    },
+    {
+     "t": 6265,
+     "w": "climb"
+    },
+    {
+     "t": 6275,
+     "w": "the"
+    },
+    {
+     "t": 6282,
+     "w": "hill"
+    },
+    {
+     "t": 6290,
+     "w": "and"
+    },
+    {
+     "t": 6296,
+     "w": "bar"
+    },
+    {
+     "t": 6303,
+     "w": "the"
+    },
+    {
+     "t": 6309,
+     "w": "door,"
+    }
+   ]
+  },
+  {
+   "start": 6322,
+   "end": 6437,
+   "text": "seal my smile in red again, a letter in a drawer;",
+   "words": [
+    {
+     "t": 6322,
+     "w": "seal"
+    },
+    {
+     "t": 6334,
+     "w": "my"
+    },
+    {
+     "t": 6340,
+     "w": "smile"
+    },
+    {
+     "t": 6354,
+     "w": "in"
+    },
+    {
+     "t": 6361,
+     "w": "red"
+    },
+    {
+     "t": 6370,
+     "w": "again,"
+    },
+    {
+     "t": 6386,
+     "w": "a"
+    },
+    {
+     "t": 6391,
+     "w": "letter"
+    },
+    {
+     "t": 6407,
+     "w": "in"
+    },
+    {
+     "t": 6414,
+     "w": "a"
+    },
+    {
+     "t": 6419,
+     "w": "drawer;"
+    }
+   ]
+  },
+  {
+   "start": 6440,
+   "end": 6588,
+   "text": "but I left two tiny tooth-marks on the rim of a coffee cup —",
+   "words": [
+    {
+     "t": 6440,
+     "w": "but"
+    },
+    {
+     "t": 6450,
+     "w": "I"
+    },
+    {
+     "t": 6455,
+     "w": "left"
+    },
+    {
+     "t": 6467,
+     "w": "two"
+    },
+    {
+     "t": 6476,
+     "w": "tiny"
+    },
+    {
+     "t": 6489,
+     "w": "tooth-marks"
+    },
+    {
+     "t": 6518,
+     "w": "on"
+    },
+    {
+     "t": 6525,
+     "w": "the"
+    },
+    {
+     "t": 6535,
+     "w": "rim"
+    },
+    {
+     "t": 6544,
+     "w": "of"
+    },
+    {
+     "t": 6552,
+     "w": "a"
+    },
+    {
+     "t": 6556,
+     "w": "coffee"
+    },
+    {
+     "t": 6573,
+     "w": "cup"
+    },
+    {
+     "t": 6583,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 6614,
+   "end": 6794,
+   "text": "let the busboy wonder at them when the sun comes up.",
+   "words": [
+    {
+     "t": 6614,
+     "w": "let"
+    },
+    {
+     "t": 6628,
+     "w": "the"
+    },
+    {
+     "t": 6641,
+     "w": "busboy"
+    },
+    {
+     "t": 6665,
+     "w": "wonder"
+    },
+    {
+     "t": 6689,
+     "w": "at"
+    },
+    {
+     "t": 6699,
+     "w": "them"
+    },
+    {
+     "t": 6716,
+     "w": "when"
+    },
+    {
+     "t": 6733,
+     "w": "the"
+    },
+    {
+     "t": 6746,
+     "w": "sun"
+    },
+    {
+     "t": 6760,
+     "w": "comes"
+    },
+    {
+     "t": 6780,
+     "w": "up."
+    }
+   ]
+  }
+ ],
+ "title1": "VELVET",
+ "title2": "FANGS",
+ "tag": "♪ VELVET FANGS",
+ "label": "HER HOURS · VERONICA",
+ "singer": "Veronica",
+ "brand": "HER HOURS",
+ "accent": "#D0182E",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

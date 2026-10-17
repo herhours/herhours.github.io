@@ -1,0 +1,241 @@
+/* Her Hours Shorts — shared shell styling.
+   Rules that apply to both designs live here; each shell adds only its own layout. */
+
+:root{
+  /* UI type: no webfont download, no CDN. Uses Pretendard when the phone has it,
+     otherwise the platform's own Korean UI face (Apple SD Gothic Neo / Noto Sans KR / Malgun Gothic). */
+  --ui: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo",
+        "Noto Sans KR", "Malgun Gothic", Roboto, "Segoe UI", system-ui, sans-serif;
+
+  --ink:#06070B; --glass:rgba(19,22,32,.94); --glass-2:rgba(30,35,49,.9);
+  --line:rgba(255,255,255,.16); --line-2:rgba(255,255,255,.28);
+  --cream:#F4F1EA; --dim:#B9C1CE; --accent:#8CFFB0; --accent-ink:#05130A;
+
+  --t-xs:16px; --t-s:18px; --t-m:20px; --t-l:23px; --t-xl:30px;
+  --hit:52px; --r:18px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overscroll-behavior:none}
+body{
+  background:var(--ink); color:var(--cream);
+  font-family:var(--ui); font-size:var(--t-s); line-height:1.4;
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+}
+button,input,a{font-family:inherit; color:inherit}
+button{border:0;background:none;cursor:pointer}
+
+/* ---------- top bar ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;height:calc(46px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 16px 0;flex:0 0 auto}
+.mark{font-size:14px;font-weight:700;letter-spacing:2.5px;color:var(--cream);opacity:.92}
+.mark i{color:var(--accent);font-style:normal}
+.top .lnk{font-size:var(--t-xs);color:var(--dim);text-decoration:none;border:1px solid var(--line);
+  border-radius:999px;padding:7px 12px;min-height:36px;display:flex;align-items:center}
+
+/* ---------- stage: the video is the page ---------- */
+.stage{position:relative;flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 14px}
+.frame{position:relative;height:100%;aspect-ratio:9/16;max-width:100%;
+  border-radius:20px;overflow:hidden;background:#000;
+  border:1px solid var(--line-2);
+  box-shadow:0 0 0 5px rgba(0,0,0,.55), 0 22px 60px rgba(0,0,0,.75), 0 0 60px rgba(140,255,176,.10)}
+.frame canvas,.frame video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;background:#000}
+.frame video{display:none}
+body.is-done .frame video{display:block}
+body.is-done .frame canvas{visibility:hidden}
+
+/* play affordance — only while idle */
+.tap{position:absolute;inset:0;display:grid;place-items:center}
+.playbtn{width:72px;height:72px;border-radius:50%;background:rgba(6,7,11,.5);border:2px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(6px);display:grid;place-items:center;transition:opacity .2s}
+.playbtn svg{width:28px;height:28px;fill:#fff;margin-left:3px}
+.playbtn .pause{display:none}
+body.is-playing .playbtn{opacity:0}
+body.is-playing .playbtn .pause{display:block}
+body.is-playing .playbtn .go{display:none}
+body.is-making .playbtn,body.is-done .playbtn{display:none}
+body.is-making .tap,body.is-done .tap{pointer-events:none}
+
+/* live badge, so it is obvious the thing on screen is the real output */
+.live{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;letter-spacing:1.6px;color:var(--cream);
+  background:rgba(6,7,11,.55);border-radius:999px;padding:6px 11px;backdrop-filter:blur(4px)}
+.live b{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
+body.is-making .live,body.is-done .live{display:none}
+
+/* making overlay */
+.making{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:0 0 22px;background:linear-gradient(to top,rgba(6,7,11,.95) 34%,rgba(6,7,11,.5) 50%,rgba(6,7,11,0) 66%)}
+body.is-making .making{display:flex}
+.making #pct{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--accent)}
+.making #status{font-size:var(--t-s);color:var(--cream);margin-top:6px}
+.making #eta{font-size:var(--t-xs);color:var(--cream);opacity:.85;margin-top:10px;text-align:center;max-width:300px;line-height:1.45}
+.bar{width:calc(100% - 36px);height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+body:not(.is-making) #status:not(.err){display:none}
+#status.err{display:block;color:#ff9a9a}
+
+/* ---------- transport ---------- */
+.transport{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:10px 20px 2px;font-size:var(--t-xs);color:var(--dim)}
+body.is-making .transport,body.is-done .transport{visibility:hidden}
+.transport .t{font-variant-numeric:tabular-nums;min-width:34px;text-align:center}
+#seek{flex:1;min-width:0;-webkit-appearance:none;appearance:none;background:transparent;height:30px;margin:0}
+#seek::-webkit-slider-runnable-track{height:5px;border-radius:99px;background:rgba(255,255,255,.22)}
+#seek::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);
+  border:0;margin-top:-7.5px;box-shadow:0 1px 6px rgba(0,0,0,.6)}
+#seek::-moz-range-track{height:5px;border-radius:99px;background:rgba(255,255,255,.22)}
+#seek::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:var(--accent)}
+
+/* ---------- buttons ---------- */
+.pill{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  min-height:58px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
+  font-size:var(--t-l);font-weight:800;letter-spacing:-.2px;text-decoration:none;
+  box-shadow:0 8px 26px rgba(140,255,176,.22)}
+.pill:active{transform:translateY(1px)}
+.pill[disabled]{opacity:.4}
+.pill.ghost{background:transparent;color:var(--cream);border:2px solid var(--line-2);box-shadow:none;font-size:var(--t-m)}
+
+/* ---------- chips ---------- */
+.chip{display:flex;align-items:center;gap:10px;min-height:var(--hit);padding:0 14px;border-radius:14px;
+  background:var(--glass-2);border:1px solid var(--line);text-align:left;width:100%}
+.chip .ico{flex:0 0 auto;width:24px;height:24px;display:grid;place-items:center;font-size:17px}
+.chip .k{flex:0 0 auto;font-size:var(--t-xs);color:var(--dim)}
+.chip .v{flex:1;min-width:0;font-size:var(--t-s);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .go{flex:0 0 auto;color:var(--dim);font-size:var(--t-s)}
+.chip.mine{border-color:rgba(140,255,176,.55)}
+.chip.mine .v{color:var(--accent)}
+
+/* ---------- panel (bottom sheet) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;transition:opacity .22s;z-index:8}
+body.panel-open .scrim{opacity:1;pointer-events:auto}
+.panel{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--glass);backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);border-radius:24px 24px 0 0;
+  padding:8px 18px calc(20px + var(--safe-b));
+  transform:translateY(101%);transition:transform .26s cubic-bezier(.22,.9,.28,1);
+  max-height:64vh;overflow:auto}
+body.panel-open .panel{transform:translateY(0)}
+/* while a sheet is open the video shrinks into the space above it instead of sitting dimmed underneath */
+.stage{transition:bottom .26s cubic-bezier(.22,.9,.28,1),top .26s}
+body.panel-open .stage{top:8px;bottom:calc(var(--sheet-h,60vh) + 8px)}
+body.panel-open .scrim{background:transparent}
+body.panel-open .rail,body.panel-open .transport,body.panel-open .top,body.panel-open .live{opacity:0;pointer-events:none}
+.grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.3);margin:2px auto 12px}
+.panel h2{font-size:var(--t-m);font-weight:800;margin:0 0 12px}
+.panel .done{position:sticky;bottom:0;margin-top:16px}
+.hint{font-size:var(--t-xs);color:var(--dim);margin:10px 0 0}
+
+.pane{display:none}
+body[data-pane="menu"] .pane-menu,
+body[data-pane="photo"] .pane-photo,
+body[data-pane="song"] .pane-song,
+body[data-pane="text"] .pane-text,
+body[data-pane="info"] .pane-info,
+body[data-pane="welcome"] .pane-welcome,
+body[data-pane="resume"] .pane-resume,
+body[data-pane="made"] .pane-made{display:block}
+
+/* ---------- 10-11 phone test fixes ---------- */
+.top .lnks{display:flex;gap:8px}
+/* a way out of the step chain that is always in the same place */
+.panel .x{position:absolute;top:8px;right:12px;width:44px;height:44px;border-radius:50%;font-size:20px;color:var(--dim);
+  display:grid;place-items:center;z-index:1}
+.rail .mine-list{margin-top:10px}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 rgba(140,255,176,.0)}50%{box-shadow:0 0 0 7px rgba(140,255,176,.35)}}
+.nudge{animation:nudge 1.2s ease-in-out 3}
+#save.nudge{border-color:var(--accent);color:var(--accent)}
+/* photos appear one by one as they are read, so a slow phone shows progress instead of a blank row */
+.thumbs .ph,.thumbs .th{flex:0 0 auto;width:74px;height:74px;border-radius:10px;background:#1b1f2a}
+@keyframes ph{50%{opacity:.45}}
+.thumbs .ph{animation:ph 1s ease-in-out infinite}
+.resume-info{font-size:var(--t-s);color:var(--cream);margin:0 0 16px;line-height:1.45}
+.made{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.made img,.made .noimg{flex:0 0 auto;width:66px;aspect-ratio:9/16;border-radius:10px;object-fit:cover;background:#1b1f2a}
+.made .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.made .t b{font-size:var(--t-s)}
+.made .t>span:not(.acts){font-size:var(--t-xs);color:var(--dim);line-height:1.35}
+.made .acts{display:flex;gap:8px;margin-top:6px}
+.made .sm{min-height:44px;font-size:var(--t-xs);flex:1;width:auto}
+.made .del.sure{border-color:#FF8A7A;color:#FF8A7A;font-weight:800}
+/* opened inside KakaoTalk & co. */
+.inapp{position:fixed;top:0;left:0;right:0;z-index:20;background:#2a1f0e;border-bottom:2px solid #FFC27A;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 12px;color:#fff}
+.inapp p{margin:0 0 10px;font-size:var(--t-s);font-weight:700;line-height:1.4}
+.inapp .pill{min-height:48px;font-size:var(--t-m)}
+.inapp .again{min-height:48px;color:#fff}
+
+/* photo pane */
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.thumbs{display:flex;gap:7px;overflow-x:auto;padding:12px 0 4px;-webkit-overflow-scrolling:touch}
+.thumbs img{flex:0 0 auto;width:74px;height:74px;object-fit:cover;border-radius:10px;background:#000}
+.two{display:flex;gap:10px}
+.two>*{flex:1}
+
+/* song pane */
+.song-group{margin:14px 4px 6px;font-size:var(--t-xs);color:var(--dim);letter-spacing:.04em}
+.song-group:first-child{margin-top:0}
+.done-credit{margin:4px 0 0;font-size:var(--t-xs);color:var(--dim);text-align:center;user-select:all}
+.done-credit:empty{display:none}
+.opt{display:flex;align-items:center;gap:12px;min-height:64px;padding:0 16px;border-radius:16px;
+  border:2px solid var(--line);background:rgba(255,255,255,.03);width:100%;text-align:left;margin-bottom:10px;font-size:var(--t-s)}
+.opt .t{flex:1;min-width:0}
+.opt .t b{display:block;font-size:var(--t-s);font-weight:700}
+/* song covers: a face for our singers, a mood colour for the backing tracks (10-11 시안 A) */
+.opt .cov{width:56px;height:56px;border-radius:12px;flex:none;object-fit:cover;margin-left:-8px;background:#111;
+  display:grid;place-items:center;color:#fff}
+.opt:has(.cov){min-height:76px}
+.opt .gr-upbeat{background:linear-gradient(135deg,#ff7aa8,#7a5cff)}
+.opt .gr-bright{background:linear-gradient(135deg,#ffd36e,#5fa8ff)}
+.opt .gr-tension{background:linear-gradient(135deg,#3b3f5c,#0d0f15);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.opt .t span{display:block;font-size:var(--t-xs);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt.on{border-color:var(--accent);background:rgba(140,255,176,.08)}
+.opt.on .t b{color:var(--accent)}
+body.mine-song label.opt[for="audio"]{border-color:var(--accent);background:rgba(140,255,176,.08)}
+body.mine-song label.opt[for="audio"] .t b{color:var(--accent)}
+
+/* text pane */
+.row{display:flex;align-items:center;gap:12px;min-height:var(--hit);border-bottom:1px solid var(--line)}
+.row:last-of-type{border-bottom:0}
+.row label{flex:0 0 74px;font-size:var(--t-xs);color:var(--dim)}
+.row input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--cream);
+  font-size:var(--t-m);font-weight:700;letter-spacing:.4px;padding:12px 0}
+.row input:focus{color:var(--accent)}
+
+/* info pane */
+#caps{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--dim);white-space:pre-line;word-break:break-all}
+
+/* ---------- done ---------- */
+.done-meta{font-size:var(--t-s);color:var(--dim);text-align:center;margin:0 0 12px}
+.again{display:flex;align-items:center;justify-content:center;width:100%;text-align:center;color:var(--dim);font-size:var(--t-s);min-height:var(--hit);border-radius:999px;border:2px solid var(--line)}
+
+/* desktop is not the target, but keep it phone-shaped so the same layout is being judged */
+@media (min-width:600px){
+  body{max-width:430px;margin:0 auto;box-shadow:0 0 0 1px var(--line)}
+  .panel,.scrim{max-width:430px;left:50%;transform:translateX(-50%) translateY(101%)}
+  .scrim{transform:translateX(-50%)}
+  body.panel-open .panel{transform:translateX(-50%) translateY(0)}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- first visit: three steps ---------- */
+.pane-welcome .wtitle{font-size:var(--t-l);margin-bottom:14px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.steps li{display:flex;align-items:center;gap:14px;font-size:var(--t-s);color:var(--dim)}
+.steps li .b{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid var(--line-2);color:var(--accent)}
+.steps li b{display:block;font-size:var(--t-m);color:var(--cream)}
+.wgo{font-size:var(--t-m);font-weight:700;margin:16px 0 4px}
+
+/* ---------- first load: fonts, demo photos and the song take a few seconds on a phone ---------- */
+.boot{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;background:var(--ink);font-size:var(--t-m);color:var(--dim);transition:opacity .4s}
+.boot i{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);
+  animation:boot-spin .9s linear infinite}
+@keyframes boot-spin{to{transform:rotate(360deg)}}
+body.ready .boot{opacity:0;pointer-events:none}
+/* a failed make used to leave nothing on screen; the reason sits above the button until the next try */
+.failmsg{margin:0 0 8px;font-size:var(--t-s);color:#ffb4a8;text-shadow:0 1px 5px rgba(0,0,0,.9)}
+.failmsg:empty{display:none}
+body:not(.ready) .tap{visibility:hidden}
+@media (prefers-reduced-motion: reduce){.boot i{animation:none}}
