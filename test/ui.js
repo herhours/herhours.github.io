@@ -603,7 +603,23 @@ function warnInApp() {
 // Phone tests run through a temporary tunnel; there each step and error is also sent to the PC, which
 // cannot see the phone's console. Nothing is sent from the real site.
 const REMOTE_LOG = location.hostname.endsWith('.trycloudflare.com');
-const rlog = (m) => { if (REMOTE_LOG) fetch('/log', { method: 'POST', body: `${new Date().toISOString().slice(11, 19)} ${navigator.userAgent.slice(0, 80)} | ${m}`.slice(0, 1500) }).catch(() => {}); };
+// The test build (herhours.github.io/test/) sends the same step/error lines to a Google Sheet, so tests are
+// visible with the PC off. Only device string, version, a random session id and step text - never photos, songs or file names.
+const SHEET_LOG = location.hostname === 'herhours.github.io' && location.pathname.startsWith('/test/');
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyqtLZmTaCfgtkU3UKY_xOnIspwRhsPtxFKOvi-xAvsBgXYFBArOjS5-wu7-F8tlkyI/exec';
+const SID = Math.random().toString(36).slice(2, 10);
+const sheetQ = [];
+const sheetFlush = () => {
+  if (!sheetQ.length) return;
+  const body = JSON.stringify({ app: 'hh-shorts-test', sid: SID, ua: navigator.userAgent.slice(0, 140), ver: self.HH_VERSION, lines: sheetQ.splice(0, 60) });
+  if (!(navigator.sendBeacon && navigator.sendBeacon(SHEET_URL, new Blob([body], { type: 'text/plain' })))) fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
+};
+if (SHEET_LOG) { setInterval(sheetFlush, 4000); addEventListener('visibilitychange', () => { if (document.hidden) sheetFlush(); }); addEventListener('pagehide', sheetFlush); }
+const rlog = (m) => {
+  if (REMOTE_LOG) fetch('/log', { method: 'POST', body: `${new Date().toISOString().slice(11, 19)} ${navigator.userAgent.slice(0, 80)} | ${m}`.slice(0, 1500) }).catch(() => {});
+  if (SHEET_LOG) { sheetQ.push({ t: new Date().toTimeString().slice(0, 8), m: String(m).slice(0, 600) }); if (sheetQ.length >= 20) sheetFlush(); }
+};
+if (SHEET_LOG) { rlog(`open ${innerWidth}x${innerHeight} dpr${devicePixelRatio} ${navigator.language}`); const n = document.getElementById('testnote'); if (n) n.hidden = false; }
 addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };

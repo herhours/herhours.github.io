@@ -61,6 +61,7 @@
     '내 노래를 고르고, 후렴부터 시작할 수도 있어요': 'Choose your song — it can start right at the chorus',
     '그다음 「쇼츠 만들기」. 폰 안에서 바로 만들어져요.': 'Then tap “Make my Short”. It’s made right on your phone.',
     '사진과 노래는 이 폰 밖으로 나가지 않아요.': 'Your photos and songs never leave this phone.',
+    '시험판이라 사용 기록(기종·단계·오류)을 모아요.': 'Test build: we collect usage logs (device, steps, errors).',
     '시작하기': 'Let’s go',
     '① 스타일': '① Style', '② 사진 · 영상': '② Photos · Videos', '③ 노래': '③ Song', '④ 글자': '④ Text',
     '다음 · 사진': 'Next · Photos', '다음 · 노래': 'Next · Song', '다음 · 글자': 'Next · Text', '다 됐어요': 'All set',
