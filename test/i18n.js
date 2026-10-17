@@ -62,6 +62,8 @@
     '그다음 「쇼츠 만들기」. 폰 안에서 바로 만들어져요.': 'Then tap “Make my Short”. It’s made right on your phone.',
     '사진과 노래는 이 폰 밖으로 나가지 않아요.': 'Your photos and songs never leave this phone.',
     '시험판이라 사용 기록(기종·단계·오류)을 모아요.': 'Test build: we collect usage logs (device, steps, errors).',
+    '아이폰: 오래된 사진은 iCloud에서 원본을 받아 오느라 몇 초 걸려요. 방금 찍은 사진은 바로 들어가요. 빠르게 하려면 설정 → 사진 → 「다운로드 및 원본 유지」(저장 공간을 더 써요).':
+      'iPhone: older photos take a few seconds while iCloud downloads the originals. New photos come in right away. To speed it up: Settings → Photos → “Download and Keep Originals” (uses more storage).',
     '시작하기': 'Let’s go',
     '① 스타일': '① Style', '② 사진 · 영상': '② Photos · Videos', '③ 노래': '③ Song', '④ 글자': '④ Text',
     '다음 · 사진': 'Next · Photos', '다음 · 노래': 'Next · Song', '다음 · 글자': 'Next · Text', '다 됐어요': 'All set',

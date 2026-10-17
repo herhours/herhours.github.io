@@ -620,6 +620,8 @@ const rlog = (m) => {
   if (SHEET_LOG) { sheetQ.push({ t: new Date().toTimeString().slice(0, 8), m: String(m).slice(0, 600) }); if (sheetQ.length >= 20) sheetFlush(); }
 };
 if (SHEET_LOG) { rlog(`open ${innerWidth}x${innerHeight} dpr${devicePixelRatio} ${navigator.language}`); const n = document.getElementById('testnote'); if (n) n.hidden = false; }
+// 10-17 시험 실측: 아이폰 사진 선택 뒤 대기는 iCloud 원본 내려받기(방금 찍은 사진은 빠름) — 앱이 못 줄이니 미리 알린다
+if (/iPhone|iPad/.test(navigator.userAgent)) { const tip = document.getElementById('iosTip'); if (tip) tip.hidden = false; }
 addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
