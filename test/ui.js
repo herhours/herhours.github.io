@@ -579,9 +579,12 @@ function inAppBrowser() {
   if (/Instagram|FBAN|FBAV|NAVER\(inapp|Line\/|DaumApps|everytimeApp|; wv\)/i.test(ua)) return 'other';
   return '';
 }
+// iPadOS Safari calls itself a Mac, so 'iPad' never shows up in the agent - a touch screen gives it away
+// (10-17: a primary school wants to run a class on tablets or phones)
+function isIOS() { const ua = navigator.userAgent; return /iPhone|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); }
 function warnInApp() {
   const kind = inAppBrowser(); if (!kind) return;
-  const ios = /iPhone|iPad/.test(navigator.userAgent);
+  const ios = isIOS();
   const box = $('inapp'), go = $('inappGo');
   $('inappMsg').textContent = T('앱 안에서 열려서 인스타로 바로 보내기가 안 돼요.', 'This opened inside another app, so sharing to Instagram won’t work here.');
   if (kind === 'kakao') {
@@ -621,7 +624,7 @@ const rlog = (m) => {
 };
 if (SHEET_LOG) { rlog(`open ${innerWidth}x${innerHeight} dpr${devicePixelRatio} ${navigator.language}`); const n = document.getElementById('testnote'); if (n) n.hidden = false; }
 // 10-17 시험 실측: 아이폰 사진 선택 뒤 대기는 iCloud 원본 내려받기(방금 찍은 사진은 빠름) — 앱이 못 줄이니 미리 알린다
-if (/iPhone|iPad/.test(navigator.userAgent)) { const tip = document.getElementById('iosTip'); if (tip) tip.hidden = false; }
+if (isIOS()) { const tip = document.getElementById('iosTip'); if (tip) tip.hidden = false; }
 addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
@@ -684,7 +687,7 @@ async function make() {
     $('doneMeta').textContent = T(`${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`, `${seconds.toFixed(0)}s · ${(blob.size / 1048576).toFixed(0)}MB · made in ${elapsed.toFixed(0)}s`);
     // an iPhone saves a download to Files, not Photos — the share sheet's 'Save Video' is the way to Photos
     $('credit').textContent = S.useOurs ? `Music: Her Hours — ${S.song.name}` : '';
-    if (/iPhone|iPad/.test(navigator.userAgent)) $('doneMeta').textContent += T(' · 사진 앱에 넣으려면 「인스타에 올리기」 → 「동영상 저장」', ' · For Photos: “Share to Instagram” → “Save Video”');
+    if (isIOS()) $('doneMeta').textContent += T(' · 사진 앱에 넣으려면 「인스타에 올리기」 → 「동영상 저장」', ' · For Photos: “Share to Instagram” → “Save Video”');
     document.body.classList.remove('is-making'); document.body.classList.add('is-done'); $('eta').textContent = '';
     $('out').play?.().catch(() => {});
     status('');
@@ -722,7 +725,7 @@ $('share').onclick = async () => {
     try {
       await navigator.share({ files: [file], title: 'Her Hours Shorts' });
       // 10-11 (4): sending to Instagram does not keep a copy on the phone - people assumed it did
-      $('doneMeta').textContent = /iPhone|iPad/.test(navigator.userAgent)
+      $('doneMeta').textContent = isIOS()
         ? T('보냈어요. 폰 사진 앱에는 아직 없어요 — 한 번 더 눌러 「동영상 저장」을 골라 두세요.', 'Sent. It isn’t in Photos yet — tap again and choose “Save Video”.')
         : T('보냈어요. 폰에는 아직 저장 안 됐어요 — 아래 「저장」도 눌러 두세요.', 'Sent. It isn’t saved on the phone yet — tap “Save” below too.');
       $('doneMeta').textContent += ' ' + T('인스타에서 「할 수 없습니다」가 뜨면 한 번 더 눌러 주세요.', 'If Instagram says it can’t, tap share once more.');
