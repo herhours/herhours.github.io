@@ -1058,14 +1058,369 @@ function drawLyricBloom(ctx, f, N, d) {
 // registry. `build` turns the shared inputs into what that look's draw() reads.
 // Colours are fixed per look on purpose (영샘 09-13): presets, not a colour picker.
 // =====================================================================================
+// =====================================================================================
+// HALLOWEEN — the October 2026 shorts (10-13 합격, halloween2026\shorts\hw_short2.py · Violet).
+// A gothic arch window over a blurred, darkened copy of the same photo; the glow round the arch
+// breathes with the bass and swaps candle-orange / the song's colour on each cut; ghost dust and
+// embers rise, bats cross. Below: the mirrored pulse and a brass name plate. The lyric lives
+// inside the arch and changes its manner every line (ghost · flicker · big · ghost · fairy).
+// Opens on the whole photo with the HALLOWEEN SPECIAL sign, then folds into the window.
+// =====================================================================================
+const HW_CARD = { x: 120, y: 300, w: 840, h: 960 };
+const HW_PLATE = { x0: 110, y0: 1380, x1: 970, y1: 1595 };
+const HW_PULSE_Y = 1320;
+const HW_KINDS = ['ghost', 'flicker', 'big', 'ghost', 'fairy'];
+const HW_LYRIC_Y = [0.80, 0.71, 0.84, 0.75, 0.80];
+const HW_MOVES = ['drift', 'push', 'pull', 'slideL', 'slideR', 'drift', 'push'];
+
+// the backdrop is the photo itself, blurred: drawn tiny and stretched, so a phone never runs a blur filter
+const hwSmall = new WeakMap();
+function hwBackdrop(img) {
+  if (img.live) return img;
+  let c = hwSmall.get(img);
+  if (!c) {
+    c = document.createElement('canvas'); c.width = 54; c.height = 96;
+    const g = c.getContext('2d');
+    const iw = img.width, ih = img.height, s = Math.max(54 / iw, 96 / ih);
+    g.drawImage(img, (54 - iw * s) / 2, (96 - ih * s) / 2, iw * s, ih * s);
+    hwSmall.set(img, c);
+  }
+  return c;
+}
+
+function archPath(ctx, x, y, w, h) {
+  const r = w / 2;
+  ctx.beginPath();
+  ctx.moveTo(x, y + h); ctx.lineTo(x, y + r);
+  ctx.arc(x + r, y + r, r, Math.PI, 0);
+  ctx.lineTo(x + w, y + h); ctx.closePath();
+}
+
+function hwMove(m, u) {
+  const e = inOut(u);
+  switch (m) {
+    case 'push': return { z: 1.0 + 0.12 * e, px: 0, py: 0 };
+    case 'pull': return { z: 1.14 - 0.12 * e, px: 0, py: 0 };
+    case 'slideL': return { z: 1.1, px: 0.04 - 0.08 * e, py: 0 };
+    case 'slideR': return { z: 1.1, px: -0.04 + 0.08 * e, py: 0 };
+    default: return { z: 1.1 + 0.03 * Math.sin(u * Math.PI), px: -0.03 + 0.06 * u, py: -0.02 + 0.04 * u };   // ghostly drift
+  }
+}
+
+function hwPhoto(ctx, img, x, y, w, h, mv) {
+  const iw = img.videoWidth || img.width, ih = img.videoHeight || img.height;
+  const s = Math.max(w / iw, h / ih) * mv.z, dw = iw * s, dh = ih * s;
+  const fy = ih > iw * 1.1 ? 0.3 : 0.45;   // faces sit high in a portrait
+  ctx.drawImage(img, x + (w - dw) / 2 + mv.px * w, y + (h - dh) * fy + mv.py * h, dw, dh);
+}
+
+function hwBat(ctx, x, y, s, flap, color) {
+  const up = Math.sin(flap) * 0.9;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  for (const dir of [1, -1]) {
+    ctx.moveTo(0, -4);
+    ctx.quadraticCurveTo(dir * 18, -10 - 26 * up, dir * 46, -8 - 30 * up);
+    ctx.quadraticCurveTo(dir * 40, 2 - 12 * up, dir * 34, 6 - 6 * up);
+    ctx.quadraticCurveTo(dir * 26, 2, dir * 20, 10);
+    ctx.quadraticCurveTo(dir * 12, 4, 0, 10);
+  }
+  ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 2, 7, 11, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-6, -7); ctx.lineTo(-4, -16); ctx.lineTo(-1, -8); ctx.moveTo(6, -7); ctx.lineTo(4, -16); ctx.lineTo(1, -8); ctx.fill();
+  ctx.restore();
+}
+
+// the word the line leans on: the longest one (ties: the later)
+const hwEmph = (words) => words.reduce((b, w, i) => (w.w.replace(/\W/g, '').length >= words[b].w.replace(/\W/g, '').length ? i : b), 0);
+
+function hwLyric(ctx, f, line, k, d) {
+  const { c1, c2 } = d;
+  const kind = HW_KINDS[k % HW_KINDS.length];
+  const words = (line.words ?? [{ t: line.start, w: line.text }]).map((w) => ({ ...w }));
+  const em = hwEmph(words);
+  const kr = krScale(line.text);
+  const base = (kind === 'fairy' ? 74 : kind === 'big' ? 52 : 60) * kr;
+  const fade = clamp((line.end - f) / 6);
+  const age = f - line.start;
+  const y0 = HW_CARD.y + HW_CARD.h * HW_LYRIC_Y[k % HW_LYRIC_Y.length];
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; ctx.letterSpacing = '0px';
+  const sizeOf = (i) => (kind === 'big' && i === em ? base * 2.0 : base);
+  const fontOf = (i) => `${sizeOf(i)}px ${F_LYRIC}`;
+  for (const [i, w] of words.entries()) { ctx.font = fontOf(i); w.ww = ctx.measureText(w.w).width; }
+  // wrap by measured widths, no word alone on the last line
+  const gap = base * 0.3, maxW = HW_CARD.w - 110;
+  const rows = []; let row = [], rw = 0;
+  for (const [i, w] of words.entries()) {
+    if (row.length && rw + gap + w.ww > maxW) { rows.push({ items: row, width: rw }); row = []; rw = 0; }
+    rw += (row.length ? gap : 0) + w.ww; row.push(i);
+  }
+  if (row.length) rows.push({ items: row, width: rw });
+  const lh = base * 1.22;
+  const top = y0 - (rows.length - 1) * lh / 2 - (kind === 'ghost' ? (1 - out(clamp(age / 21))) * -40 : 0);
+  // a soft dark pad under the words: a white dress or a bright sky must not swallow the line (10-14)
+  {
+    const padW = Math.max(...rows.map((r) => r.width)) + base * 1.6, padH = rows.length * lh + base * 1.1;
+    const cy = top + (rows.length - 1) * lh / 2 - base * 0.3;
+    ctx.save(); ctx.translate(W / 2, cy); ctx.scale(padW / 2, padH / 2);
+    const pg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    pg.addColorStop(0, `rgba(6,3,10,${0.72 * fade})`); pg.addColorStop(0.6, `rgba(6,3,10,${0.5 * fade})`); pg.addColorStop(1, 'rgba(6,3,10,0)');
+    ctx.fillStyle = pg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+  }
+  ctx.shadowColor = 'rgba(8,4,12,0.95)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 2;
+  rows.forEach((r, ri) => {
+    let x = W / 2 - r.width / 2;
+    const y = top + ri * lh;
+    for (const i of r.items) {
+      const w = words[i];
+      const on = f - w.t;
+      let a = fade, col = i === em ? c1 : '#F2F2F2', sc = 1;
+      if (kind === 'ghost') { a *= out(clamp(age / 18)); col = i === em ? c1 : '#EEE6FA'; }
+      else if (kind === 'flicker') { a *= on < 0 ? 0 : on < 2 ? 0.9 : on < 4 ? 0.35 : 1; col = i === em ? c1 : '#FFE2B8'; }
+      else if (kind === 'big') { a *= out(clamp(age / 5)); if (i === em) sc = 1 + 0.15 * (1 - out(clamp(age / 8))); }
+      else { a *= out(clamp(age / 7)); sc = 0.88 + 0.12 * out(clamp(age / 13)); col = i === em ? c1 : '#FFE9A8'; }   // fairy
+      if (a > 0.01) {
+        ctx.globalAlpha = a; ctx.font = fontOf(i); ctx.fillStyle = col;
+        if (sc !== 1) {
+          ctx.save(); ctx.translate(x + w.ww / 2, y); ctx.scale(sc, sc); ctx.fillText(w.w, -w.ww / 2, 0); ctx.restore();
+        } else ctx.fillText(w.w, x, y);
+      }
+      x += w.ww + gap;
+    }
+  });
+  ctx.globalAlpha = 1; ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+}
+
+function drawHalloween(ctx, f, N, d) {
+  const { images, phrases, c1, c2, frame, step, spec, bands, intro, fold, outro } = d;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.letterSpacing = '0px'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#07050a'; ctx.fillRect(0, 0, W, H);
+
+  const band = (i) => (spec ? spec[Math.min(f, spec.length / bands - 1) * bands + i] || 0 : 0);
+  let drive = 0; for (let i = 0; i < 6; i++) drive += band(i); drive /= 6;
+  if (!spec) drive = 0.04 + 0.03 * Math.sin(f * 0.21);
+
+  // which photo: the first holds the opening, then one per step
+  const cutAt = (j) => fold + (j - 1) * step;   // j >= 1
+  const k = f < fold ? 0 : 1 + Math.floor((f - fold) / step);
+  const img = images[k % images.length];
+  const u = f < fold ? f / fold : ((f - fold) % step) / step;
+  const mv = hwMove(HW_MOVES[k % HW_MOVES.length], u);
+  const tint = k % 2 === 0 ? c1 : c2;
+
+  // ---- the card scene (also what the opening folds into)
+  const scene = () => {
+    // blurred backdrop + a violet-black veil
+    ctx.globalAlpha = 1;
+    ctx.imageSmoothingQuality = 'high';
+    const bd = hwBackdrop(img);
+    if (bd === img) { ctx.filter = 'blur(28px)'; hwPhoto(ctx, img, -60, -60, W + 120, H + 120, { z: 1.2, px: 0, py: 0 }); ctx.filter = 'none'; }
+    else ctx.drawImage(bd, -W, -H, W * 3, H * 3);   // wide, so the fold's zoom never shows an edge
+    ctx.fillStyle = 'rgba(14,8,20,0.58)'; ctx.fillRect(0, 0, W, H);
+
+    // dust and embers drifting up
+    for (let i = 0; i < 56; i++) {
+      const spark = i % 4 === 0;
+      const v = spark ? 1.6 + hash(i, 3) * 1.6 : 0.6 + hash(i, 4) * 1.4;
+      const y = ((hash(i, 1) * (H + 40) - v * f) % (H + 40) + H + 40) % (H + 40) - 20;
+      const x = (hash(i, 2) * W + 30 * Math.sin(f / 60 + hash(i, 5) * 6.3) + W) % W;
+      const s = spark ? 18 : 10 + hash(i, 6) * 16;
+      ctx.globalAlpha = spark ? 0.85 : 0.22;
+      ctx.drawImage(sprite(spark ? c1 : '#cfe9ff'), x - s / 2, y - s / 2, s, s);
+    }
+    ctx.globalAlpha = 1;
+
+    // the glow round the window, breathing with the bass
+    const glow = Math.min(1, 0.55 + drive * 9);
+    ctx.save();
+    archPath(ctx, HW_CARD.x, HW_CARD.y, HW_CARD.w, HW_CARD.h);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.shadowColor = tint; ctx.shadowBlur = 80 * glow;
+    ctx.strokeStyle = tint; ctx.globalAlpha = 0.9 * glow; ctx.lineWidth = 22; ctx.stroke(); ctx.stroke();
+    ctx.restore();
+
+    // the photo inside the arch; a cut dips like a candle going out and back
+    ctx.save();
+    archPath(ctx, HW_CARD.x, HW_CARD.y, HW_CARD.w, HW_CARD.h); ctx.clip();
+    hwPhoto(ctx, img, HW_CARD.x, HW_CARD.y, HW_CARD.w, HW_CARD.h, mv);
+    let dip = 0;
+    for (let j = 1; j <= k + 1; j++) {
+      const dt = f - cutAt(j);
+      if (dt > -8 && dt < 8) dip = Math.max(dip, Math.sin(((dt + 8) / 16) * Math.PI) * (0.88 + 0.12 * Math.sin(dt * 2.3)));
+    }
+    if (dip > 0) { ctx.fillStyle = `rgba(6,4,8,${dip})`; ctx.fillRect(HW_CARD.x, HW_CARD.y, HW_CARD.w, HW_CARD.h); }
+    // thin window bars — faint, a thick one cuts the face
+    ctx.globalAlpha = 0.32; ctx.strokeStyle = '#1a140f'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(HW_CARD.x + HW_CARD.w / 2, HW_CARD.y); ctx.lineTo(HW_CARD.x + HW_CARD.w / 2, HW_CARD.y + HW_CARD.h);
+    ctx.moveTo(HW_CARD.x, HW_CARD.y + HW_CARD.h * 0.55); ctx.lineTo(HW_CARD.x + HW_CARD.w, HW_CARD.y + HW_CARD.h * 0.55);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    // the lower part darkens so the lyric reads
+    const lg = ctx.createLinearGradient(0, HW_CARD.y + HW_CARD.h * 0.45, 0, HW_CARD.y + HW_CARD.h);
+    lg.addColorStop(0, 'rgba(0,0,0,0)'); lg.addColorStop(1, 'rgba(6,3,10,0.74)');
+    ctx.fillStyle = lg; ctx.fillRect(HW_CARD.x, HW_CARD.y, HW_CARD.w, HW_CARD.h);
+    ctx.restore();
+    archPath(ctx, HW_CARD.x - 7, HW_CARD.y - 7, HW_CARD.w + 14, HW_CARD.h + 14);
+    ctx.strokeStyle = frame; ctx.lineWidth = 12; ctx.stroke();
+    archPath(ctx, HW_CARD.x - 7, HW_CARD.y - 7, HW_CARD.w + 14, HW_CARD.h + 14);
+    ctx.strokeStyle = 'rgba(255,240,210,0.35)'; ctx.lineWidth = 2; ctx.stroke();
+
+    // the mirrored pulse
+    const nb = 56;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineWidth = 7;
+    for (let i = 0; i < nb; i++) {
+      const bi = Math.round(((i < nb / 2 ? nb / 2 - 1 - i : i - nb / 2) / (nb / 2)) * (bands * 0.6));
+      const v = spec ? band(bi) : 0.03 + 0.03 * Math.abs(Math.sin(f * 0.13 + i));
+      const taper = 1 - 0.65 * Math.abs(i - (nb - 1) / 2) / (nb / 2);   // tall in the middle, like the approved shorts
+      const hgt = 4 + Math.min(46, v * 300) * taper;
+      const x = 150 + (i / (nb - 1)) * 780;
+      ctx.globalAlpha = 0.45 + Math.min(0.5, v * 3);
+      ctx.strokeStyle = i % 2 ? '#FFE2B0' : c1;
+      ctx.beginPath(); ctx.moveTo(x, HW_PULSE_Y - hgt); ctx.lineTo(x, HW_PULSE_Y + hgt); ctx.stroke();
+    }
+    ctx.restore();
+
+    // the brass plate: song name and who sings it
+    const P = HW_PLATE;
+    ctx.globalAlpha = 0.84; ctx.fillStyle = '#120f0d'; ctx.fillRect(P.x0, P.y0, P.x1 - P.x0, P.y1 - P.y0); ctx.globalAlpha = 1;
+    ctx.strokeStyle = frame; ctx.lineWidth = 3; ctx.strokeRect(P.x0, P.y0, P.x1 - P.x0, P.y1 - P.y0);
+    ctx.strokeStyle = 'rgba(201,161,90,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(P.x0 + 14, P.y0 + 14, P.x1 - P.x0 - 28, P.y1 - P.y0 - 28);
+    for (const [rx, ry] of [[P.x0 + 26, P.y0 + 26], [P.x1 - 26, P.y0 + 26], [P.x0 + 26, P.y1 - 26], [P.x1 - 26, P.y1 - 26]]) {
+      ctx.fillStyle = frame; ctx.beginPath(); ctx.arc(rx, ry, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff2cc'; ctx.beginPath(); ctx.arc(rx - 2, ry - 2, 2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '3px'; fit(ctx, d.title, 50, F_SERIF, P.x1 - P.x0 - 120);
+    ctx.fillStyle = '#FFE2B0'; ctx.fillText(d.title, W / 2, P.y0 + 98);
+    ctx.letterSpacing = '1px'; fit(ctx, d.role, 36, F_LYRIC, P.x1 - P.x0 - 140);
+    ctx.fillStyle = 'rgba(255,255,255,0.86)'; ctx.fillText(d.role, W / 2, P.y0 + 160);
+    ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
+
+    // the sign above the window
+    ctx.textAlign = 'center'; ctx.letterSpacing = '6px';
+    fit(ctx, d.sign, 34, F_SANS, 720);
+    ctx.shadowColor = c1; ctx.shadowBlur = 16; ctx.fillStyle = '#ffffff'; ctx.fillText(d.sign, 470, 200);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
+  };
+
+  // ---- opening: the whole photo, the sign drops in and flickers
+  const opening = () => {
+    hwPhoto(ctx, images[0], 0, 0, W, H, { z: 1.0 + 0.06 * (f / fold), px: 0, py: 0 });
+    const g = ctx.createLinearGradient(0, H * 0.45, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(8,4,12,0.82)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const by = 1250, drop = out(clamp((f - 8) / 10));
+    ctx.textAlign = 'center';
+    ctx.globalAlpha = out(clamp((f - 4) / 9)); ctx.letterSpacing = '12px'; ctx.font = `36px ${F_SANS}`;
+    ctx.fillStyle = '#ffffff'; ctx.fillText(d.brand, W / 2, by - 128);
+    const flick = f < 18 ? 0 : f < 20 ? 1 : f < 22 ? 0.25 : f < 24 ? 1 : f < 27 ? 0.45 : 1;
+    ctx.globalAlpha = drop * flick; ctx.letterSpacing = '4px';
+    const s = 1 + 0.25 * (1 - drop);
+    ctx.save(); ctx.translate(W / 2, by - 140 * (1 - drop)); ctx.scale(s, s);
+    fit(ctx, 'HALLOWEEN SPECIAL', 104, F_DISPLAY, 940);
+    ctx.shadowColor = c1; ctx.shadowBlur = 44; ctx.fillStyle = c1; ctx.fillText('HALLOWEEN SPECIAL', 0, 0);
+    ctx.shadowBlur = 12; ctx.fillStyle = '#FFE9C8'; ctx.fillText('HALLOWEEN SPECIAL', 0, 0);
+    ctx.restore();
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    ctx.globalAlpha = out(clamp((f - 26) / 10)); ctx.letterSpacing = '1px';
+    fit(ctx, d.promise, 58, F_LYRIC, 900);
+    ctx.fillStyle = '#F2E8FF'; ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillText(d.promise, W / 2, by + 100);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
+  };
+
+  if (f < intro) opening();
+  else if (f < fold) {
+    // fold: the card arrives from close up, with a flash of candlelight
+    const a = inOut((f - intro) / (fold - intro)), z = 1.9 - 0.9 * a;
+    const bd0 = hwBackdrop(img); if (bd0 !== img) ctx.drawImage(bd0, -40, -40, W + 80, H + 80);
+    const fx = HW_CARD.x + HW_CARD.w / 2, fy = HW_CARD.y + HW_CARD.h * 0.3;
+    ctx.save(); ctx.translate(fx, fy + (H / 2 - fy) * a); ctx.scale(z, z); ctx.translate(-fx, -fy);
+    scene(); ctx.restore();
+    const b = Math.sin(clamp((f - intro) / 8) * Math.PI) * 0.5;
+    if (b > 0) { ctx.globalAlpha = b; ctx.fillStyle = c1; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  } else scene();
+
+  // bats cross the top now and then
+  for (let i = 0; i < 3; i++) {
+    const per = 170 + i * 37, t0 = ((f + i * 61) % per) / per;
+    if (t0 > 0.55) continue;
+    const p = t0 / 0.55, dir = i % 2 ? -1 : 1;
+    const x = dir > 0 ? -80 + p * (W + 160) : W + 80 - p * (W + 160);
+    const y = 230 + i * 120 + Math.sin(p * Math.PI * 2 + i) * 40 - p * 60;
+    hwBat(ctx, x, y, 1.1 + 0.3 * i, f * 0.55 + i, 'rgba(10,6,14,0.92)');
+  }
+
+  // the lyric, inside the arch
+  if (f >= fold - 6 && f < N - outro) {
+    const idx = phrases.findIndex((p) => f >= p.start && f < p.end);
+    if (idx >= 0) hwLyric(ctx, f, phrases[idx], idx, d);
+  }
+
+  // the ending card
+  if (f >= N - outro) {
+    const a = clamp((f - (N - outro)) / 16);
+    ctx.globalAlpha = 0.74 * a; ctx.fillStyle = '#05030a'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+    const pop = (t) => 1 + 0.28 * (1 - out(clamp(t / 8)));
+    const e0 = f - (N - outro) - 6, e1 = e0 - 14;
+    ctx.textAlign = 'center';
+    if (e0 >= 0) {
+      ctx.save(); ctx.translate(W / 2, 780); ctx.scale(pop(e0), pop(e0));
+      fit(ctx, d.end1, 116, F_LYRIC, 960);
+      ctx.shadowColor = c2; ctx.shadowBlur = 30; ctx.fillStyle = '#FFD58A'; ctx.fillText(d.end1, 0, 0);
+      ctx.restore();
+    }
+    if (e1 >= 0) {
+      ctx.save(); ctx.translate(W / 2, 960); ctx.scale(pop(e1), pop(e1));
+      ctx.letterSpacing = '6px'; fit(ctx, d.end2, 92, F_DISPLAY, 900);
+      ctx.shadowColor = c1; ctx.shadowBlur = 36; ctx.fillStyle = '#FFE9C8'; ctx.fillText(d.end2, 0, 0);
+      ctx.restore();
+    }
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.letterSpacing = '0px'; ctx.textAlign = 'left';
+  }
+
+  // grain
+  ctx.globalAlpha = 0.06; ctx.globalCompositeOperation = 'overlay';
+  const shift = (f % 7) * 13;
+  ctx.save(); ctx.translate(shift, -shift); ctx.fillStyle = grainPattern(ctx); ctx.fillRect(-shift, shift, W, H); ctx.restore();
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
 export const LOOKS = [
   {
-    id: 'windowband', name: 'Window Band', sub: T('창문 띠 · 가사가 박자에 켜짐 · EP01', 'window band · lyrics light on the beat · EP01'),
+    id: 'halloween', name: 'Halloween', sub: T('아치 창문 · 박쥐와 불티 · 줄마다 다른 가사', 'a gothic arch window · bats and embers · every line sung differently'),
+    draw: drawHalloween,
+    build: (base, beat) => {
+      const N = base.N ?? 960;
+      const name = base.singer || '';   // only our character songs name a singer
+      const title = `${base.title1} ${base.title2}`.trim();
+      return {
+        ...base,
+        phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, N),
+        c1: '#FFB04A', c2: base.accent && base.accent.toUpperCase() !== '#FFB04A' ? base.accent : '#7FE0D8', frame: '#C9A15A',
+        step: beatStep(beat, 90), spec: beat?.spec ?? null, bands: 128,
+        intro: Math.min(66, Math.round(N * 0.08)), fold: Math.min(86, Math.round(N * 0.1)), outro: Math.min(66, Math.round(N * 0.08)),
+        title: title.toUpperCase(),
+        role: name ? `sung by ${name}` : base.brand,
+        sign: name ? `HALLOWEEN SPECIAL  ·  ${name.toUpperCase()}` : 'HALLOWEEN SPECIAL',
+        promise: title.toLowerCase(),
+        end1: base.useOurs ? 'The full song —' : `♪ ${title}`,
+        end2: base.useOurs ? `ON ${base.brand}` : base.footL.toUpperCase(),
+      };
+    },
+  },
+  {
+    id: 'windowband', name: 'Window Band', sub: T('창문 띠 · 가사가 박자에 켜짐', 'window band · lyrics light on the beat'),
     draw: drawWindowBand,
     build: (base) => base,
   },
   {
-    id: 'triptych', name: 'Triptych', sub: T('3단 컷 · 박자마다 따로 끊김 · 불티 · EP02', 'three panels · each cuts on its own beat · embers · EP02'),
+    id: 'triptych', name: 'Triptych', sub: T('3단 컷 · 박자마다 따로 끊김 · 불티', 'three panels · each cuts on its own beat · embers'),
     draw: drawTriptych,
     build: (base, beat) => {
       const title = `${base.title1} ${base.title2}`.trim();
@@ -1083,16 +1438,16 @@ export const LOOKS = [
       };
     },
   },
-  blackCut('blackcut-room', T('Black Cut · 실내', 'Black Cut · Indoors'), T('검은 컷 · 화면 전체가 움직임 · 가사 아래 · EP06', 'black cuts · the whole frame moves · lyrics below · EP06'), {
+  blackCut('blackcut-room', T('Black Cut · 실내', 'Black Cut · Indoors'), T('검은 컷 · 화면 전체가 움직임 · 가사 아래', 'black cuts · the whole frame moves · lyrics below'), {
     accent: '#ffb063', grade: 'saturate(0.92) contrast(1.06) brightness(0.97)',
     motions: ['push', 'tilt', 'hold-snap', 'pull', 'rise', 'slideL'], lyricPos: 'lower', lyricWords: false, lyricFont: 'italic', lyricSize: 72,
   }),
-  blackCut('blackcut-road', T('Black Cut · 길 위', 'Black Cut · On the Road'), T('검은 컷 · 낱말이 하나씩 · 가사 위 · EP07', 'black cuts · one word at a time · lyrics above · EP07'), {
+  blackCut('blackcut-road', T('Black Cut · 길 위', 'Black Cut · On the Road'), T('검은 컷 · 낱말이 하나씩 · 가사 위', 'black cuts · one word at a time · lyrics above'), {
     accent: '#ffd58a', grade: 'saturate(1.02) contrast(1.05) brightness(1.02)',
     motions: ['slideR', 'rise', 'slideL', 'push', 'tilt', 'slideR', 'pull'], lyricPos: 'upper', lyricWords: true, lyricFont: 'caps', lyricSize: 50,
   }),
   {
-    id: 'pulse', name: 'Pulse', sub: T('음악에 반응하는 링 · 4번 모양이 바뀜 · EP07', 'a ring that moves with the music · changes shape 4 times · EP07'),
+    id: 'pulse', name: 'Pulse', sub: T('음악에 반응하는 링 · 4번 모양이 바뀜', 'a ring that moves with the music · changes shape 4 times'),
     draw: drawPulse,
     build: (base, beat) => ({
       ...base,
@@ -1101,16 +1456,25 @@ export const LOOKS = [
       step: beatStep(beat, 122), spec: beat?.spec ?? null, bands: 128,
     }),
   },
-  clockface('clockface-day', T('Clockface · 하루', 'Clockface · Day'), T('하루가 32초 · 시간 따라 색이 바뀜 · 큰 시계 · EP05', 'a whole day in one video · colour follows the hour · big clock · EP05'),
+  clockface('clockface-day', T('Clockface · 하루', 'Clockface · Day'), T('영상 한 편에 하루 · 시간 따라 색이 바뀜 · 큰 시계', 'a whole day in one video · colour follows the hour · big clock'),
     { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
-  clockface('clockface-night', T('Clockface · 밤', 'Clockface · Night'), T('밤 열 시간 · 가사가 시계 자리에 · 다음 장면 창 · EP06', 'ten hours of night · lyrics where the clock was · next-scene window · EP06'),
+  clockface('clockface-night', T('Clockface · 밤', 'Clockface · Night'), T('밤 열 시간 · 가사가 시계 자리에 · 다음 장면이 작은 창으로', 'ten hours of night · lyrics where the clock was · the next scene in a small window'),
     { shot: 57, startMinute: 1200, spanMinutes: 600, night: true }),
   {
-    id: 'lyricbloom', name: 'Lyric Bloom', sub: T('가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리 · EP05', 'lyrics fill the screen · the last word holds a photo · a new corner each line · EP05'),
+    id: 'lyricbloom', name: 'Lyric Bloom', sub: T('가사가 화면을 채움 · 마지막 낱말에 사진이 · 줄마다 다른 모서리', 'lyrics fill the screen · the last word holds a photo · a new corner each line'),
     draw: drawLyricBloom,
     build: (base, beat) => {
       const N = base.N ?? 960, outroLen = Math.min(80, Math.round(N * 0.1));
-      const ps = base.phrases.length ? base.phrases : bloomFallback(base, N - outroLen);
+      // 10-14 phone: a Halloween line is 10-12 words, and one stack of them came out small and overlapping.
+      // A long line blooms in two halves, each on its own photo.
+      const halve = (p) => {
+        const ws = p.words;
+        if (!ws || ws.length <= 6) return [p];
+        const k = Math.ceil(ws.length / 2), a = ws.slice(0, k), b = ws.slice(k);
+        return [{ ...p, end: b[0].t, text: a.map((w) => w.w).join(' '), words: a },
+          { ...p, start: b[0].t, text: b.map((w) => w.w).join(' '), words: b }];
+      };
+      const ps = base.phrases.length ? base.phrases.flatMap(halve) : bloomFallback(base, N - outroLen);
       // with no words from the user the cards are the song's own name, so they take the title script too
       const lines = ps.filter((p) => p.start < N - outroLen).map((p) => ({ from: p.start, intro: !base.phrases.length, chunks: bloomChunks(p) }));
       // 영샘 10-04: before the first sung line the frame was just a photo — flat. The song's name
@@ -1134,6 +1498,7 @@ export const LOOKS = [
 // How many photos each look actually shows for this song, and which shape suits it.
 // slots = distinct picture places in N frames; fewer photos than `min` and the repeats show.
 const PHOTO = {
+  halloween: { min: 5, shape: 'tall', slots: (d, N) => 1 + Math.ceil(Math.max(0, N - d.fold) / d.step) },
   windowband: { min: 4, shape: 'wide', slots: (d, N) => Math.ceil(N / d.shot) },
   triptych: { min: 9, shape: 'wide', slots: (d, N) => [0, 1, 2].reduce((s, i) => s + triptychCuts(d, (d.period * i) / 3, N).length, 0) },
   'blackcut-room': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) },

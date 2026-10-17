@@ -71,10 +71,10 @@ body[data-pane="look"] .pane-look{display:block}
    the choice is meant to be judged on (영샘 10-03). Details show once, for the chosen look. */
 .looks{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 10px;margin:0 -18px;padding-left:18px;padding-right:18px;
   scroll-padding-left:18px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
-.tile{flex:0 0 92px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 6px 9px;border-radius:16px;
+.tile{flex:0 0 112px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:5px 5px 8px;border-radius:16px;
   border:2px solid var(--line);background:rgba(255,255,255,.03);color:var(--cream);scroll-snap-align:start;
-  font-size:13px;font-weight:700;line-height:1.25;text-align:center}
-.tile .sw{width:52px;height:52px;border-radius:12px}
+  font-size:15px;font-weight:700;line-height:1.2;text-align:center}
+.tile .lkimg{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:11px;background:#111;display:block}
 .tile.on{border-color:var(--accent);background:rgba(140,255,176,.08);color:var(--accent)}
 .cut{margin:4px 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
 .cutrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:var(--t-xs)}
@@ -137,14 +137,20 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <symbol id="i-music" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4v10.5a3.5 3.5 0 1 1-2-3.16V7.3l-8 1.6v8.6a3.5 3.5 0 1 1-2-3.16V6.2l12-2.2z"/></symbol>
 <symbol id="i-type" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h12v2.4H9.9V19H8.1V7.4H3V5zm11.4 5H21v2h-2.4v7h-1.8v-7H14.4v-2z"/></symbol>
 <symbol id="i-look" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v4.5H3V4zm0 5.75h18v4.5H3v-4.5zM3 15.5h18V20H3v-4.5z"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></symbol>
 <symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
 <symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l5 5-1.4 1.4L13 6.3V15h-2V6.3L8.4 8.9 7 7.5l5-5zM4 13h2v6h12v-6h2v8H4v-8z"/></symbol>
 <symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v8.2l2.6-2.6L17 10l-5 5-5-5 1.4-1.4L11 11.2V3zM4 18h16v3H4z"/></symbol>
 </defs></svg>
 
+<div class="inapp" id="inapp" hidden>
+  <p id="inappMsg"></p>
+  <div class="two"><button class="pill" id="inappGo"></button><button class="again" id="inappX">닫기</button></div>
+</div>
+
 <header class="top">
   <div class="mark">HER HOURS<i>.</i></div>
-  <button class="lnk" data-open="info">정보</button>
+  <div class="lnks"><button class="lnk" data-open="made">내 영상</button><button class="lnk" data-open="info">정보</button></div>
 </header>
 
 <div class="stage">
@@ -163,13 +169,14 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <b id="pct">0%</b>
       <div id="status"></div>
       <div class="bar"><i id="fill"></i></div>
+      <div id="eta"></div>
     </div>
   </div>
 </div>
 
 <nav class="rail">
   <button data-open="look">
-    <span class="b"><svg width="26" height="26"><use href="#i-look"/></svg></span><span class="l">룩</span>
+    <span class="b"><svg width="26" height="26"><use href="#i-look"/></svg></span><span class="l">스타일</span>
   </button>
   <button data-open="photo" data-chip="photo">
     <span class="b"><svg width="26" height="26"><use href="#i-photo"/></svg></span><span class="l">사진</span>
@@ -179,6 +186,10 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   </button>
   <button data-open="text">
     <span class="b"><svg width="26" height="26"><use href="#i-type"/></svg></span><span class="l">글자</span>
+  </button>
+  <!-- the top bar hides on most phones (browser bars make the screen short), so the list lives on the rail too -->
+  <button data-open="made" class="mine-list">
+    <span class="b"><svg width="26" height="26"><use href="#i-list"/></svg></span><span class="l">내 영상</span>
   </button>
 </nav>
 
@@ -195,6 +206,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   </div>
   <div class="donebox">
     <p class="done-meta" id="doneMeta"></p>
+    <p class="done-credit" id="credit"></p>
     <button class="pill" id="share"><svg width="22" height="22"><use href="#i-share"/></svg>인스타에 올리기</button>
     <div class="two">
       <a class="pill ghost" id="save"><svg width="20" height="20"><use href="#i-save"/></svg>저장</a>
@@ -206,24 +218,25 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <div class="scrim" data-close></div>
 <section class="panel" role="dialog" aria-modal="true">
   <div class="grab"></div>
+  <button class="x" data-close aria-label="닫기">✕</button>
 
   <div class="pane pane-look">
-    <h2>룩</h2>
+    <h2>① 스타일</h2>
     <div class="looks" id="looks"></div>
     <div class="lookinfo" id="lookInfo"></div>
     <p class="hint">옆으로 밀어서 골라요. 고르는 즉시 위 영상이 바뀌어요.</p>
-    <button class="pill done" data-close>확인</button>
+    <button class="pill done" data-next="photo">다음 · 사진</button>
   </div>
 
   <div class="pane pane-photo">
-    <h2>사진 · 영상</h2>
+    <h2>② 사진 · 영상</h2>
     <div class="two">
       <label class="pill ghost" for="photos">사진·영상 고르기</label>
-      <button class="pill ghost" id="useDemo">데모로</button>
+      <button class="pill ghost" id="useDemo">예시로</button>
     </div>
     <input type="file" id="photos" accept="image/*,video/*" multiple>
     <div class="thumbs" id="thumbs"></div>
-    <p class="hint" id="phint">고르는 즉시 위 미리보기에 들어갑니다.</p>
+    <p class="hint" id="phint">고르면 바로 위 화면에 나와요.</p>
     <p class="hint" id="padv"></p>
     <div class="gain" id="clipGainRow" hidden>
       <label for="clipGain">영상 소리</label>
@@ -231,11 +244,11 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <b id="clipGainV">35%</b>
     </div>
     <p class="hint" id="clipGainHint" style="margin-top:2px">영상이 화면에 나올 때만 노래 밑에 깔려요.</p>
-    <button class="pill done" data-close>확인</button>
+    <button class="pill done" data-next="song">다음 · 노래</button>
   </div>
 
   <div class="pane pane-song">
-    <h2>노래</h2>
+    <h2>③ 노래</h2>
     <div id="ourSongs" class="songs"></div>
     <label class="opt" for="audio">
       <svg width="22" height="22"><use href="#i-music"/></svg>
@@ -244,7 +257,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <input type="file" id="audio" accept="audio/*">
     <div class="cut">
       <div class="cutrow"><span class="cl">길이</span>
-        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="32" class="on">32초</button><button data-len="60">60초</button></div>
+        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="32" class="on">32초</button><button data-len="60">60초</button><button data-len="90">90초</button><button data-len="180">3분</button></div>
       </div>
       <div class="cutrow"><span class="cl">어디부터</span><b id="offV">0:00</b><span class="cdim" id="offTo"></span></div>
       <input type="range" id="offset" min="0" max="0" step="0.5" value="0" aria-label="시작점">
@@ -255,7 +268,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <svg width="22" height="22"><use href="#i-type"/></svg>
       <span class="t"><b>글 넣기 · 가사나 한마디</b><span id="lyricsBtnSub">붙여넣고 톡톡 눌러 맞춰요</span></span>
     </button>
-    <button class="pill done" data-close>확인</button>
+    <button class="pill done" data-next="text">다음 · 글자</button>
   </div>
 
   <div class="pane pane-lyrics">
@@ -269,20 +282,20 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     </div>
     <div class="lyredit">
       <textarea id="lyrics" rows="6" placeholder="한 줄에 한 마디씩 써요&#10;가사도 좋고, 그날의 한마디도 좋아요&#10;예) 첫 눈 / 첫 활강 / 오늘은 우리 둘이"></textarea>
-      <p class="hint" id="lhint">「탭으로 맞추기」를 누르면 고른 시작점부터 노래가 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡. 컴퓨터에선 스페이스바(한 줄 뒤로는 백스페이스).</p>
-      <button class="pill" id="tapStart">탭으로 맞추기</button>
-      <button class="pill ghost done" data-close>확인</button>
+      <p class="hint" id="lhint">「눌러서 맞추기」를 누르면 고른 시작점부터 노래가 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡. 컴퓨터에선 스페이스바(한 줄 뒤로는 백스페이스).</p>
+      <button class="pill" id="tapStart">눌러서 맞추기</button>
+      <button class="pill ghost done" data-next="song">확인</button>
     </div>
   </div>
 
   <div class="pane pane-text">
-    <h2>글자</h2>
+    <h2>④ 글자</h2>
     <div class="row"><label>이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"></div>
     <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"></div>
     <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
-    <button class="again" data-open="info" style="margin-top:12px">기기 정보</button>
-    <button class="pill done" data-close>확인</button>
+    <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">기기 정보</button></div>
+    <button class="pill done" data-finish>다 됐어요</button>
   </div>
 
   <div class="pane pane-info">
@@ -299,19 +312,33 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <div class="pane pane-welcome">
     <h2 class="wtitle">사진 + 노래 하나 → 쇼츠</h2>
     <ol class="steps">
-      <li><span class="b"><svg width="24" height="24"><use href="#i-look"/></svg></span><span><b>룩</b>영상 모양을 골라요</span></li>
+      <li><span class="b"><svg width="24" height="24"><use href="#i-look"/></svg></span><span><b>스타일</b>영상 모양을 골라요</span></li>
       <li><span class="b"><svg width="24" height="24"><use href="#i-photo"/></svg></span><span><b>사진</b>내 사진이나 영상을 넣어요</span></li>
       <li><span class="b"><svg width="24" height="24"><use href="#i-music"/></svg></span><span><b>노래</b>내 노래를 고르고, 후렴부터 시작할 수도 있어요</span></li>
     </ol>
     <p class="wgo">그다음 「쇼츠 만들기」. 폰 안에서 바로 만들어져요.</p>
     <p class="hint">사진과 노래는 이 폰 밖으로 나가지 않아요.</p>
-    <button class="pill done" data-close>시작하기</button>
+    <button class="pill done" data-next="look">시작하기</button>
+  </div>
+
+  <div class="pane pane-resume">
+    <h2>만들던 게 있어요</h2>
+    <p class="resume-info" id="resumeInfo"></p>
+    <button class="pill" id="resumeGo">이어서 만들기</button>
+    <button class="again" id="resumeNew" style="margin-top:10px">새로 시작</button>
+  </div>
+
+  <div class="pane pane-made">
+    <h2>내 영상</h2>
+    <div id="madeList"></div>
+    <p class="hint">이 폰에만 남아요 · 최근 8개. 영상 파일은 만든 뒤 「저장」해야 폰에 남아요. 「다시 열기」는 그때 고른 스타일·사진·노래로 돌아가요.</p>
+    <button class="pill ghost done" data-close>닫기</button>
   </div>
 </section>
 
 <audio id="pv" preload="auto" playsinline></audio>
 <script>
-  window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); };
+  window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); document.querySelector('.panel').scrollTop = 0; };
   window.hhClose = () => document.body.classList.remove('panel-open');
   // the video moves up into the space above the sheet, so a choice is seen as it is made (여자친구 10-04:
   // the sheets hid the video). The sheet's height follows its content.

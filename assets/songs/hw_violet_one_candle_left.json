@@ -1,0 +1,2087 @@
+{
+ "name": "One Candle Left",
+ "file": "assets/songs/hw_violet_one_candle_left.mp3",
+ "phrases": [
+  {
+   "start": 313,
+   "end": 412,
+   "text": "The fiddlers have folded their elbows and gone,",
+   "words": [
+    {
+     "t": 313,
+     "w": "The"
+    },
+    {
+     "t": 321,
+     "w": "fiddlers"
+    },
+    {
+     "t": 340,
+     "w": "have"
+    },
+    {
+     "t": 350,
+     "w": "folded"
+    },
+    {
+     "t": 365,
+     "w": "their"
+    },
+    {
+     "t": 377,
+     "w": "elbows"
+    },
+    {
+     "t": 391,
+     "w": "and"
+    },
+    {
+     "t": 400,
+     "w": "gone,"
+    }
+   ]
+  },
+  {
+   "start": 414,
+   "end": 559,
+   "text": "the punch bowl is down to a wheel of lime,",
+   "words": [
+    {
+     "t": 414,
+     "w": "the"
+    },
+    {
+     "t": 427,
+     "w": "punch"
+    },
+    {
+     "t": 448,
+     "w": "bowl"
+    },
+    {
+     "t": 465,
+     "w": "is"
+    },
+    {
+     "t": 475,
+     "w": "down"
+    },
+    {
+     "t": 492,
+     "w": "to"
+    },
+    {
+     "t": 502,
+     "w": "a"
+    },
+    {
+     "t": 508,
+     "w": "wheel"
+    },
+    {
+     "t": 529,
+     "w": "of"
+    },
+    {
+     "t": 539,
+     "w": "lime,"
+    }
+   ]
+  },
+  {
+   "start": 562,
+   "end": 718,
+   "text": "a fairy left one of her wings on the banister,",
+   "words": [
+    {
+     "t": 562,
+     "w": "a"
+    },
+    {
+     "t": 569,
+     "w": "fairy"
+    },
+    {
+     "t": 589,
+     "w": "left"
+    },
+    {
+     "t": 605,
+     "w": "one"
+    },
+    {
+     "t": 618,
+     "w": "of"
+    },
+    {
+     "t": 628,
+     "w": "her"
+    },
+    {
+     "t": 642,
+     "w": "wings"
+    },
+    {
+     "t": 662,
+     "w": "on"
+    },
+    {
+     "t": 672,
+     "w": "the"
+    },
+    {
+     "t": 685,
+     "w": "banister,"
+    }
+   ]
+  },
+  {
+   "start": 720,
+   "end": 839,
+   "text": "and the grandfather clock is too tired to chime.",
+   "words": [
+    {
+     "t": 720,
+     "w": "and"
+    },
+    {
+     "t": 730,
+     "w": "the"
+    },
+    {
+     "t": 739,
+     "w": "grandfather"
+    },
+    {
+     "t": 769,
+     "w": "clock"
+    },
+    {
+     "t": 783,
+     "w": "is"
+    },
+    {
+     "t": 790,
+     "w": "too"
+    },
+    {
+     "t": 800,
+     "w": "tired"
+    },
+    {
+     "t": 815,
+     "w": "to"
+    },
+    {
+     "t": 822,
+     "w": "chime."
+    }
+   ]
+  },
+  {
+   "start": 841,
+   "end": 984,
+   "text": "Paper bats droop from the chandelier chains,",
+   "words": [
+    {
+     "t": 841,
+     "w": "Paper"
+    },
+    {
+     "t": 860,
+     "w": "bats"
+    },
+    {
+     "t": 876,
+     "w": "droop"
+    },
+    {
+     "t": 895,
+     "w": "from"
+    },
+    {
+     "t": 911,
+     "w": "the"
+    },
+    {
+     "t": 924,
+     "w": "chandelier"
+    },
+    {
+     "t": 959,
+     "w": "chains,"
+    }
+   ]
+  },
+  {
+   "start": 986,
+   "end": 1122,
+   "text": "a glove on the floor makes a hand of the dust,",
+   "words": [
+    {
+     "t": 986,
+     "w": "a"
+    },
+    {
+     "t": 992,
+     "w": "glove"
+    },
+    {
+     "t": 1009,
+     "w": "on"
+    },
+    {
+     "t": 1018,
+     "w": "the"
+    },
+    {
+     "t": 1029,
+     "w": "floor"
+    },
+    {
+     "t": 1047,
+     "w": "makes"
+    },
+    {
+     "t": 1064,
+     "w": "a"
+    },
+    {
+     "t": 1070,
+     "w": "hand"
+    },
+    {
+     "t": 1084,
+     "w": "of"
+    },
+    {
+     "t": 1093,
+     "w": "the"
+    },
+    {
+     "t": 1105,
+     "w": "dust,"
+    }
+   ]
+  },
+  {
+   "start": 1124,
+   "end": 1259,
+   "text": "and somewhere a mask with a sugar-sweet smile",
+   "words": [
+    {
+     "t": 1124,
+     "w": "and"
+    },
+    {
+     "t": 1136,
+     "w": "somewhere"
+    },
+    {
+     "t": 1165,
+     "w": "a"
+    },
+    {
+     "t": 1171,
+     "w": "mask"
+    },
+    {
+     "t": 1186,
+     "w": "with"
+    },
+    {
+     "t": 1200,
+     "w": "a"
+    },
+    {
+     "t": 1206,
+     "w": "sugar-sweet"
+    },
+    {
+     "t": 1241,
+     "w": "smile"
+    }
+   ]
+  },
+  {
+   "start": 1262,
+   "end": 1407,
+   "text": "is grinning at nobody, as masks must.",
+   "words": [
+    {
+     "t": 1262,
+     "w": "is"
+    },
+    {
+     "t": 1273,
+     "w": "grinning"
+    },
+    {
+     "t": 1308,
+     "w": "at"
+    },
+    {
+     "t": 1319,
+     "w": "nobody,"
+    },
+    {
+     "t": 1350,
+     "w": "as"
+    },
+    {
+     "t": 1361,
+     "w": "masks"
+    },
+    {
+     "t": 1384,
+     "w": "must."
+    }
+   ]
+  },
+  {
+   "start": 1411,
+   "end": 1551,
+   "text": "But there on the sill by the cold window glass,",
+   "words": [
+    {
+     "t": 1411,
+     "w": "But"
+    },
+    {
+     "t": 1423,
+     "w": "there"
+    },
+    {
+     "t": 1440,
+     "w": "on"
+    },
+    {
+     "t": 1449,
+     "w": "the"
+    },
+    {
+     "t": 1461,
+     "w": "sill"
+    },
+    {
+     "t": 1475,
+     "w": "by"
+    },
+    {
+     "t": 1484,
+     "w": "the"
+    },
+    {
+     "t": 1496,
+     "w": "cold"
+    },
+    {
+     "t": 1510,
+     "w": "window"
+    },
+    {
+     "t": 1531,
+     "w": "glass,"
+    }
+   ]
+  },
+  {
+   "start": 1553,
+   "end": 1690,
+   "text": "on a saucer of brass in a puddle of wax,",
+   "words": [
+    {
+     "t": 1553,
+     "w": "on"
+    },
+    {
+     "t": 1563,
+     "w": "a"
+    },
+    {
+     "t": 1570,
+     "w": "saucer"
+    },
+    {
+     "t": 1593,
+     "w": "of"
+    },
+    {
+     "t": 1603,
+     "w": "brass"
+    },
+    {
+     "t": 1623,
+     "w": "in"
+    },
+    {
+     "t": 1633,
+     "w": "a"
+    },
+    {
+     "t": 1640,
+     "w": "puddle"
+    },
+    {
+     "t": 1663,
+     "w": "of"
+    },
+    {
+     "t": 1673,
+     "w": "wax,"
+    }
+   ]
+  },
+  {
+   "start": 1693,
+   "end": 1839,
+   "text": "the last one awake in a house full of chairs",
+   "words": [
+    {
+     "t": 1693,
+     "w": "the"
+    },
+    {
+     "t": 1706,
+     "w": "last"
+    },
+    {
+     "t": 1722,
+     "w": "one"
+    },
+    {
+     "t": 1735,
+     "w": "awake"
+    },
+    {
+     "t": 1755,
+     "w": "in"
+    },
+    {
+     "t": 1764,
+     "w": "a"
+    },
+    {
+     "t": 1771,
+     "w": "house"
+    },
+    {
+     "t": 1790,
+     "w": "full"
+    },
+    {
+     "t": 1807,
+     "w": "of"
+    },
+    {
+     "t": 1816,
+     "w": "chairs"
+    }
+   ]
+  },
+  {
+   "start": 1841,
+   "end": 1982,
+   "text": "is lifting her hem and not looking back.",
+   "words": [
+    {
+     "t": 1841,
+     "w": "is"
+    },
+    {
+     "t": 1851,
+     "w": "lifting"
+    },
+    {
+     "t": 1879,
+     "w": "her"
+    },
+    {
+     "t": 1893,
+     "w": "hem"
+    },
+    {
+     "t": 1906,
+     "w": "and"
+    },
+    {
+     "t": 1920,
+     "w": "not"
+    },
+    {
+     "t": 1934,
+     "w": "looking"
+    },
+    {
+     "t": 1961,
+     "w": "back."
+    }
+   ]
+  },
+  {
+   "start": 2027,
+   "end": 2158,
+   "text": "One candle left in the ballroom,",
+   "words": [
+    {
+     "t": 2027,
+     "w": "One"
+    },
+    {
+     "t": 2043,
+     "w": "candle"
+    },
+    {
+     "t": 2071,
+     "w": "left"
+    },
+    {
+     "t": 2091,
+     "w": "in"
+    },
+    {
+     "t": 2102,
+     "w": "the"
+    },
+    {
+     "t": 2118,
+     "w": "ballroom,"
+    }
+   ]
+  },
+  {
+   "start": 2173,
+   "end": 2288,
+   "text": "a dancer in a yellow dress,",
+   "words": [
+    {
+     "t": 2173,
+     "w": "a"
+    },
+    {
+     "t": 2181,
+     "w": "dancer"
+    },
+    {
+     "t": 2210,
+     "w": "in"
+    },
+    {
+     "t": 2222,
+     "w": "a"
+    },
+    {
+     "t": 2231,
+     "w": "yellow"
+    },
+    {
+     "t": 2259,
+     "w": "dress,"
+    }
+   ]
+  },
+  {
+   "start": 2293,
+   "end": 2442,
+   "text": "and I've no breath to blow her out,",
+   "words": [
+    {
+     "t": 2293,
+     "w": "and"
+    },
+    {
+     "t": 2310,
+     "w": "I've"
+    },
+    {
+     "t": 2330,
+     "w": "no"
+    },
+    {
+     "t": 2343,
+     "w": "breath"
+    },
+    {
+     "t": 2372,
+     "w": "to"
+    },
+    {
+     "t": 2384,
+     "w": "blow"
+    },
+    {
+     "t": 2405,
+     "w": "her"
+    },
+    {
+     "t": 2421,
+     "w": "out,"
+    }
+   ]
+  },
+  {
+   "start": 2444,
+   "end": 2527,
+   "text": "so the party isn't over, more or less.",
+   "words": [
+    {
+     "t": 2444,
+     "w": "so"
+    },
+    {
+     "t": 2450,
+     "w": "the"
+    },
+    {
+     "t": 2459,
+     "w": "party"
+    },
+    {
+     "t": 2472,
+     "w": "isn't"
+    },
+    {
+     "t": 2484,
+     "w": "over,"
+    },
+    {
+     "t": 2497,
+     "w": "more"
+    },
+    {
+     "t": 2508,
+     "w": "or"
+    },
+    {
+     "t": 2514,
+     "w": "less."
+    }
+   ]
+  },
+  {
+   "start": 2708,
+   "end": 2869,
+   "text": "I ask her to dance and she leans toward me",
+   "words": [
+    {
+     "t": 2708,
+     "w": "I"
+    },
+    {
+     "t": 2715,
+     "w": "ask"
+    },
+    {
+     "t": 2730,
+     "w": "her"
+    },
+    {
+     "t": 2745,
+     "w": "to"
+    },
+    {
+     "t": 2757,
+     "w": "dance"
+    },
+    {
+     "t": 2779,
+     "w": "and"
+    },
+    {
+     "t": 2794,
+     "w": "she"
+    },
+    {
+     "t": 2809,
+     "w": "leans"
+    },
+    {
+     "t": 2832,
+     "w": "toward"
+    },
+    {
+     "t": 2858,
+     "w": "me"
+    }
+   ]
+  },
+  {
+   "start": 2872,
+   "end": 3001,
+   "text": "the way that a flame leans to an opening door,",
+   "words": [
+    {
+     "t": 2872,
+     "w": "the"
+    },
+    {
+     "t": 2883,
+     "w": "way"
+    },
+    {
+     "t": 2894,
+     "w": "that"
+    },
+    {
+     "t": 2908,
+     "w": "a"
+    },
+    {
+     "t": 2913,
+     "w": "flame"
+    },
+    {
+     "t": 2930,
+     "w": "leans"
+    },
+    {
+     "t": 2946,
+     "w": "to"
+    },
+    {
+     "t": 2954,
+     "w": "an"
+    },
+    {
+     "t": 2963,
+     "w": "opening"
+    },
+    {
+     "t": 2985,
+     "w": "door,"
+    }
+   ]
+  },
+  {
+   "start": 3004,
+   "end": 3144,
+   "text": "I'm the one partner she never can scorch,",
+   "words": [
+    {
+     "t": 3004,
+     "w": "I'm"
+    },
+    {
+     "t": 3017,
+     "w": "the"
+    },
+    {
+     "t": 3031,
+     "w": "one"
+    },
+    {
+     "t": 3044,
+     "w": "partner"
+    },
+    {
+     "t": 3071,
+     "w": "she"
+    },
+    {
+     "t": 3084,
+     "w": "never"
+    },
+    {
+     "t": 3104,
+     "w": "can"
+    },
+    {
+     "t": 3117,
+     "w": "scorch,"
+    }
+   ]
+  },
+  {
+   "start": 3160,
+   "end": 3288,
+   "text": "so we take a slow turn on the sugar-strewn floor.",
+   "words": [
+    {
+     "t": 3160,
+     "w": "so"
+    },
+    {
+     "t": 3168,
+     "w": "we"
+    },
+    {
+     "t": 3175,
+     "w": "take"
+    },
+    {
+     "t": 3188,
+     "w": "a"
+    },
+    {
+     "t": 3193,
+     "w": "slow"
+    },
+    {
+     "t": 3206,
+     "w": "turn"
+    },
+    {
+     "t": 3219,
+     "w": "on"
+    },
+    {
+     "t": 3227,
+     "w": "the"
+    },
+    {
+     "t": 3237,
+     "w": "sugar-strewn"
+    },
+    {
+     "t": 3270,
+     "w": "floor."
+    }
+   ]
+  },
+  {
+   "start": 3290,
+   "end": 3432,
+   "text": "She tells me in flickers who kissed on the stairs,",
+   "words": [
+    {
+     "t": 3290,
+     "w": "She"
+    },
+    {
+     "t": 3301,
+     "w": "tells"
+    },
+    {
+     "t": 3318,
+     "w": "me"
+    },
+    {
+     "t": 3326,
+     "w": "in"
+    },
+    {
+     "t": 3335,
+     "w": "flickers"
+    },
+    {
+     "t": 3360,
+     "w": "who"
+    },
+    {
+     "t": 3371,
+     "w": "kissed"
+    },
+    {
+     "t": 3390,
+     "w": "on"
+    },
+    {
+     "t": 3399,
+     "w": "the"
+    },
+    {
+     "t": 3410,
+     "w": "stairs,"
+    }
+   ]
+  },
+  {
+   "start": 3434,
+   "end": 3565,
+   "text": "who stepped on whose hem and who pocketed pie,",
+   "words": [
+    {
+     "t": 3434,
+     "w": "who"
+    },
+    {
+     "t": 3445,
+     "w": "stepped"
+    },
+    {
+     "t": 3467,
+     "w": "on"
+    },
+    {
+     "t": 3476,
+     "w": "whose"
+    },
+    {
+     "t": 3493,
+     "w": "hem"
+    },
+    {
+     "t": 3504,
+     "w": "and"
+    },
+    {
+     "t": 3515,
+     "w": "who"
+    },
+    {
+     "t": 3526,
+     "w": "pocketed"
+    },
+    {
+     "t": 3551,
+     "w": "pie,"
+    }
+   ]
+  },
+  {
+   "start": 3568,
+   "end": 3683,
+   "text": "and I tell her in shivers of eighteen-oh-nine,",
+   "words": [
+    {
+     "t": 3568,
+     "w": "and"
+    },
+    {
+     "t": 3578,
+     "w": "I"
+    },
+    {
+     "t": 3583,
+     "w": "tell"
+    },
+    {
+     "t": 3595,
+     "w": "her"
+    },
+    {
+     "t": 3605,
+     "w": "in"
+    },
+    {
+     "t": 3612,
+     "w": "shivers"
+    },
+    {
+     "t": 3632,
+     "w": "of"
+    },
+    {
+     "t": 3639,
+     "w": "eighteen-oh-nine,"
+    }
+   ]
+  },
+  {
+   "start": 3722,
+   "end": 3860,
+   "text": "when the waltz was a scandal and I was still shy.",
+   "words": [
+    {
+     "t": 3722,
+     "w": "when"
+    },
+    {
+     "t": 3736,
+     "w": "the"
+    },
+    {
+     "t": 3747,
+     "w": "waltz"
+    },
+    {
+     "t": 3763,
+     "w": "was"
+    },
+    {
+     "t": 3774,
+     "w": "a"
+    },
+    {
+     "t": 3780,
+     "w": "scandal"
+    },
+    {
+     "t": 3802,
+     "w": "and"
+    },
+    {
+     "t": 3813,
+     "w": "I"
+    },
+    {
+     "t": 3819,
+     "w": "was"
+    },
+    {
+     "t": 3830,
+     "w": "still"
+    },
+    {
+     "t": 3846,
+     "w": "shy."
+    }
+   ]
+  },
+  {
+   "start": 3862,
+   "end": 3998,
+   "text": "She is shorter now by the width of a thumb,",
+   "words": [
+    {
+     "t": 3862,
+     "w": "She"
+    },
+    {
+     "t": 3874,
+     "w": "is"
+    },
+    {
+     "t": 3884,
+     "w": "shorter"
+    },
+    {
+     "t": 3908,
+     "w": "now"
+    },
+    {
+     "t": 3921,
+     "w": "by"
+    },
+    {
+     "t": 3930,
+     "w": "the"
+    },
+    {
+     "t": 3942,
+     "w": "width"
+    },
+    {
+     "t": 3961,
+     "w": "of"
+    },
+    {
+     "t": 3970,
+     "w": "a"
+    },
+    {
+     "t": 3976,
+     "w": "thumb,"
+    }
+   ]
+  },
+  {
+   "start": 4000,
+   "end": 4136,
+   "text": "her skirt wearing thin as a moth's paper wing,",
+   "words": [
+    {
+     "t": 4000,
+     "w": "her"
+    },
+    {
+     "t": 4012,
+     "w": "skirt"
+    },
+    {
+     "t": 4029,
+     "w": "wearing"
+    },
+    {
+     "t": 4052,
+     "w": "thin"
+    },
+    {
+     "t": 4067,
+     "w": "as"
+    },
+    {
+     "t": 4075,
+     "w": "a"
+    },
+    {
+     "t": 4081,
+     "w": "moth's"
+    },
+    {
+     "t": 4101,
+     "w": "paper"
+    },
+    {
+     "t": 4119,
+     "w": "wing,"
+    }
+   ]
+  },
+  {
+   "start": 4138,
+   "end": 4279,
+   "text": "and the window is greying like ash in a grate,",
+   "words": [
+    {
+     "t": 4138,
+     "w": "and"
+    },
+    {
+     "t": 4150,
+     "w": "the"
+    },
+    {
+     "t": 4162,
+     "w": "window"
+    },
+    {
+     "t": 4183,
+     "w": "is"
+    },
+    {
+     "t": 4192,
+     "w": "greying"
+    },
+    {
+     "t": 4216,
+     "w": "like"
+    },
+    {
+     "t": 4231,
+     "w": "ash"
+    },
+    {
+     "t": 4243,
+     "w": "in"
+    },
+    {
+     "t": 4252,
+     "w": "a"
+    },
+    {
+     "t": 4258,
+     "w": "grate,"
+    }
+   ]
+  },
+  {
+   "start": 4282,
+   "end": 4457,
+   "text": "but she lifts up her chin, and she curtsies, and sings.",
+   "words": [
+    {
+     "t": 4282,
+     "w": "but"
+    },
+    {
+     "t": 4294,
+     "w": "she"
+    },
+    {
+     "t": 4307,
+     "w": "lifts"
+    },
+    {
+     "t": 4326,
+     "w": "up"
+    },
+    {
+     "t": 4335,
+     "w": "her"
+    },
+    {
+     "t": 4348,
+     "w": "chin,"
+    },
+    {
+     "t": 4366,
+     "w": "and"
+    },
+    {
+     "t": 4379,
+     "w": "she"
+    },
+    {
+     "t": 4391,
+     "w": "curtsies,"
+    },
+    {
+     "t": 4423,
+     "w": "and"
+    },
+    {
+     "t": 4435,
+     "w": "sings."
+    }
+   ]
+  },
+  {
+   "start": 4517,
+   "end": 4644,
+   "text": "One candle left in the ballroom,",
+   "words": [
+    {
+     "t": 4517,
+     "w": "One"
+    },
+    {
+     "t": 4532,
+     "w": "candle"
+    },
+    {
+     "t": 4559,
+     "w": "left"
+    },
+    {
+     "t": 4579,
+     "w": "in"
+    },
+    {
+     "t": 4590,
+     "w": "the"
+    },
+    {
+     "t": 4606,
+     "w": "ballroom,"
+    }
+   ]
+  },
+  {
+   "start": 4675,
+   "end": 4774,
+   "text": "a dancer in a yellow dress,",
+   "words": [
+    {
+     "t": 4675,
+     "w": "a"
+    },
+    {
+     "t": 4682,
+     "w": "dancer"
+    },
+    {
+     "t": 4707,
+     "w": "in"
+    },
+    {
+     "t": 4717,
+     "w": "a"
+    },
+    {
+     "t": 4725,
+     "w": "yellow"
+    },
+    {
+     "t": 4749,
+     "w": "dress,"
+    }
+   ]
+  },
+  {
+   "start": 4795,
+   "end": 4930,
+   "text": "and I've no breath to blow her out,",
+   "words": [
+    {
+     "t": 4795,
+     "w": "and"
+    },
+    {
+     "t": 4810,
+     "w": "I've"
+    },
+    {
+     "t": 4829,
+     "w": "no"
+    },
+    {
+     "t": 4840,
+     "w": "breath"
+    },
+    {
+     "t": 4866,
+     "w": "to"
+    },
+    {
+     "t": 4877,
+     "w": "blow"
+    },
+    {
+     "t": 4896,
+     "w": "her"
+    },
+    {
+     "t": 4911,
+     "w": "out,"
+    }
+   ]
+  },
+  {
+   "start": 4933,
+   "end": 5130,
+   "text": "so the party isn't over, more or less.",
+   "words": [
+    {
+     "t": 4933,
+     "w": "so"
+    },
+    {
+     "t": 4948,
+     "w": "the"
+    },
+    {
+     "t": 4968,
+     "w": "party"
+    },
+    {
+     "t": 4999,
+     "w": "isn't"
+    },
+    {
+     "t": 5029,
+     "w": "over,"
+    },
+    {
+     "t": 5059,
+     "w": "more"
+    },
+    {
+     "t": 5085,
+     "w": "or"
+    },
+    {
+     "t": 5100,
+     "w": "less."
+    }
+   ]
+  },
+  {
+   "start": 5231,
+   "end": 5353,
+   "text": "Since eighteen-oh-nine I have haunted this hall,",
+   "words": [
+    {
+     "t": 5231,
+     "w": "Since"
+    },
+    {
+     "t": 5246,
+     "w": "eighteen-oh-nine"
+    },
+    {
+     "t": 5288,
+     "w": "I"
+    },
+    {
+     "t": 5293,
+     "w": "have"
+    },
+    {
+     "t": 5306,
+     "w": "haunted"
+    },
+    {
+     "t": 5326,
+     "w": "this"
+    },
+    {
+     "t": 5338,
+     "w": "hall,"
+    }
+   ]
+  },
+  {
+   "start": 5355,
+   "end": 5501,
+   "text": "and the candles all hurried to leave me in black,",
+   "words": [
+    {
+     "t": 5355,
+     "w": "and"
+    },
+    {
+     "t": 5367,
+     "w": "the"
+    },
+    {
+     "t": 5378,
+     "w": "candles"
+    },
+    {
+     "t": 5402,
+     "w": "all"
+    },
+    {
+     "t": 5413,
+     "w": "hurried"
+    },
+    {
+     "t": 5437,
+     "w": "to"
+    },
+    {
+     "t": 5446,
+     "w": "leave"
+    },
+    {
+     "t": 5463,
+     "w": "me"
+    },
+    {
+     "t": 5472,
+     "w": "in"
+    },
+    {
+     "t": 5481,
+     "w": "black,"
+    }
+   ]
+  },
+  {
+   "start": 5503,
+   "end": 5650,
+   "text": "but you stayed for the slow one, the last one, the quiet one,",
+   "words": [
+    {
+     "t": 5503,
+     "w": "but"
+    },
+    {
+     "t": 5512,
+     "w": "you"
+    },
+    {
+     "t": 5522,
+     "w": "stayed"
+    },
+    {
+     "t": 5539,
+     "w": "for"
+    },
+    {
+     "t": 5548,
+     "w": "the"
+    },
+    {
+     "t": 5558,
+     "w": "slow"
+    },
+    {
+     "t": 5569,
+     "w": "one,"
+    },
+    {
+     "t": 5581,
+     "w": "the"
+    },
+    {
+     "t": 5591,
+     "w": "last"
+    },
+    {
+     "t": 5603,
+     "w": "one,"
+    },
+    {
+     "t": 5614,
+     "w": "the"
+    },
+    {
+     "t": 5624,
+     "w": "quiet"
+    },
+    {
+     "t": 5638,
+     "w": "one,"
+    }
+   ]
+  },
+  {
+   "start": 5652,
+   "end": 5837,
+   "text": "with nobody playing and no one to clap.",
+   "words": [
+    {
+     "t": 5652,
+     "w": "with"
+    },
+    {
+     "t": 5675,
+     "w": "nobody"
+    },
+    {
+     "t": 5708,
+     "w": "playing"
+    },
+    {
+     "t": 5744,
+     "w": "and"
+    },
+    {
+     "t": 5763,
+     "w": "no"
+    },
+    {
+     "t": 5777,
+     "w": "one"
+    },
+    {
+     "t": 5795,
+     "w": "to"
+    },
+    {
+     "t": 5809,
+     "w": "clap."
+    }
+   ]
+  },
+  {
+   "start": 5880,
+   "end": 5996,
+   "text": "One candle left in the ballroom,",
+   "words": [
+    {
+     "t": 5880,
+     "w": "One"
+    },
+    {
+     "t": 5894,
+     "w": "candle"
+    },
+    {
+     "t": 5919,
+     "w": "left"
+    },
+    {
+     "t": 5936,
+     "w": "in"
+    },
+    {
+     "t": 5947,
+     "w": "the"
+    },
+    {
+     "t": 5961,
+     "w": "ballroom,"
+    }
+   ]
+  },
+  {
+   "start": 6024,
+   "end": 6117,
+   "text": "a dancer in a yellow dress,",
+   "words": [
+    {
+     "t": 6024,
+     "w": "a"
+    },
+    {
+     "t": 6031,
+     "w": "dancer"
+    },
+    {
+     "t": 6054,
+     "w": "in"
+    },
+    {
+     "t": 6064,
+     "w": "a"
+    },
+    {
+     "t": 6070,
+     "w": "yellow"
+    },
+    {
+     "t": 6094,
+     "w": "dress,"
+    }
+   ]
+  },
+  {
+   "start": 6144,
+   "end": 6278,
+   "text": "and I've no breath to blow her out,",
+   "words": [
+    {
+     "t": 6144,
+     "w": "and"
+    },
+    {
+     "t": 6159,
+     "w": "I've"
+    },
+    {
+     "t": 6178,
+     "w": "no"
+    },
+    {
+     "t": 6189,
+     "w": "breath"
+    },
+    {
+     "t": 6215,
+     "w": "to"
+    },
+    {
+     "t": 6226,
+     "w": "blow"
+    },
+    {
+     "t": 6244,
+     "w": "her"
+    },
+    {
+     "t": 6259,
+     "w": "out,"
+    }
+   ]
+  },
+  {
+   "start": 6281,
+   "end": 6479,
+   "text": "so the party isn't over, more or less.",
+   "words": [
+    {
+     "t": 6281,
+     "w": "so"
+    },
+    {
+     "t": 6296,
+     "w": "the"
+    },
+    {
+     "t": 6317,
+     "w": "party"
+    },
+    {
+     "t": 6347,
+     "w": "isn't"
+    },
+    {
+     "t": 6377,
+     "w": "over,"
+    },
+    {
+     "t": 6408,
+     "w": "more"
+    },
+    {
+     "t": 6433,
+     "w": "or"
+    },
+    {
+     "t": 6449,
+     "w": "less."
+    }
+   ]
+  },
+  {
+   "start": 6581,
+   "end": 6703,
+   "text": "The sun lays a finger of rose on the boards,",
+   "words": [
+    {
+     "t": 6581,
+     "w": "The"
+    },
+    {
+     "t": 6592,
+     "w": "sun"
+    },
+    {
+     "t": 6603,
+     "w": "lays"
+    },
+    {
+     "t": 6616,
+     "w": "a"
+    },
+    {
+     "t": 6622,
+     "w": "finger"
+    },
+    {
+     "t": 6641,
+     "w": "of"
+    },
+    {
+     "t": 6649,
+     "w": "rose"
+    },
+    {
+     "t": 6662,
+     "w": "on"
+    },
+    {
+     "t": 6670,
+     "w": "the"
+    },
+    {
+     "t": 6681,
+     "w": "boards,"
+    }
+   ]
+  },
+  {
+   "start": 6705,
+   "end": 6845,
+   "text": "you shiver and gutter and gather your gold,",
+   "words": [
+    {
+     "t": 6705,
+     "w": "you"
+    },
+    {
+     "t": 6718,
+     "w": "shiver"
+    },
+    {
+     "t": 6740,
+     "w": "and"
+    },
+    {
+     "t": 6753,
+     "w": "gutter"
+    },
+    {
+     "t": 6775,
+     "w": "and"
+    },
+    {
+     "t": 6788,
+     "w": "gather"
+    },
+    {
+     "t": 6810,
+     "w": "your"
+    },
+    {
+     "t": 6826,
+     "w": "gold,"
+    }
+   ]
+  },
+  {
+   "start": 6848,
+   "end": 7019,
+   "text": "I make you a chimney of both of my hands,",
+   "words": [
+    {
+     "t": 6848,
+     "w": "I"
+    },
+    {
+     "t": 6856,
+     "w": "make"
+    },
+    {
+     "t": 6876,
+     "w": "you"
+    },
+    {
+     "t": 6893,
+     "w": "a"
+    },
+    {
+     "t": 6901,
+     "w": "chimney"
+    },
+    {
+     "t": 6934,
+     "w": "of"
+    },
+    {
+     "t": 6946,
+     "w": "both"
+    },
+    {
+     "t": 6966,
+     "w": "of"
+    },
+    {
+     "t": 6978,
+     "w": "my"
+    },
+    {
+     "t": 6990,
+     "w": "hands,"
+    }
+   ]
+  },
+  {
+   "start": 7041,
+   "end": 7230,
+   "text": "they're no use at all, but you don't mind the cold.",
+   "words": [
+    {
+     "t": 7041,
+     "w": "they're"
+    },
+    {
+     "t": 7070,
+     "w": "no"
+    },
+    {
+     "t": 7081,
+     "w": "use"
+    },
+    {
+     "t": 7096,
+     "w": "at"
+    },
+    {
+     "t": 7106,
+     "w": "all,"
+    },
+    {
+     "t": 7125,
+     "w": "but"
+    },
+    {
+     "t": 7139,
+     "w": "you"
+    },
+    {
+     "t": 7154,
+     "w": "don't"
+    },
+    {
+     "t": 7175,
+     "w": "mind"
+    },
+    {
+     "t": 7194,
+     "w": "the"
+    },
+    {
+     "t": 7208,
+     "w": "cold."
+    }
+   ]
+  },
+  {
+   "start": 7321,
+   "end": 7437,
+   "text": "One candle left in the ballroom,",
+   "words": [
+    {
+     "t": 7321,
+     "w": "One"
+    },
+    {
+     "t": 7335,
+     "w": "candle"
+    },
+    {
+     "t": 7360,
+     "w": "left"
+    },
+    {
+     "t": 7377,
+     "w": "in"
+    },
+    {
+     "t": 7388,
+     "w": "the"
+    },
+    {
+     "t": 7402,
+     "w": "ballroom,"
+    }
+   ]
+  },
+  {
+   "start": 7439,
+   "end": 7581,
+   "text": "a dancer in a yellow dress,",
+   "words": [
+    {
+     "t": 7439,
+     "w": "a"
+    },
+    {
+     "t": 7449,
+     "w": "dancer"
+    },
+    {
+     "t": 7485,
+     "w": "in"
+    },
+    {
+     "t": 7500,
+     "w": "a"
+    },
+    {
+     "t": 7510,
+     "w": "yellow"
+    },
+    {
+     "t": 7545,
+     "w": "dress,"
+    }
+   ]
+  },
+  {
+   "start": 7594,
+   "end": 7735,
+   "text": "and she's no breath to blow me out,",
+   "words": [
+    {
+     "t": 7594,
+     "w": "and"
+    },
+    {
+     "t": 7610,
+     "w": "she's"
+    },
+    {
+     "t": 7633,
+     "w": "no"
+    },
+    {
+     "t": 7645,
+     "w": "breath"
+    },
+    {
+     "t": 7672,
+     "w": "to"
+    },
+    {
+     "t": 7684,
+     "w": "blow"
+    },
+    {
+     "t": 7704,
+     "w": "me"
+    },
+    {
+     "t": 7715,
+     "w": "out,"
+    }
+   ]
+  },
+  {
+   "start": 7738,
+   "end": 7936,
+   "text": "so I'll be here next year, more or less.",
+   "words": [
+    {
+     "t": 7738,
+     "w": "so"
+    },
+    {
+     "t": 7752,
+     "w": "I'll"
+    },
+    {
+     "t": 7777,
+     "w": "be"
+    },
+    {
+     "t": 7791,
+     "w": "here"
+    },
+    {
+     "t": 7815,
+     "w": "next"
+    },
+    {
+     "t": 7839,
+     "w": "year,"
+    },
+    {
+     "t": 7868,
+     "w": "more"
+    },
+    {
+     "t": 7893,
+     "w": "or"
+    },
+    {
+     "t": 7907,
+     "w": "less."
+    }
+   ]
+  },
+  {
+   "start": 8033,
+   "end": 8176,
+   "text": "One candle left, and a ghost to keep her,",
+   "words": [
+    {
+     "t": 8033,
+     "w": "One"
+    },
+    {
+     "t": 8047,
+     "w": "candle"
+    },
+    {
+     "t": 8070,
+     "w": "left,"
+    },
+    {
+     "t": 8091,
+     "w": "and"
+    },
+    {
+     "t": 8105,
+     "w": "a"
+    },
+    {
+     "t": 8111,
+     "w": "ghost"
+    },
+    {
+     "t": 8132,
+     "w": "to"
+    },
+    {
+     "t": 8142,
+     "w": "keep"
+    },
+    {
+     "t": 8159,
+     "w": "her,"
+    }
+   ]
+  },
+  {
+   "start": 8178,
+   "end": 8378,
+   "text": "the party's not over, it's only asleep.",
+   "words": [
+    {
+     "t": 8178,
+     "w": "the"
+    },
+    {
+     "t": 8198,
+     "w": "party's"
+    },
+    {
+     "t": 8238,
+     "w": "not"
+    },
+    {
+     "t": 8258,
+     "w": "over,"
+    },
+    {
+     "t": 8288,
+     "w": "it's"
+    },
+    {
+     "t": 8313,
+     "w": "only"
+    },
+    {
+     "t": 8338,
+     "w": "asleep."
+    }
+   ]
+  }
+ ],
+ "title1": "ONE CANDLE",
+ "title2": "LEFT",
+ "tag": "♪ ONE CANDLE LEFT",
+ "label": "HER HOURS · VIOLET",
+ "singer": "Violet",
+ "brand": "HER HOURS",
+ "accent": "#7FE0D8",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

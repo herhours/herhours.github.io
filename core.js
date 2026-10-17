@@ -66,8 +66,10 @@ export async function fileToBitmap(file) {
   // downscale on decode: the band is 1080x540, 1600px wide is plenty.
   // Some Android Chrome builds reject createImageBitmap on large camera JPEGs ("source image could not be decoded"),
   // so fall back to a plain <img> decode drawn onto a small canvas.
-  try { return await createImageBitmap(file, { resizeWidth: 1600, resizeQuality: 'high' }); } catch {}
-  try { return await createImageBitmap(file); } catch {}
+  // hhPath says which way it went, for the phone-test log.
+  try { const b = await createImageBitmap(file, { resizeWidth: 1600, resizeQuality: 'high' }); b.hhPath = 'resize'; return b; } catch {}
+  // The full-size decode used to come second; on an iPhone that kept 24-48MP bitmaps and photo picking was slow
+  // (10-11), so the small-canvas route goes first and full size is the last resort.
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('decode')); im.src = url; });
@@ -75,8 +77,10 @@ export async function fileToBitmap(file) {
     const c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s));
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    c.hhPath = 'img';
     return c;
-  } finally { URL.revokeObjectURL(url); }
+  } catch {} finally { URL.revokeObjectURL(url); }
+  const b = await createImageBitmap(file); b.hhPath = 'full'; return b;
 }
 
 // ---------- noise tile for grain ----------
@@ -367,8 +371,18 @@ export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFr
   // Chrome refuses to share more than 50MB ("Permission denied", 영샘's phone 10-04), so a long short gets a
   // lower video bitrate. Aimed at 36MB: a phone encoder overshoots (42MB aimed came out 47.8MB on 영샘's Android).
   // 32s and shorter keep the full 9Mbps; Instagram re-encodes to less anyway.
-  const vbr = Math.min(9_000_000, Math.floor((36 * 8_000_000) / (N / FPS)) - 192_000);
-  const vsrc = new CanvasSource(canvas, { codec: 'avc', bitrate: vbr, keyFrameInterval: 2 });
+  // 10-10: with moving video clips 영샘's Android ignored the variable-rate aim entirely - 127s aimed at ~33MB came
+  // out 105.7MB. Past 32s the encoder is held to a constant rate (when the phone supports it) and aims at 30MB.
+  const sec = N / FPS, long = sec > 32;
+  const vbr = Math.min(9_000_000, Math.floor(((long ? 30 : 36) * 8_000_000) / sec) - 192_000);
+  let bitrateMode;
+  if (long && 'VideoEncoder' in self) {
+    try {
+      const s = await VideoEncoder.isConfigSupported({ codec: 'avc1.640028', width: canvas.width, height: canvas.height, bitrate: vbr, framerate: FPS, bitrateMode: 'constant' });
+      if (s.supported) bitrateMode = 'constant';
+    } catch {}
+  }
+  const vsrc = new CanvasSource(canvas, { codec: 'avc', bitrate: vbr, keyFrameInterval: 2, ...(bitrateMode ? { bitrateMode } : {}) });
   const asrc = new AudioBufferSource({ codec: 'aac', bitrate: 192_000 });
   output.addVideoTrack(vsrc, { frameRate: FPS });
   output.addAudioTrack(asrc);
@@ -401,6 +415,7 @@ export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases
     useOurs, images, phrases: useOurs ? tpl.phrases : (phrases || []),
     brand: B,
     label: useOurs ? tpl.label : `${B} · MY OWN PLAYLIST`,
+    singer: useOurs ? tpl.singer || '' : '',
     title1: t1, title2: t2,
     tag: useOurs ? tpl.tag : `♪ ${(t1 + ' ' + t2).trim().toUpperCase()}`,
     accent: tpl.accent, ink: tpl.ink, cream: tpl.cream, shot: tpl.shot, crossfade: tpl.crossfade,
@@ -410,11 +425,35 @@ export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases
 
 export const DEMO = ['L11', 'L03', 'L02', 'L07', 'L06', 'L13'];
 export const loadDemo = () => Promise.all(DEMO.map((id) => loadImage(`assets/demo/${id}.jpg`)));
+// the Halloween look shows the Halloween shorts' own pictures until the user brings photos (10-14)
+export const loadDemoHw = () => Promise.all([1, 2, 3, 4, 5, 6].map((i) => loadImage(`assets/demo_hw/H${i}.jpg`)));
 // Our own songs, each with its lyric timing. Green Light is the original EP01 short; the other two were
 // chosen for launch by 영샘 and 영샘's girlfriend (10-04).
 export const SONGS = [
-  { id: 'green', name: 'Green Light on the Window', json: 'assets/green_light.json', file: 'assets/green_light.mp3' },
-  { id: 'wings', name: 'Wings Over the Market', json: 'assets/songs/wings_over_the_market.json', file: 'assets/songs/wings_over_the_market.mp3' },
-  { id: 'angels', name: 'Angels in the Alleyway', json: 'assets/songs/angels_in_the_alleyway.json', file: 'assets/songs/angels_in_the_alleyway.mp3', lyrics: false },
+  { id: 'green', group: 'lyrics', name: 'Green Light on the Window', json: 'assets/green_light.json', file: 'assets/green_light.mp3' },
+  { id: 'wings', group: 'lyrics', name: 'Wings Over the Market', json: 'assets/songs/wings_over_the_market.json', file: 'assets/songs/wings_over_the_market.mp3' },
+  { id: 'angels', group: 'lyrics', name: 'Angels in the Alleyway', json: 'assets/songs/angels_in_the_alleyway.json', file: 'assets/songs/angels_in_the_alleyway.mp3', lyrics: false },
+  // Halloween pack (10-14): one song per character from the Halloween longform, the same four as the October shorts;
+  // line timings come from the longform alignment. Yukino sings in Japanese, so her title becomes the type instead.
+  { id: 'hw_eira_wind_me_up', name: 'Wind Me Up Till Midnight', group: 'halloween', json: 'assets/songs/hw_eira_wind_me_up.json', file: 'assets/songs/hw_eira_wind_me_up.mp3' },
+  { id: 'hw_violet_one_candle_left', name: 'One Candle Left', group: 'halloween', json: 'assets/songs/hw_violet_one_candle_left.json', file: 'assets/songs/hw_violet_one_candle_left.mp3' },
+  { id: 'hw_seren_porcelain_party', name: 'Porcelain Party', group: 'halloween', json: 'assets/songs/hw_seren_porcelain_party.json', file: 'assets/songs/hw_seren_porcelain_party.mp3' },
+  { id: 'hw_veronica_velvet_fangs', name: 'Velvet Fangs', group: 'halloween', json: 'assets/songs/hw_veronica_velvet_fangs.json', file: 'assets/songs/hw_veronica_velvet_fangs.mp3' },
+  { id: 'hw_ivelle_off_the_page', name: 'Off the Page', group: 'halloween', json: 'assets/songs/hw_ivelle_off_the_page.json', file: 'assets/songs/hw_ivelle_off_the_page.mp3' },
+  { id: 'hw_yukino_snow_in_october', name: 'Snow in October', group: 'halloween', json: 'assets/songs/hw_yukino_snow_in_october.json', file: 'assets/songs/hw_yukino_snow_in_october.mp3', lyrics: false },
+  // music drawer (영샘's students 10-09: "we have no music") - Her Hours vocals first, then the approved app tracks by mood
+  { id: 'hh_seren_three_words', name: 'Three Words', group: 'vocal', json: 'assets/songs/hh_seren_three_words.json', file: 'assets/songs/hh_seren_three_words.mp3', lyrics: false },
+  { id: 'hh_violet_before_it_disappears', name: 'Before It Disappears', group: 'vocal', json: 'assets/songs/hh_violet_before_it_disappears.json', file: 'assets/songs/hh_violet_before_it_disappears.mp3', lyrics: false },
+  { id: 'hh_veronica_world_inside_glass', name: 'A World Inside the Glass', group: 'vocal', json: 'assets/songs/hh_veronica_world_inside_glass.json', file: 'assets/songs/hh_veronica_world_inside_glass.mp3', lyrics: false },
+  { id: 'hh_eira_curtain_up', name: 'Curtain Up', group: 'vocal', json: 'assets/songs/hh_eira_curtain_up.json', file: 'assets/songs/hh_eira_curtain_up.mp3', lyrics: false },
+  { id: 'app_citypop_groove', name: 'City Pop Groove', group: 'upbeat', json: 'assets/songs/app_citypop_groove.json', file: 'assets/songs/app_citypop_groove.mp3', lyrics: false },
+  { id: 'app_indie_clap', name: 'Indie Clap', group: 'upbeat', json: 'assets/songs/app_indie_clap.json', file: 'assets/songs/app_indie_clap.mp3', lyrics: false },
+  { id: 'app_lofi_bounce', name: 'Lo-fi Bounce', group: 'upbeat', json: 'assets/songs/app_lofi_bounce.json', file: 'assets/songs/app_lofi_bounce.mp3', lyrics: false },
+  { id: 'app_sunny_acoustic', name: 'Sunny Acoustic', group: 'bright', json: 'assets/songs/app_sunny_acoustic.json', file: 'assets/songs/app_sunny_acoustic.mp3', lyrics: false },
+  { id: 'app_dream_sparkle', name: 'Dream Sparkle', group: 'bright', json: 'assets/songs/app_dream_sparkle.json', file: 'assets/songs/app_dream_sparkle.mp3', lyrics: false },
+  { id: 'app_piano_morning', name: 'Piano Morning', group: 'bright', json: 'assets/songs/app_piano_morning.json', file: 'assets/songs/app_piano_morning.mp3', lyrics: false },
+  { id: 'app_pulse_synth', name: 'Pulse Synth', group: 'tension', json: 'assets/songs/app_pulse_synth.json', file: 'assets/songs/app_pulse_synth.mp3', lyrics: false },
+  { id: 'app_strings_chase', name: 'Strings Chase', group: 'tension', json: 'assets/songs/app_strings_chase.json', file: 'assets/songs/app_strings_chase.mp3', lyrics: false },
+  { id: 'app_dark_minimal', name: 'Dark Minimal', group: 'tension', json: 'assets/songs/app_dark_minimal.json', file: 'assets/songs/app_dark_minimal.mp3', lyrics: false },
 ];
 export const loadTemplate = async (song = SONGS[0]) => (await fetch(song.json)).json();

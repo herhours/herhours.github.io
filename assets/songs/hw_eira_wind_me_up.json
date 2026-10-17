@@ -1,0 +1,2461 @@
+{
+ "name": "Wind Me Up Till Midnight",
+ "file": "assets/songs/hw_eira_wind_me_up.mp3",
+ "phrases": [
+  {
+   "start": 504,
+   "end": 652,
+   "text": "A key sits in my shoulders where a ribbon ought to be,",
+   "words": [
+    {
+     "t": 504,
+     "w": "A"
+    },
+    {
+     "t": 509,
+     "w": "key"
+    },
+    {
+     "t": 520,
+     "w": "sits"
+    },
+    {
+     "t": 534,
+     "w": "in"
+    },
+    {
+     "t": 542,
+     "w": "my"
+    },
+    {
+     "t": 550,
+     "w": "shoulders"
+    },
+    {
+     "t": 577,
+     "w": "where"
+    },
+    {
+     "t": 593,
+     "w": "a"
+    },
+    {
+     "t": 598,
+     "w": "ribbon"
+    },
+    {
+     "t": 617,
+     "w": "ought"
+    },
+    {
+     "t": 633,
+     "w": "to"
+    },
+    {
+     "t": 641,
+     "w": "be,"
+    }
+   ]
+  },
+  {
+   "start": 654,
+   "end": 776,
+   "text": "A ticking in my bodice that the tailor couldn't see;",
+   "words": [
+    {
+     "t": 654,
+     "w": "A"
+    },
+    {
+     "t": 659,
+     "w": "ticking"
+    },
+    {
+     "t": 677,
+     "w": "in"
+    },
+    {
+     "t": 684,
+     "w": "my"
+    },
+    {
+     "t": 691,
+     "w": "bodice"
+    },
+    {
+     "t": 707,
+     "w": "that"
+    },
+    {
+     "t": 718,
+     "w": "the"
+    },
+    {
+     "t": 728,
+     "w": "tailor"
+    },
+    {
+     "t": 744,
+     "w": "couldn't"
+    },
+    {
+     "t": 764,
+     "w": "see;"
+    }
+   ]
+  },
+  {
+   "start": 779,
+   "end": 905,
+   "text": "They oiled me up at seven and they lacquered me at eight,",
+   "words": [
+    {
+     "t": 779,
+     "w": "They"
+    },
+    {
+     "t": 790,
+     "w": "oiled"
+    },
+    {
+     "t": 803,
+     "w": "me"
+    },
+    {
+     "t": 809,
+     "w": "up"
+    },
+    {
+     "t": 816,
+     "w": "at"
+    },
+    {
+     "t": 822,
+     "w": "seven"
+    },
+    {
+     "t": 835,
+     "w": "and"
+    },
+    {
+     "t": 844,
+     "w": "they"
+    },
+    {
+     "t": 855,
+     "w": "lacquered"
+    },
+    {
+     "t": 877,
+     "w": "me"
+    },
+    {
+     "t": 883,
+     "w": "at"
+    },
+    {
+     "t": 890,
+     "w": "eight,"
+    }
+   ]
+  },
+  {
+   "start": 908,
+   "end": 1033,
+   "text": "Then stood me by the hatstand like a thing that's made to wait.",
+   "words": [
+    {
+     "t": 908,
+     "w": "Then"
+    },
+    {
+     "t": 918,
+     "w": "stood"
+    },
+    {
+     "t": 929,
+     "w": "me"
+    },
+    {
+     "t": 935,
+     "w": "by"
+    },
+    {
+     "t": 941,
+     "w": "the"
+    },
+    {
+     "t": 949,
+     "w": "hatstand"
+    },
+    {
+     "t": 967,
+     "w": "like"
+    },
+    {
+     "t": 976,
+     "w": "a"
+    },
+    {
+     "t": 980,
+     "w": "thing"
+    },
+    {
+     "t": 992,
+     "w": "that's"
+    },
+    {
+     "t": 1006,
+     "w": "made"
+    },
+    {
+     "t": 1015,
+     "w": "to"
+    },
+    {
+     "t": 1021,
+     "w": "wait."
+    }
+   ]
+  },
+  {
+   "start": 1035,
+   "end": 1165,
+   "text": "But tonight the door is open and the porch is full of moons,",
+   "words": [
+    {
+     "t": 1035,
+     "w": "But"
+    },
+    {
+     "t": 1044,
+     "w": "tonight"
+    },
+    {
+     "t": 1061,
+     "w": "the"
+    },
+    {
+     "t": 1069,
+     "w": "door"
+    },
+    {
+     "t": 1080,
+     "w": "is"
+    },
+    {
+     "t": 1086,
+     "w": "open"
+    },
+    {
+     "t": 1097,
+     "w": "and"
+    },
+    {
+     "t": 1105,
+     "w": "the"
+    },
+    {
+     "t": 1114,
+     "w": "porch"
+    },
+    {
+     "t": 1127,
+     "w": "is"
+    },
+    {
+     "t": 1133,
+     "w": "full"
+    },
+    {
+     "t": 1144,
+     "w": "of"
+    },
+    {
+     "t": 1150,
+     "w": "moons,"
+    }
+   ]
+  },
+  {
+   "start": 1167,
+   "end": 1292,
+   "text": "And the band has got a clarinet that's pickpocketing the tunes;",
+   "words": [
+    {
+     "t": 1167,
+     "w": "And"
+    },
+    {
+     "t": 1175,
+     "w": "the"
+    },
+    {
+     "t": 1183,
+     "w": "band"
+    },
+    {
+     "t": 1192,
+     "w": "has"
+    },
+    {
+     "t": 1200,
+     "w": "got"
+    },
+    {
+     "t": 1208,
+     "w": "a"
+    },
+    {
+     "t": 1212,
+     "w": "clarinet"
+    },
+    {
+     "t": 1229,
+     "w": "that's"
+    },
+    {
+     "t": 1243,
+     "w": "pickpocketing"
+    },
+    {
+     "t": 1271,
+     "w": "the"
+    },
+    {
+     "t": 1278,
+     "w": "tunes;"
+    }
+   ]
+  },
+  {
+   "start": 1295,
+   "end": 1417,
+   "text": "So I tap a porcelain slipper and I tilt a painted chin,",
+   "words": [
+    {
+     "t": 1295,
+     "w": "So"
+    },
+    {
+     "t": 1302,
+     "w": "I"
+    },
+    {
+     "t": 1306,
+     "w": "tap"
+    },
+    {
+     "t": 1315,
+     "w": "a"
+    },
+    {
+     "t": 1319,
+     "w": "porcelain"
+    },
+    {
+     "t": 1341,
+     "w": "slipper"
+    },
+    {
+     "t": 1358,
+     "w": "and"
+    },
+    {
+     "t": 1367,
+     "w": "I"
+    },
+    {
+     "t": 1371,
+     "w": "tilt"
+    },
+    {
+     "t": 1382,
+     "w": "a"
+    },
+    {
+     "t": 1387,
+     "w": "painted"
+    },
+    {
+     "t": 1404,
+     "w": "chin,"
+    }
+   ]
+  },
+  {
+   "start": 1419,
+   "end": 1570,
+   "text": "And every cog inside me clicks: the night has let me in.",
+   "words": [
+    {
+     "t": 1419,
+     "w": "And"
+    },
+    {
+     "t": 1430,
+     "w": "every"
+    },
+    {
+     "t": 1445,
+     "w": "cog"
+    },
+    {
+     "t": 1456,
+     "w": "inside"
+    },
+    {
+     "t": 1475,
+     "w": "me"
+    },
+    {
+     "t": 1483,
+     "w": "clicks:"
+    },
+    {
+     "t": 1504,
+     "w": "the"
+    },
+    {
+     "t": 1514,
+     "w": "night"
+    },
+    {
+     "t": 1530,
+     "w": "has"
+    },
+    {
+     "t": 1541,
+     "w": "let"
+    },
+    {
+     "t": 1551,
+     "w": "me"
+    },
+    {
+     "t": 1559,
+     "w": "in."
+    }
+   ]
+  },
+  {
+   "start": 1585,
+   "end": 1679,
+   "text": "Twelve full turns will carry me to the bell,",
+   "words": [
+    {
+     "t": 1585,
+     "w": "Twelve"
+    },
+    {
+     "t": 1600,
+     "w": "full"
+    },
+    {
+     "t": 1610,
+     "w": "turns"
+    },
+    {
+     "t": 1623,
+     "w": "will"
+    },
+    {
+     "t": 1633,
+     "w": "carry"
+    },
+    {
+     "t": 1646,
+     "w": "me"
+    },
+    {
+     "t": 1652,
+     "w": "to"
+    },
+    {
+     "t": 1658,
+     "w": "the"
+    },
+    {
+     "t": 1666,
+     "w": "bell,"
+    }
+   ]
+  },
+  {
+   "start": 1681,
+   "end": 1807,
+   "text": "Not one tick more, the old clockmaker said;",
+   "words": [
+    {
+     "t": 1681,
+     "w": "Not"
+    },
+    {
+     "t": 1692,
+     "w": "one"
+    },
+    {
+     "t": 1704,
+     "w": "tick"
+    },
+    {
+     "t": 1718,
+     "w": "more,"
+    },
+    {
+     "t": 1735,
+     "w": "the"
+    },
+    {
+     "t": 1747,
+     "w": "old"
+    },
+    {
+     "t": 1758,
+     "w": "clockmaker"
+    },
+    {
+     "t": 1790,
+     "w": "said;"
+    }
+   ]
+  },
+  {
+   "start": 1809,
+   "end": 1933,
+   "text": "So spin me where the lanterns swing and swell,",
+   "words": [
+    {
+     "t": 1809,
+     "w": "So"
+    },
+    {
+     "t": 1817,
+     "w": "spin"
+    },
+    {
+     "t": 1830,
+     "w": "me"
+    },
+    {
+     "t": 1838,
+     "w": "where"
+    },
+    {
+     "t": 1854,
+     "w": "the"
+    },
+    {
+     "t": 1864,
+     "w": "lanterns"
+    },
+    {
+     "t": 1888,
+     "w": "swing"
+    },
+    {
+     "t": 1904,
+     "w": "and"
+    },
+    {
+     "t": 1915,
+     "w": "swell,"
+    }
+   ]
+  },
+  {
+   "start": 1936,
+   "end": 2062,
+   "text": "And count the turns out loud above my head!",
+   "words": [
+    {
+     "t": 1936,
+     "w": "And"
+    },
+    {
+     "t": 1947,
+     "w": "count"
+    },
+    {
+     "t": 1965,
+     "w": "the"
+    },
+    {
+     "t": 1976,
+     "w": "turns"
+    },
+    {
+     "t": 1993,
+     "w": "out"
+    },
+    {
+     "t": 2005,
+     "w": "loud"
+    },
+    {
+     "t": 2019,
+     "w": "above"
+    },
+    {
+     "t": 2036,
+     "w": "my"
+    },
+    {
+     "t": 2045,
+     "w": "head!"
+    }
+   ]
+  },
+  {
+   "start": 2065,
+   "end": 2195,
+   "text": "So wind me up till midnight, till the twelfth bell turns to gold —",
+   "words": [
+    {
+     "t": 2065,
+     "w": "So"
+    },
+    {
+     "t": 2071,
+     "w": "wind"
+    },
+    {
+     "t": 2081,
+     "w": "me"
+    },
+    {
+     "t": 2086,
+     "w": "up"
+    },
+    {
+     "t": 2092,
+     "w": "till"
+    },
+    {
+     "t": 2102,
+     "w": "midnight,"
+    },
+    {
+     "t": 2121,
+     "w": "till"
+    },
+    {
+     "t": 2131,
+     "w": "the"
+    },
+    {
+     "t": 2139,
+     "w": "twelfth"
+    },
+    {
+     "t": 2154,
+     "w": "bell"
+    },
+    {
+     "t": 2164,
+     "w": "turns"
+    },
+    {
+     "t": 2176,
+     "w": "to"
+    },
+    {
+     "t": 2181,
+     "w": "gold"
+    },
+    {
+     "t": 2191,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 2198,
+   "end": 2323,
+   "text": "A clockwork heart keeps better time than any heart of old;",
+   "words": [
+    {
+     "t": 2198,
+     "w": "A"
+    },
+    {
+     "t": 2202,
+     "w": "clockwork"
+    },
+    {
+     "t": 2223,
+     "w": "heart"
+    },
+    {
+     "t": 2236,
+     "w": "keeps"
+    },
+    {
+     "t": 2249,
+     "w": "better"
+    },
+    {
+     "t": 2264,
+     "w": "time"
+    },
+    {
+     "t": 2274,
+     "w": "than"
+    },
+    {
+     "t": 2285,
+     "w": "any"
+    },
+    {
+     "t": 2293,
+     "w": "heart"
+    },
+    {
+     "t": 2306,
+     "w": "of"
+    },
+    {
+     "t": 2312,
+     "w": "old;"
+    }
+   ]
+  },
+  {
+   "start": 2326,
+   "end": 2448,
+   "text": "And if my hands are silver and my blood is but a spring,",
+   "words": [
+    {
+     "t": 2326,
+     "w": "And"
+    },
+    {
+     "t": 2335,
+     "w": "if"
+    },
+    {
+     "t": 2341,
+     "w": "my"
+    },
+    {
+     "t": 2347,
+     "w": "hands"
+    },
+    {
+     "t": 2360,
+     "w": "are"
+    },
+    {
+     "t": 2369,
+     "w": "silver"
+    },
+    {
+     "t": 2384,
+     "w": "and"
+    },
+    {
+     "t": 2392,
+     "w": "my"
+    },
+    {
+     "t": 2399,
+     "w": "blood"
+    },
+    {
+     "t": 2412,
+     "w": "is"
+    },
+    {
+     "t": 2418,
+     "w": "but"
+    },
+    {
+     "t": 2427,
+     "w": "a"
+    },
+    {
+     "t": 2431,
+     "w": "spring,"
+    }
+   ]
+  },
+  {
+   "start": 2450,
+   "end": 2635,
+   "text": "Then let the springs run down, my love — tonight I learn to sing.",
+   "words": [
+    {
+     "t": 2450,
+     "w": "Then"
+    },
+    {
+     "t": 2464,
+     "w": "let"
+    },
+    {
+     "t": 2475,
+     "w": "the"
+    },
+    {
+     "t": 2486,
+     "w": "springs"
+    },
+    {
+     "t": 2509,
+     "w": "run"
+    },
+    {
+     "t": 2520,
+     "w": "down,"
+    },
+    {
+     "t": 2537,
+     "w": "my"
+    },
+    {
+     "t": 2545,
+     "w": "love"
+    },
+    {
+     "t": 2559,
+     "w": "—"
+    },
+    {
+     "t": 2565,
+     "w": "tonight"
+    },
+    {
+     "t": 2587,
+     "w": "I"
+    },
+    {
+     "t": 2593,
+     "w": "learn"
+    },
+    {
+     "t": 2610,
+     "w": "to"
+    },
+    {
+     "t": 2618,
+     "w": "sing."
+    }
+   ]
+  },
+  {
+   "start": 2839,
+   "end": 2964,
+   "text": "I've a waltz in my left ankle and a foxtrot in my knee,",
+   "words": [
+    {
+     "t": 2839,
+     "w": "I've"
+    },
+    {
+     "t": 2850,
+     "w": "a"
+    },
+    {
+     "t": 2855,
+     "w": "waltz"
+    },
+    {
+     "t": 2868,
+     "w": "in"
+    },
+    {
+     "t": 2875,
+     "w": "my"
+    },
+    {
+     "t": 2881,
+     "w": "left"
+    },
+    {
+     "t": 2893,
+     "w": "ankle"
+    },
+    {
+     "t": 2906,
+     "w": "and"
+    },
+    {
+     "t": 2915,
+     "w": "a"
+    },
+    {
+     "t": 2919,
+     "w": "foxtrot"
+    },
+    {
+     "t": 2937,
+     "w": "in"
+    },
+    {
+     "t": 2944,
+     "w": "my"
+    },
+    {
+     "t": 2951,
+     "w": "knee,"
+    }
+   ]
+  },
+  {
+   "start": 2966,
+   "end": 3094,
+   "text": "And a Charleston in my hinges that's as cheeky as can be;",
+   "words": [
+    {
+     "t": 2966,
+     "w": "And"
+    },
+    {
+     "t": 2975,
+     "w": "a"
+    },
+    {
+     "t": 2979,
+     "w": "Charleston"
+    },
+    {
+     "t": 3004,
+     "w": "in"
+    },
+    {
+     "t": 3010,
+     "w": "my"
+    },
+    {
+     "t": 3017,
+     "w": "hinges"
+    },
+    {
+     "t": 3032,
+     "w": "that's"
+    },
+    {
+     "t": 3048,
+     "w": "as"
+    },
+    {
+     "t": 3054,
+     "w": "cheeky"
+    },
+    {
+     "t": 3070,
+     "w": "as"
+    },
+    {
+     "t": 3076,
+     "w": "can"
+    },
+    {
+     "t": 3085,
+     "w": "be;"
+    }
+   ]
+  },
+  {
+   "start": 3096,
+   "end": 3227,
+   "text": "A pirate took my partner and a witch ran off with my hat,",
+   "words": [
+    {
+     "t": 3096,
+     "w": "A"
+    },
+    {
+     "t": 3101,
+     "w": "pirate"
+    },
+    {
+     "t": 3116,
+     "w": "took"
+    },
+    {
+     "t": 3128,
+     "w": "my"
+    },
+    {
+     "t": 3134,
+     "w": "partner"
+    },
+    {
+     "t": 3152,
+     "w": "and"
+    },
+    {
+     "t": 3162,
+     "w": "a"
+    },
+    {
+     "t": 3166,
+     "w": "witch"
+    },
+    {
+     "t": 3180,
+     "w": "ran"
+    },
+    {
+     "t": 3189,
+     "w": "off"
+    },
+    {
+     "t": 3198,
+     "w": "with"
+    },
+    {
+     "t": 3209,
+     "w": "my"
+    },
+    {
+     "t": 3216,
+     "w": "hat,"
+    }
+   ]
+  },
+  {
+   "start": 3229,
+   "end": 3349,
+   "text": "So I'm swinging with a scarecrow — and he's stuffed! Imagine that!",
+   "words": [
+    {
+     "t": 3229,
+     "w": "So"
+    },
+    {
+     "t": 3234,
+     "w": "I'm"
+    },
+    {
+     "t": 3242,
+     "w": "swinging"
+    },
+    {
+     "t": 3258,
+     "w": "with"
+    },
+    {
+     "t": 3267,
+     "w": "a"
+    },
+    {
+     "t": 3270,
+     "w": "scarecrow"
+    },
+    {
+     "t": 3288,
+     "w": "—"
+    },
+    {
+     "t": 3292,
+     "w": "and"
+    },
+    {
+     "t": 3299,
+     "w": "he's"
+    },
+    {
+     "t": 3308,
+     "w": "stuffed!"
+    },
+    {
+     "t": 3324,
+     "w": "Imagine"
+    },
+    {
+     "t": 3338,
+     "w": "that!"
+    }
+   ]
+  },
+  {
+   "start": 3352,
+   "end": 3476,
+   "text": "Nine turns gone, and the room begins to blur,",
+   "words": [
+    {
+     "t": 3352,
+     "w": "Nine"
+    },
+    {
+     "t": 3365,
+     "w": "turns"
+    },
+    {
+     "t": 3382,
+     "w": "gone,"
+    },
+    {
+     "t": 3398,
+     "w": "and"
+    },
+    {
+     "t": 3409,
+     "w": "the"
+    },
+    {
+     "t": 3419,
+     "w": "room"
+    },
+    {
+     "t": 3433,
+     "w": "begins"
+    },
+    {
+     "t": 3452,
+     "w": "to"
+    },
+    {
+     "t": 3460,
+     "w": "blur,"
+    }
+   ]
+  },
+  {
+   "start": 3478,
+   "end": 3607,
+   "text": "The candles drip like honey down the hall;",
+   "words": [
+    {
+     "t": 3478,
+     "w": "The"
+    },
+    {
+     "t": 3490,
+     "w": "candles"
+    },
+    {
+     "t": 3514,
+     "w": "drip"
+    },
+    {
+     "t": 3529,
+     "w": "like"
+    },
+    {
+     "t": 3544,
+     "w": "honey"
+    },
+    {
+     "t": 3562,
+     "w": "down"
+    },
+    {
+     "t": 3577,
+     "w": "the"
+    },
+    {
+     "t": 3589,
+     "w": "hall;"
+    }
+   ]
+  },
+  {
+   "start": 3610,
+   "end": 3744,
+   "text": "My skirt's a pinwheel and my gears all purr —",
+   "words": [
+    {
+     "t": 3610,
+     "w": "My"
+    },
+    {
+     "t": 3619,
+     "w": "skirt's"
+    },
+    {
+     "t": 3642,
+     "w": "a"
+    },
+    {
+     "t": 3648,
+     "w": "pinwheel"
+    },
+    {
+     "t": 3674,
+     "w": "and"
+    },
+    {
+     "t": 3686,
+     "w": "my"
+    },
+    {
+     "t": 3694,
+     "w": "gears"
+    },
+    {
+     "t": 3712,
+     "w": "all"
+    },
+    {
+     "t": 3724,
+     "w": "purr"
+    },
+    {
+     "t": 3738,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 3772,
+   "end": 3862,
+   "text": "Count slower, darling... no, don't count at all.",
+   "words": [
+    {
+     "t": 3772,
+     "w": "Count"
+    },
+    {
+     "t": 3783,
+     "w": "slower,"
+    },
+    {
+     "t": 3798,
+     "w": "darling..."
+    },
+    {
+     "t": 3818,
+     "w": "no,"
+    },
+    {
+     "t": 3825,
+     "w": "don't"
+    },
+    {
+     "t": 3836,
+     "w": "count"
+    },
+    {
+     "t": 3847,
+     "w": "at"
+    },
+    {
+     "t": 3853,
+     "w": "all."
+    }
+   ]
+  },
+  {
+   "start": 3867,
+   "end": 3995,
+   "text": "So wind me up till midnight, till the twelfth bell turns to gold —",
+   "words": [
+    {
+     "t": 3867,
+     "w": "So"
+    },
+    {
+     "t": 3873,
+     "w": "wind"
+    },
+    {
+     "t": 3882,
+     "w": "me"
+    },
+    {
+     "t": 3888,
+     "w": "up"
+    },
+    {
+     "t": 3894,
+     "w": "till"
+    },
+    {
+     "t": 3903,
+     "w": "midnight,"
+    },
+    {
+     "t": 3922,
+     "w": "till"
+    },
+    {
+     "t": 3932,
+     "w": "the"
+    },
+    {
+     "t": 3940,
+     "w": "twelfth"
+    },
+    {
+     "t": 3955,
+     "w": "bell"
+    },
+    {
+     "t": 3964,
+     "w": "turns"
+    },
+    {
+     "t": 3976,
+     "w": "to"
+    },
+    {
+     "t": 3982,
+     "w": "gold"
+    },
+    {
+     "t": 3991,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 3997,
+   "end": 4123,
+   "text": "A clockwork heart keeps better time than any heart of old;",
+   "words": [
+    {
+     "t": 3997,
+     "w": "A"
+    },
+    {
+     "t": 4001,
+     "w": "clockwork"
+    },
+    {
+     "t": 4023,
+     "w": "heart"
+    },
+    {
+     "t": 4035,
+     "w": "keeps"
+    },
+    {
+     "t": 4048,
+     "w": "better"
+    },
+    {
+     "t": 4063,
+     "w": "time"
+    },
+    {
+     "t": 4074,
+     "w": "than"
+    },
+    {
+     "t": 4085,
+     "w": "any"
+    },
+    {
+     "t": 4093,
+     "w": "heart"
+    },
+    {
+     "t": 4106,
+     "w": "of"
+    },
+    {
+     "t": 4112,
+     "w": "old;"
+    }
+   ]
+  },
+  {
+   "start": 4126,
+   "end": 4248,
+   "text": "And if my hands are silver and my blood is but a spring,",
+   "words": [
+    {
+     "t": 4126,
+     "w": "And"
+    },
+    {
+     "t": 4135,
+     "w": "if"
+    },
+    {
+     "t": 4141,
+     "w": "my"
+    },
+    {
+     "t": 4147,
+     "w": "hands"
+    },
+    {
+     "t": 4160,
+     "w": "are"
+    },
+    {
+     "t": 4169,
+     "w": "silver"
+    },
+    {
+     "t": 4184,
+     "w": "and"
+    },
+    {
+     "t": 4192,
+     "w": "my"
+    },
+    {
+     "t": 4199,
+     "w": "blood"
+    },
+    {
+     "t": 4212,
+     "w": "is"
+    },
+    {
+     "t": 4218,
+     "w": "but"
+    },
+    {
+     "t": 4227,
+     "w": "a"
+    },
+    {
+     "t": 4231,
+     "w": "spring,"
+    }
+   ]
+  },
+  {
+   "start": 4250,
+   "end": 4432,
+   "text": "Then let the springs run down, my love — tonight I learn to sing.",
+   "words": [
+    {
+     "t": 4250,
+     "w": "Then"
+    },
+    {
+     "t": 4264,
+     "w": "let"
+    },
+    {
+     "t": 4275,
+     "w": "the"
+    },
+    {
+     "t": 4286,
+     "w": "springs"
+    },
+    {
+     "t": 4308,
+     "w": "run"
+    },
+    {
+     "t": 4319,
+     "w": "down,"
+    },
+    {
+     "t": 4335,
+     "w": "my"
+    },
+    {
+     "t": 4344,
+     "w": "love"
+    },
+    {
+     "t": 4358,
+     "w": "—"
+    },
+    {
+     "t": 4363,
+     "w": "tonight"
+    },
+    {
+     "t": 4385,
+     "w": "I"
+    },
+    {
+     "t": 4391,
+     "w": "learn"
+    },
+    {
+     "t": 4407,
+     "w": "to"
+    },
+    {
+     "t": 4415,
+     "w": "sing."
+    }
+   ]
+  },
+  {
+   "start": 4519,
+   "end": 4646,
+   "text": "I was never given heartbeats, just a tidy little tick,",
+   "words": [
+    {
+     "t": 4519,
+     "w": "I"
+    },
+    {
+     "t": 4524,
+     "w": "was"
+    },
+    {
+     "t": 4533,
+     "w": "never"
+    },
+    {
+     "t": 4547,
+     "w": "given"
+    },
+    {
+     "t": 4561,
+     "w": "heartbeats,"
+    },
+    {
+     "t": 4588,
+     "w": "just"
+    },
+    {
+     "t": 4600,
+     "w": "a"
+    },
+    {
+     "t": 4604,
+     "w": "tidy"
+    },
+    {
+     "t": 4616,
+     "w": "little"
+    },
+    {
+     "t": 4632,
+     "w": "tick,"
+    }
+   ]
+  },
+  {
+   "start": 4648,
+   "end": 4774,
+   "text": "Like a cricket in a teacup, keeping count and keeping quick;",
+   "words": [
+    {
+     "t": 4648,
+     "w": "Like"
+    },
+    {
+     "t": 4658,
+     "w": "a"
+    },
+    {
+     "t": 4662,
+     "w": "cricket"
+    },
+    {
+     "t": 4679,
+     "w": "in"
+    },
+    {
+     "t": 4685,
+     "w": "a"
+    },
+    {
+     "t": 4689,
+     "w": "teacup,"
+    },
+    {
+     "t": 4706,
+     "w": "keeping"
+    },
+    {
+     "t": 4722,
+     "w": "count"
+    },
+    {
+     "t": 4735,
+     "w": "and"
+    },
+    {
+     "t": 4743,
+     "w": "keeping"
+    },
+    {
+     "t": 4760,
+     "w": "quick;"
+    }
+   ]
+  },
+  {
+   "start": 4777,
+   "end": 4891,
+   "text": "But the hearts that whirl around me know a thing I never knew:",
+   "words": [
+    {
+     "t": 4777,
+     "w": "But"
+    },
+    {
+     "t": 4784,
+     "w": "the"
+    },
+    {
+     "t": 4791,
+     "w": "hearts"
+    },
+    {
+     "t": 4804,
+     "w": "that"
+    },
+    {
+     "t": 4813,
+     "w": "whirl"
+    },
+    {
+     "t": 4824,
+     "w": "around"
+    },
+    {
+     "t": 4837,
+     "w": "me"
+    },
+    {
+     "t": 4842,
+     "w": "know"
+    },
+    {
+     "t": 4851,
+     "w": "a"
+    },
+    {
+     "t": 4855,
+     "w": "thing"
+    },
+    {
+     "t": 4866,
+     "w": "I"
+    },
+    {
+     "t": 4869,
+     "w": "never"
+    },
+    {
+     "t": 4880,
+     "w": "knew:"
+    }
+   ]
+  },
+  {
+   "start": 4893,
+   "end": 5041,
+   "text": "That a song is only sweeter when the song is nearly through.",
+   "words": [
+    {
+     "t": 4893,
+     "w": "That"
+    },
+    {
+     "t": 4905,
+     "w": "a"
+    },
+    {
+     "t": 4910,
+     "w": "song"
+    },
+    {
+     "t": 4922,
+     "w": "is"
+    },
+    {
+     "t": 4929,
+     "w": "only"
+    },
+    {
+     "t": 4942,
+     "w": "sweeter"
+    },
+    {
+     "t": 4961,
+     "w": "when"
+    },
+    {
+     "t": 4973,
+     "w": "the"
+    },
+    {
+     "t": 4983,
+     "w": "song"
+    },
+    {
+     "t": 4995,
+     "w": "is"
+    },
+    {
+     "t": 5002,
+     "w": "nearly"
+    },
+    {
+     "t": 5019,
+     "w": "through."
+    }
+   ]
+  },
+  {
+   "start": 5046,
+   "end": 5148,
+   "text": "Eleven turns — the springs are wearing thin,",
+   "words": [
+    {
+     "t": 5046,
+     "w": "Eleven"
+    },
+    {
+     "t": 5062,
+     "w": "turns"
+    },
+    {
+     "t": 5075,
+     "w": "—"
+    },
+    {
+     "t": 5080,
+     "w": "the"
+    },
+    {
+     "t": 5089,
+     "w": "springs"
+    },
+    {
+     "t": 5107,
+     "w": "are"
+    },
+    {
+     "t": 5116,
+     "w": "wearing"
+    },
+    {
+     "t": 5134,
+     "w": "thin,"
+    }
+   ]
+  },
+  {
+   "start": 5150,
+   "end": 5277,
+   "text": "My silver ankles stutter on the floor;",
+   "words": [
+    {
+     "t": 5150,
+     "w": "My"
+    },
+    {
+     "t": 5160,
+     "w": "silver"
+    },
+    {
+     "t": 5183,
+     "w": "ankles"
+    },
+    {
+     "t": 5205,
+     "w": "stutter"
+    },
+    {
+     "t": 5231,
+     "w": "on"
+    },
+    {
+     "t": 5241,
+     "w": "the"
+    },
+    {
+     "t": 5254,
+     "w": "floor;"
+    }
+   ]
+  },
+  {
+   "start": 5279,
+   "end": 5407,
+   "text": "The tower bell has cleared its iron throat,",
+   "words": [
+    {
+     "t": 5279,
+     "w": "The"
+    },
+    {
+     "t": 5291,
+     "w": "tower"
+    },
+    {
+     "t": 5308,
+     "w": "bell"
+    },
+    {
+     "t": 5323,
+     "w": "has"
+    },
+    {
+     "t": 5334,
+     "w": "cleared"
+    },
+    {
+     "t": 5358,
+     "w": "its"
+    },
+    {
+     "t": 5369,
+     "w": "iron"
+    },
+    {
+     "t": 5384,
+     "w": "throat,"
+    }
+   ]
+  },
+  {
+   "start": 5410,
+   "end": 5560,
+   "text": "So kiss the key, and turn me one turn more.",
+   "words": [
+    {
+     "t": 5410,
+     "w": "So"
+    },
+    {
+     "t": 5420,
+     "w": "kiss"
+    },
+    {
+     "t": 5437,
+     "w": "the"
+    },
+    {
+     "t": 5451,
+     "w": "key,"
+    },
+    {
+     "t": 5468,
+     "w": "and"
+    },
+    {
+     "t": 5482,
+     "w": "turn"
+    },
+    {
+     "t": 5499,
+     "w": "me"
+    },
+    {
+     "t": 5509,
+     "w": "one"
+    },
+    {
+     "t": 5522,
+     "w": "turn"
+    },
+    {
+     "t": 5540,
+     "w": "more."
+    }
+   ]
+  },
+  {
+   "start": 5606,
+   "end": 5730,
+   "text": "So wind me up till midnight, till the twelfth bell turns to gold —",
+   "words": [
+    {
+     "t": 5606,
+     "w": "So"
+    },
+    {
+     "t": 5612,
+     "w": "wind"
+    },
+    {
+     "t": 5621,
+     "w": "me"
+    },
+    {
+     "t": 5626,
+     "w": "up"
+    },
+    {
+     "t": 5632,
+     "w": "till"
+    },
+    {
+     "t": 5641,
+     "w": "midnight,"
+    },
+    {
+     "t": 5660,
+     "w": "till"
+    },
+    {
+     "t": 5669,
+     "w": "the"
+    },
+    {
+     "t": 5676,
+     "w": "twelfth"
+    },
+    {
+     "t": 5691,
+     "w": "bell"
+    },
+    {
+     "t": 5700,
+     "w": "turns"
+    },
+    {
+     "t": 5711,
+     "w": "to"
+    },
+    {
+     "t": 5717,
+     "w": "gold"
+    },
+    {
+     "t": 5726,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 5732,
+   "end": 5858,
+   "text": "A clockwork heart keeps better time than any heart of old;",
+   "words": [
+    {
+     "t": 5732,
+     "w": "A"
+    },
+    {
+     "t": 5736,
+     "w": "clockwork"
+    },
+    {
+     "t": 5758,
+     "w": "heart"
+    },
+    {
+     "t": 5770,
+     "w": "keeps"
+    },
+    {
+     "t": 5783,
+     "w": "better"
+    },
+    {
+     "t": 5798,
+     "w": "time"
+    },
+    {
+     "t": 5809,
+     "w": "than"
+    },
+    {
+     "t": 5820,
+     "w": "any"
+    },
+    {
+     "t": 5828,
+     "w": "heart"
+    },
+    {
+     "t": 5841,
+     "w": "of"
+    },
+    {
+     "t": 5847,
+     "w": "old;"
+    }
+   ]
+  },
+  {
+   "start": 5861,
+   "end": 5983,
+   "text": "And if my hands are silver and my blood is but a spring,",
+   "words": [
+    {
+     "t": 5861,
+     "w": "And"
+    },
+    {
+     "t": 5870,
+     "w": "if"
+    },
+    {
+     "t": 5876,
+     "w": "my"
+    },
+    {
+     "t": 5882,
+     "w": "hands"
+    },
+    {
+     "t": 5895,
+     "w": "are"
+    },
+    {
+     "t": 5904,
+     "w": "silver"
+    },
+    {
+     "t": 5919,
+     "w": "and"
+    },
+    {
+     "t": 5927,
+     "w": "my"
+    },
+    {
+     "t": 5934,
+     "w": "blood"
+    },
+    {
+     "t": 5947,
+     "w": "is"
+    },
+    {
+     "t": 5953,
+     "w": "but"
+    },
+    {
+     "t": 5962,
+     "w": "a"
+    },
+    {
+     "t": 5966,
+     "w": "spring,"
+    }
+   ]
+  },
+  {
+   "start": 5986,
+   "end": 6168,
+   "text": "Then let the springs run down, my love — tonight I learn to sing.",
+   "words": [
+    {
+     "t": 5986,
+     "w": "Then"
+    },
+    {
+     "t": 6000,
+     "w": "let"
+    },
+    {
+     "t": 6011,
+     "w": "the"
+    },
+    {
+     "t": 6022,
+     "w": "springs"
+    },
+    {
+     "t": 6044,
+     "w": "run"
+    },
+    {
+     "t": 6055,
+     "w": "down,"
+    },
+    {
+     "t": 6071,
+     "w": "my"
+    },
+    {
+     "t": 6080,
+     "w": "love"
+    },
+    {
+     "t": 6094,
+     "w": "—"
+    },
+    {
+     "t": 6099,
+     "w": "tonight"
+    },
+    {
+     "t": 6121,
+     "w": "I"
+    },
+    {
+     "t": 6127,
+     "w": "learn"
+    },
+    {
+     "t": 6143,
+     "w": "to"
+    },
+    {
+     "t": 6151,
+     "w": "sing."
+    }
+   ]
+  },
+  {
+   "start": 6184,
+   "end": 6309,
+   "text": "So wind me up till midnight, till the twelfth bell turns to gold —",
+   "words": [
+    {
+     "t": 6184,
+     "w": "So"
+    },
+    {
+     "t": 6190,
+     "w": "wind"
+    },
+    {
+     "t": 6199,
+     "w": "me"
+    },
+    {
+     "t": 6205,
+     "w": "up"
+    },
+    {
+     "t": 6210,
+     "w": "till"
+    },
+    {
+     "t": 6219,
+     "w": "midnight,"
+    },
+    {
+     "t": 6238,
+     "w": "till"
+    },
+    {
+     "t": 6247,
+     "w": "the"
+    },
+    {
+     "t": 6255,
+     "w": "twelfth"
+    },
+    {
+     "t": 6270,
+     "w": "bell"
+    },
+    {
+     "t": 6279,
+     "w": "turns"
+    },
+    {
+     "t": 6290,
+     "w": "to"
+    },
+    {
+     "t": 6296,
+     "w": "gold"
+    },
+    {
+     "t": 6305,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 6311,
+   "end": 6436,
+   "text": "A clockwork heart keeps better time, but time is all it holds;",
+   "words": [
+    {
+     "t": 6311,
+     "w": "A"
+    },
+    {
+     "t": 6315,
+     "w": "clockwork"
+    },
+    {
+     "t": 6335,
+     "w": "heart"
+    },
+    {
+     "t": 6347,
+     "w": "keeps"
+    },
+    {
+     "t": 6359,
+     "w": "better"
+    },
+    {
+     "t": 6373,
+     "w": "time,"
+    },
+    {
+     "t": 6384,
+     "w": "but"
+    },
+    {
+     "t": 6392,
+     "w": "time"
+    },
+    {
+     "t": 6402,
+     "w": "is"
+    },
+    {
+     "t": 6408,
+     "w": "all"
+    },
+    {
+     "t": 6416,
+     "w": "it"
+    },
+    {
+     "t": 6422,
+     "w": "holds;"
+    }
+   ]
+  },
+  {
+   "start": 6439,
+   "end": 6563,
+   "text": "And if my hands are silver and my blood is but a spring,",
+   "words": [
+    {
+     "t": 6439,
+     "w": "And"
+    },
+    {
+     "t": 6448,
+     "w": "if"
+    },
+    {
+     "t": 6454,
+     "w": "my"
+    },
+    {
+     "t": 6461,
+     "w": "hands"
+    },
+    {
+     "t": 6474,
+     "w": "are"
+    },
+    {
+     "t": 6483,
+     "w": "silver"
+    },
+    {
+     "t": 6498,
+     "w": "and"
+    },
+    {
+     "t": 6506,
+     "w": "my"
+    },
+    {
+     "t": 6513,
+     "w": "blood"
+    },
+    {
+     "t": 6526,
+     "w": "is"
+    },
+    {
+     "t": 6533,
+     "w": "but"
+    },
+    {
+     "t": 6541,
+     "w": "a"
+    },
+    {
+     "t": 6546,
+     "w": "spring,"
+    }
+   ]
+  },
+  {
+   "start": 6565,
+   "end": 6746,
+   "text": "Then let the springs run down, my love — tonight I learn to sing.",
+   "words": [
+    {
+     "t": 6565,
+     "w": "Then"
+    },
+    {
+     "t": 6579,
+     "w": "let"
+    },
+    {
+     "t": 6590,
+     "w": "the"
+    },
+    {
+     "t": 6601,
+     "w": "springs"
+    },
+    {
+     "t": 6623,
+     "w": "run"
+    },
+    {
+     "t": 6634,
+     "w": "down,"
+    },
+    {
+     "t": 6650,
+     "w": "my"
+    },
+    {
+     "t": 6658,
+     "w": "love"
+    },
+    {
+     "t": 6672,
+     "w": "—"
+    },
+    {
+     "t": 6677,
+     "w": "tonight"
+    },
+    {
+     "t": 6699,
+     "w": "I"
+    },
+    {
+     "t": 6705,
+     "w": "learn"
+    },
+    {
+     "t": 6721,
+     "w": "to"
+    },
+    {
+     "t": 6730,
+     "w": "sing."
+    }
+   ]
+  },
+  {
+   "start": 6772,
+   "end": 6853,
+   "text": "Wind me up till midnight,",
+   "words": [
+    {
+     "t": 6772,
+     "w": "Wind"
+    },
+    {
+     "t": 6788,
+     "w": "me"
+    },
+    {
+     "t": 6797,
+     "w": "up"
+    },
+    {
+     "t": 6806,
+     "w": "till"
+    },
+    {
+     "t": 6822,
+     "w": "midnight,"
+    }
+   ]
+  },
+  {
+   "start": 6892,
+   "end": 6978,
+   "text": "Then let the key go still;",
+   "words": [
+    {
+     "t": 6892,
+     "w": "Then"
+    },
+    {
+     "t": 6908,
+     "w": "let"
+    },
+    {
+     "t": 6921,
+     "w": "the"
+    },
+    {
+     "t": 6933,
+     "w": "key"
+    },
+    {
+     "t": 6946,
+     "w": "go"
+    },
+    {
+     "t": 6956,
+     "w": "still;"
+    }
+   ]
+  },
+  {
+   "start": 7010,
+   "end": 7113,
+   "text": "The tower keeps the hours, love —",
+   "words": [
+    {
+     "t": 7010,
+     "w": "The"
+    },
+    {
+     "t": 7022,
+     "w": "tower"
+    },
+    {
+     "t": 7040,
+     "w": "keeps"
+    },
+    {
+     "t": 7058,
+     "w": "the"
+    },
+    {
+     "t": 7071,
+     "w": "hours,"
+    },
+    {
+     "t": 7092,
+     "w": "love"
+    },
+    {
+     "t": 7107,
+     "w": "—"
+    }
+   ]
+  },
+  {
+   "start": 7128,
+   "end": 7438,
+   "text": "And I will keep the trill.",
+   "words": [
+    {
+     "t": 7128,
+     "w": "And"
+    },
+    {
+     "t": 7174,
+     "w": "I"
+    },
+    {
+     "t": 7197,
+     "w": "will"
+    },
+    {
+     "t": 7254,
+     "w": "keep"
+    },
+    {
+     "t": 7312,
+     "w": "the"
+    },
+    {
+     "t": 7358,
+     "w": "trill."
+    }
+   ]
+  }
+ ],
+ "title1": "WIND ME UP",
+ "title2": "TILL MIDNIGHT",
+ "tag": "♪ WIND ME UP TILL MIDNIGHT",
+ "label": "HER HOURS · EIRA",
+ "singer": "Eira",
+ "brand": "HER HOURS",
+ "accent": "#FFB04A",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

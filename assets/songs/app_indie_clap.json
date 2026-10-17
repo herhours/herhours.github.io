@@ -1,0 +1,15 @@
+{
+ "name": "Indie Clap",
+ "file": "assets/songs/app_indie_clap.mp3",
+ "phrases": [],
+ "title1": "INDIE",
+ "title2": "CLAP",
+ "tag": "♪ INDIE CLAP",
+ "label": "HER HOURS · UPBEAT",
+ "brand": "HER HOURS",
+ "accent": "#FFB86B",
+ "ink": "#0b0b14",
+ "cream": "#f5efe8",
+ "shot": 80,
+ "crossfade": 12
+}

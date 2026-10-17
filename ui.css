@@ -11,7 +11,7 @@
   --line:rgba(255,255,255,.16); --line-2:rgba(255,255,255,.28);
   --cream:#F4F1EA; --dim:#B9C1CE; --accent:#8CFFB0; --accent-ink:#05130A;
 
-  --t-xs:15px; --t-s:17px; --t-m:19px; --t-l:22px; --t-xl:30px;
+  --t-xs:16px; --t-s:18px; --t-m:20px; --t-l:23px; --t-xl:30px;
   --hit:52px; --r:18px;
   --safe-b:env(safe-area-inset-bottom,0px);
 }
@@ -70,6 +70,7 @@ body.is-making .live,body.is-done .live{display:none}
 body.is-making .making{display:flex}
 .making #pct{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--accent)}
 .making #status{font-size:var(--t-s);color:var(--cream);margin-top:6px}
+.making #eta{font-size:var(--t-xs);color:var(--cream);opacity:.85;margin-top:10px;text-align:center;max-width:300px;line-height:1.45}
 .bar{width:calc(100% - 36px);height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:14px}
 .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
 body:not(.is-making) #status:not(.err){display:none}
@@ -130,7 +131,38 @@ body[data-pane="photo"] .pane-photo,
 body[data-pane="song"] .pane-song,
 body[data-pane="text"] .pane-text,
 body[data-pane="info"] .pane-info,
-body[data-pane="welcome"] .pane-welcome{display:block}
+body[data-pane="welcome"] .pane-welcome,
+body[data-pane="resume"] .pane-resume,
+body[data-pane="made"] .pane-made{display:block}
+
+/* ---------- 10-11 phone test fixes ---------- */
+.top .lnks{display:flex;gap:8px}
+/* a way out of the step chain that is always in the same place */
+.panel .x{position:absolute;top:8px;right:12px;width:44px;height:44px;border-radius:50%;font-size:20px;color:var(--dim);
+  display:grid;place-items:center;z-index:1}
+.rail .mine-list{margin-top:10px}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 rgba(140,255,176,.0)}50%{box-shadow:0 0 0 7px rgba(140,255,176,.35)}}
+.nudge{animation:nudge 1.2s ease-in-out 3}
+#save.nudge{border-color:var(--accent);color:var(--accent)}
+/* photos appear one by one as they are read, so a slow phone shows progress instead of a blank row */
+.thumbs .ph,.thumbs .th{flex:0 0 auto;width:74px;height:74px;border-radius:10px;background:#1b1f2a}
+@keyframes ph{50%{opacity:.45}}
+.thumbs .ph{animation:ph 1s ease-in-out infinite}
+.resume-info{font-size:var(--t-s);color:var(--cream);margin:0 0 16px;line-height:1.45}
+.made{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.made img,.made .noimg{flex:0 0 auto;width:66px;aspect-ratio:9/16;border-radius:10px;object-fit:cover;background:#1b1f2a}
+.made .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.made .t b{font-size:var(--t-s)}
+.made .t>span:not(.acts){font-size:var(--t-xs);color:var(--dim);line-height:1.35}
+.made .acts{display:flex;gap:8px;margin-top:6px}
+.made .sm{min-height:44px;font-size:var(--t-xs);flex:1;width:auto}
+.made .del.sure{border-color:#FF8A7A;color:#FF8A7A;font-weight:800}
+/* opened inside KakaoTalk & co. */
+.inapp{position:fixed;top:0;left:0;right:0;z-index:20;background:#2a1f0e;border-bottom:2px solid #FFC27A;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 12px;color:#fff}
+.inapp p{margin:0 0 10px;font-size:var(--t-s);font-weight:700;line-height:1.4}
+.inapp .pill{min-height:48px;font-size:var(--t-m)}
+.inapp .again{min-height:48px;color:#fff}
 
 /* photo pane */
 input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -140,10 +172,21 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .two>*{flex:1}
 
 /* song pane */
+.song-group{margin:14px 4px 6px;font-size:var(--t-xs);color:var(--dim);letter-spacing:.04em}
+.song-group:first-child{margin-top:0}
+.done-credit{margin:4px 0 0;font-size:var(--t-xs);color:var(--dim);text-align:center;user-select:all}
+.done-credit:empty{display:none}
 .opt{display:flex;align-items:center;gap:12px;min-height:64px;padding:0 16px;border-radius:16px;
   border:2px solid var(--line);background:rgba(255,255,255,.03);width:100%;text-align:left;margin-bottom:10px;font-size:var(--t-s)}
 .opt .t{flex:1;min-width:0}
 .opt .t b{display:block;font-size:var(--t-s);font-weight:700}
+/* song covers: a face for our singers, a mood colour for the backing tracks (10-11 시안 A) */
+.opt .cov{width:56px;height:56px;border-radius:12px;flex:none;object-fit:cover;margin-left:-8px;background:#111;
+  display:grid;place-items:center;color:#fff}
+.opt:has(.cov){min-height:76px}
+.opt .gr-upbeat{background:linear-gradient(135deg,#ff7aa8,#7a5cff)}
+.opt .gr-bright{background:linear-gradient(135deg,#ffd36e,#5fa8ff)}
+.opt .gr-tension{background:linear-gradient(135deg,#3b3f5c,#0d0f15);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
 .opt .t span{display:block;font-size:var(--t-xs);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opt.on{border-color:var(--accent);background:rgba(140,255,176,.08)}
 .opt.on .t b{color:var(--accent)}
