@@ -248,3 +248,29 @@ body:not(.ready) .tap{visibility:hidden}
 .fbemo button{flex:1;font-size:38px;line-height:1;min-height:64px;border-radius:18px;border:2px solid var(--line);background:transparent;transition:transform .12s}
 .fbemo button.on{border-color:var(--cream);background:rgba(255,255,255,.12);transform:scale(1.08)}
 #fbText{width:100%;min-height:var(--hit);font-size:var(--t-m);padding:0 14px;border-radius:14px;border:2px solid var(--line-2);background:transparent;color:var(--cream)}
+/* ---------- 10-18 class link: the making and done screens wear the chosen template's type (영샘, Galaxy test) ---------- */
+/* 민정샘 · 핼러윈: poster face, neon orange glow, an orange-to-violet bar */
+body.th-halloween .making #pct{font-family:"Black Han Sans","HHKrSans",sans-serif;font-weight:400;font-size:64px;letter-spacing:1px;color:#fff;
+  text-shadow:0 0 14px #FF8A3D,0 0 34px rgba(255,138,61,.7)}
+body.th-halloween .making #status{font-family:"Black Han Sans","HHKrSans",sans-serif;font-size:19px;color:#FFB066;letter-spacing:.5px}
+body.th-halloween .making #eta{font-family:"Black Han Sans","HHKrSans",sans-serif;font-size:15px;color:#E9DAFF;opacity:.95;line-height:1.55}
+body.th-halloween .bar{height:10px;background:rgba(181,124,255,.18)}
+body.th-halloween .bar i{background:linear-gradient(90deg,#FF8A3D,#FF5FA2,#B57CFF);box-shadow:0 0 12px #FF8A3D}
+body.th-halloween .done-meta{font-family:"Black Han Sans","HHKrSans",sans-serif;font-size:17px;color:#FFD9B0;letter-spacing:.3px;text-shadow:0 0 10px rgba(255,138,61,.5)}
+body.th-halloween .done-credit{font-family:"Black Han Sans","HHKrSans",sans-serif;color:#C9B3FF}
+body.th-halloween #share,body.th-halloween #make{font-family:"Black Han Sans","HHKrSans",sans-serif;font-weight:400;font-size:21px;letter-spacing:.5px;color:#fff;
+  background:linear-gradient(90deg,#FF8A3D,#FF5FA2);box-shadow:0 0 18px rgba(255,95,162,.55),0 0 2px #fff inset}
+body.th-halloween #save,body.th-halloween #again,body.th-halloween .fbopen{font-family:"Black Han Sans","HHKrSans",sans-serif;font-weight:400;color:#F2E8FF;
+  border-color:#B57CFF;box-shadow:0 0 10px rgba(181,124,255,.45)}
+/* 민정샘 (일반): the Her Hours dress — gold Josefin numbers, MaruBuri words, champagne gold bar and buttons */
+body.th-everyday .making #pct{font-family:"HHSans","HHKr",serif;font-weight:400;font-size:58px;letter-spacing:6px;color:#f3dca2;text-shadow:0 0 18px rgba(243,220,162,.35)}
+body.th-everyday .making #status{font-family:"HHKr",serif;font-size:18px;color:#f5efe8;letter-spacing:2px}
+body.th-everyday .making #eta{font-family:"HHKr",serif;font-size:15px;color:#e8dcc4;opacity:.9;line-height:1.7;letter-spacing:.5px}
+body.th-everyday .bar{height:3px;background:rgba(243,220,162,.18)}
+body.th-everyday .bar i{background:linear-gradient(90deg,#c99a52,#f3dca2,#fff3d0)}
+body.th-everyday .done-meta{font-family:"HHKr",serif;font-size:16px;color:#f3dca2;letter-spacing:1px}
+body.th-everyday .done-credit{font-family:"HHSans",serif;letter-spacing:2px;color:#d9c7a0}
+body.th-everyday #share,body.th-everyday #make{font-family:"HHKr",serif;font-weight:700;font-size:19px;letter-spacing:3px;color:#1a120a;
+  background:linear-gradient(180deg,#fff3d0,#f3dca2 45%,#c99a52);box-shadow:0 4px 18px rgba(201,154,82,.35)}
+body.th-everyday #save,body.th-everyday #again,body.th-everyday .fbopen{font-family:"HHKr",serif;letter-spacing:2px;color:#f3dca2;border-color:rgba(243,220,162,.6)}
+body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .done-meta,body.th-everyday .done-meta{word-break:keep-all}
