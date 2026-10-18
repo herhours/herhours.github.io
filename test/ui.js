@@ -57,6 +57,9 @@ function rebuild() {
   // our own song's lyrics are timed from 0; a later start moves them with it
   if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
   S.d = S.look.build(base, S.beat);
+  // 10-18 (영샘, Galaxy test): on the class link the making/done screens wear the chosen template's type too
+  document.body.classList.toggle('th-halloween', KIDS && S.look.theme === 'halloween');
+  document.body.classList.toggle('th-everyday', KIDS && S.look.theme === 'everyday');
   saveSoon();
 }
 const demoFor = (look) => (KIDS && S.demoKids[look.theme || 'everyday']?.length ? S.demoKids[look.theme || 'everyday'] : look.id === 'halloween' && S.demoHw.length ? S.demoHw : S.demo);
@@ -685,7 +688,8 @@ async function make() {
     // 영샘 10-10: on a phone the wait looked frozen - say roughly how long, measured on 영샘's phones
     // (Android with video clips: 180s took 203s with the constant-rate encoder, 127s took 334s before it; iPhone with photos:
     // 32s took 30s ≈ 1x) + ~40s to get ready
-    const live = S.images.some((c) => c.live), estSec = 40 + seconds * (live ? 1.5 : 1.2), est = Math.ceil(estSec / 60);
+    // 10-18 class-link test (photos only, 32s): Galaxy 43.5s / 43.9s, iPhone 49.3s — the old guess said "about 2 minutes"
+    const live = S.images.some((c) => c.live), estSec = live ? 40 + seconds * 1.5 : 15 + seconds * 1.1, est = Math.ceil(estSec / 60);
     $('eta').textContent = T(`예상 ${est <= 1 ? '1분 안쪽' : `약 ${est}분`} · 화면을 켜 둔 채 기다려 주세요. 처음 한 번은 글꼴을 받느라 조금 더 걸려요.`,
       `About ${est <= 1 ? 'a minute' : `${est} minutes`} · keep the screen on. The first time takes a little longer while fonts download.`);
     // A clip's <video> can pass the clean-probe and then turn protected while it plays (Android, HEVC through the
