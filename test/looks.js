@@ -1393,6 +1393,841 @@ function drawHalloween(ctx, f, N, d) {
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
 }
 
+// =====================================================================================
+// 민정샘 — a primary-school class template (10-18, for 민정샘's IT class).
+// v2 Halloween Night Pop (영샘 10-18: v1 stickers and round letters read like a kindergarten —
+// "핼러윈 컨셉에 세련되게, 요즘 애들 엄청 감각적이야"). A violet night with an orange moon glow and
+// grain; the photo in a rounded frame with a neon edge that changes colour each cut; thin neon line
+// icons (moon, bat, web, sparkle, star) that flicker on the beat; condensed caps over a clean Hangul
+// face; a glass caption for lyrics or the class's own lines; and at the end a neon badge whose ring
+// reads MINJEONG CLASS · HALLOWEEN while the centre says 「참 잘했어요」 — the teacher's stamp, grown up.
+// =====================================================================================
+const F_NP_DISPLAY = `"HHDisplay","HHKrSans",${KR},sans-serif`;
+const F_NP_KR = `"HHKrSans",${KR},sans-serif`;
+const F_NP_CAPS = `"HHSans","HHKrSans",${KR},sans-serif`;
+// text that tells the two dresses apart (영샘 10-18): Halloween writes Hangul in a heavy poster face (Google Fonts,
+// sliced like Gaegu), the Her Hours dress in MaruBuri behind Josefin
+const F_NP_POSTER = `"Black Han Sans","HHKrSans",${KR},sans-serif`;
+const F_NP_SERIFCAPS = `"HHSans","HHKr",${KR},serif`;
+// Two dresses for one grammar (영샘 10-18: "템플릿 두 개 — 지금 핼러윈 특집, 하나는 일반")
+const NP_THEMES = {
+  halloween: { style: 'neon', halloween: true, neon: ['#FF8A3D', '#B57CFF', '#7CFFB2', '#FF5FA2'], sky: ['#140a2a', '#1e1142', '#2b0f36'],
+    glow: [255, 150, 70], glowAt: [850, 300], wash: 'rgba(20,10,40,', icons: [0, 8, 9, 1, 2, 3],
+    ring: 'HALLOWEEN', sign: '#FF5FA2', signIcon: 8, signIconColor: '#FF8A3D', badge: '#FF8A3D' },
+  // the Her Hours dress (영샘 10-18: "일반용은 우리 기존 스타일의 색감 텍스트 느낌으로"): ink and warm amber, champagne
+  // gold lines, the title script over spaced Josefin caps, the app's gold italic lyric, embers instead of neon icons
+  everyday: { style: 'hh', neon: ['#f3dca2', '#ffb063', '#f5efe8', '#d9b77a'], sky: ['#0b0a0c', '#15100d', '#22170f'],
+    glow: [255, 176, 99], glowAt: [540, 1500], wash: 'rgba(11,10,12,', icons: [],
+    ring: 'HER HOURS SHORTS', sign: '#f3dca2', signIcon: 3, signIconColor: '#f3dca2', badge: '#f3dca2' },
+};
+
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+}
+
+// thin neon line icons, drawn as paths so every phone shows the same thing
+function npIcon(ctx, kind, s) {
+  ctx.beginPath();
+  if (kind === 0) {          // crescent moon
+    ctx.arc(0, 0, s, Math.PI * 0.25, Math.PI * 1.75);
+    ctx.arc(s * 0.42, 0, s * 0.78, Math.PI * 1.62, Math.PI * 0.38, true);
+    ctx.closePath();
+  } else if (kind === 1) {   // bat
+    ctx.moveTo(0, -s * 0.18);
+    ctx.quadraticCurveTo(-s * 0.45, -s * 0.6, -s, -s * 0.3);
+    ctx.quadraticCurveTo(-s * 0.78, -s * 0.05, -s * 0.85, s * 0.25);
+    ctx.quadraticCurveTo(-s * 0.55, s * 0.02, -s * 0.38, s * 0.3);
+    ctx.quadraticCurveTo(-s * 0.2, s * 0.08, 0, s * 0.35);
+    ctx.quadraticCurveTo(s * 0.2, s * 0.08, s * 0.38, s * 0.3);
+    ctx.quadraticCurveTo(s * 0.55, s * 0.02, s * 0.85, s * 0.25);
+    ctx.quadraticCurveTo(s * 0.78, -s * 0.05, s, -s * 0.3);
+    ctx.quadraticCurveTo(s * 0.45, -s * 0.6, 0, -s * 0.18);
+    ctx.closePath();
+  } else if (kind === 2) {   // spider web corner: spokes and arcs
+    for (let i = 0; i <= 4; i++) { const a = (i / 4) * Math.PI / 2; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * s * 1.4, Math.sin(a) * s * 1.4); }
+    for (let r = 1; r <= 3; r++) {
+      const rr = (r / 3) * s * 1.3;
+      ctx.moveTo(rr, 0);
+      for (let i = 1; i <= 4; i++) { const a = (i / 4) * Math.PI / 2, am = ((i - 0.5) / 4) * Math.PI / 2; ctx.quadraticCurveTo(Math.cos(am) * rr * 0.86, Math.sin(am) * rr * 0.86, Math.cos(a) * rr, Math.sin(a) * rr); }
+    }
+  } else if (kind === 3) {   // four-point sparkle
+    for (let i = 0; i < 8; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 4, r = i % 2 ? s * 0.2 : s; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    ctx.closePath();
+  } else if (kind === 5) {   // heart
+    ctx.moveTo(0, s * 0.8);
+    ctx.bezierCurveTo(-s * 1.1, s * 0.05, -s * 0.55, -s * 0.9, 0, -s * 0.3);
+    ctx.bezierCurveTo(s * 0.55, -s * 0.9, s * 1.1, s * 0.05, 0, s * 0.8);
+  } else if (kind === 6) {   // music note
+    ctx.ellipse(-s * 0.35, s * 0.55, s * 0.32, s * 0.24, -0.4, 0, Math.PI * 2);
+    ctx.moveTo(-s * 0.05, s * 0.5); ctx.lineTo(-s * 0.05, -s * 0.8); ctx.quadraticCurveTo(s * 0.35, -s * 0.55, s * 0.55, -s * 0.15);
+  } else if (kind === 7) {   // lightning bolt
+    ctx.moveTo(s * 0.2, -s); ctx.lineTo(-s * 0.45, s * 0.1); ctx.lineTo(0, s * 0.1); ctx.lineTo(-s * 0.2, s); ctx.lineTo(s * 0.45, -s * 0.15); ctx.lineTo(0, -s * 0.15);
+    ctx.closePath();
+  } else if (kind === 8) {   // jack-o'-lantern
+    ctx.ellipse(0, s * 0.1, s, s * 0.82, 0, 0, Math.PI * 2);
+    ctx.moveTo(-s * 0.32, -s * 0.66); ctx.quadraticCurveTo(-s * 0.48, s * 0.1, -s * 0.32, s * 0.86);
+    ctx.moveTo(s * 0.32, -s * 0.66); ctx.quadraticCurveTo(s * 0.48, s * 0.1, s * 0.32, s * 0.86);
+    ctx.moveTo(0, -s * 0.72); ctx.lineTo(s * 0.12, -s * 1.05);
+    ctx.moveTo(-s * 0.5, -s * 0.05); ctx.lineTo(-s * 0.3, -s * 0.32); ctx.lineTo(-s * 0.14, -s * 0.05); ctx.closePath();
+    ctx.moveTo(s * 0.5, -s * 0.05); ctx.lineTo(s * 0.3, -s * 0.32); ctx.lineTo(s * 0.14, -s * 0.05); ctx.closePath();
+    ctx.moveTo(-s * 0.5, s * 0.28); for (let i = 1; i <= 6; i++) ctx.lineTo(-s * 0.5 + (i * s) / 6, s * (i % 2 ? 0.48 : 0.3));
+  } else if (kind === 9) {   // ghost
+    ctx.moveTo(-s * 0.7, s * 0.9); ctx.lineTo(-s * 0.7, -s * 0.1); ctx.arc(0, -s * 0.1, s * 0.7, Math.PI, 0);
+    ctx.lineTo(s * 0.7, s * 0.9);
+    for (let i = 1; i <= 4; i++) ctx.quadraticCurveTo(s * 0.7 - (i - 0.5) * s * 0.35, s * (i % 2 ? 0.6 : 1.05), s * 0.7 - i * s * 0.35, s * 0.9);
+    ctx.closePath();
+    ctx.moveTo(-s * 0.15, -s * 0.2); ctx.arc(-s * 0.25, -s * 0.2, s * 0.1, 0, Math.PI * 2);
+    ctx.moveTo(s * 0.35, -s * 0.2); ctx.arc(s * 0.25, -s * 0.2, s * 0.1, 0, Math.PI * 2);
+  } else {                   // outline star
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? s * 0.45 : s; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    ctx.closePath();
+  }
+}
+function npNeonIcon(ctx, kind, x, y, s, rot, color, alpha, soft) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.globalAlpha = alpha;
+  npIcon(ctx, kind, s);
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.shadowColor = color; ctx.shadowBlur = soft ? 8 : 22; ctx.lineWidth = soft ? 3 : 5; ctx.strokeStyle = color; ctx.stroke();
+  ctx.shadowBlur = 0; ctx.lineWidth = soft ? 1 : 2; ctx.strokeStyle = soft ? '#fff6dc' : '#fff'; ctx.stroke();
+  ctx.restore();
+}
+
+const NP_W = 840, NP_H = 1040, NP_Y = 1040;
+const HH = (th) => th.style === 'hh';
+// a photo frame: a neon tube for Halloween, a fine champagne double line for the Her Hours dress
+function npFrame(ctx, x, y, w, h, r, th, color, glow) {
+  rrect(ctx, x, y, w, h, r);
+  if (HH(th)) {
+    ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.stroke();
+    rrect(ctx, x + 10, y + 10, w - 20, h - 20, Math.max(4, r - 8)); ctx.lineWidth = 1; ctx.globalAlpha *= 0.55; ctx.stroke(); ctx.globalAlpha /= 0.55;
+  } else {
+    ctx.shadowColor = color; ctx.shadowBlur = 26 + glow * 22; ctx.lineWidth = 5; ctx.strokeStyle = color; ctx.stroke();
+    ctx.shadowBlur = 0; ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke();
+  }
+}
+// the photo inside a frame, moved the way the approved looks move a still (blackMove: scale, x/y in %, rot in degrees)
+function npPhoto(ctx, img, x, y, w, h, mv) {
+  ctx.save();
+  ctx.translate(x + w / 2, y + h / 2); ctx.scale(mv.scale, mv.scale);
+  ctx.translate((mv.x / 100) * w, (mv.y / 100) * h); ctx.rotate((mv.rot * Math.PI) / 180);
+  drawCover(ctx, img, -w / 2, -h / 2, w, h, 1, 0);
+  ctx.restore();
+}
+function npCard(ctx, img, cx, cy, sc, alpha, neon, f, glow, th, mv, rot = 0) {
+  if (!img) return;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(sc, sc);
+  const x = -NP_W / 2, y = -NP_H / 2, r = HH(th) ? 8 : 44;
+  ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 24;
+  rrect(ctx, x, y, NP_W, NP_H, r); ctx.fillStyle = '#0b0718'; ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  ctx.save(); rrect(ctx, x, y, NP_W, NP_H, r); ctx.clip();
+  npPhoto(ctx, img, x, y, NP_W, NP_H, mv || { scale: 1.06 + 0.04 * Math.sin(f / 50), x: 0, y: 0, rot: 0 });
+  // a wash at the foot, so the caption and the ground run into the photo
+  const wash = ctx.createLinearGradient(0, y + NP_H * 0.55, 0, y + NP_H);
+  wash.addColorStop(0, th.wash + '0)'); wash.addColorStop(1, th.wash + '0.55)');
+  ctx.fillStyle = wash; ctx.fillRect(x, y, NP_W, NP_H);
+  ctx.restore();
+  npFrame(ctx, x, y, NP_W, NP_H, r, th, neon, glow);
+  ctx.restore();
+}
+
+// The class name as a sign hung on the card's top-left corner (영샘 10-18: plain text did not catch the eye —
+// "모션 그래픽으로"). Halloween: a neon tube that traces round, sputters each letter alight and blinks now and then.
+// Her Hours dress: a gold-lined plate whose letters shimmer in one by one. Both swing when a new photo lands.
+function npSign(ctx, text, f, local, idx, kick, th) {
+  const SIGN = th.sign, hh = HH(th);
+  const t = f - 10;
+  if (t < 0) return;
+  ctx.save();
+  ctx.font = hh ? `60px ${F_NP_SERIFCAPS}` : `66px ${F_NP_POSTER}`; ctx.letterSpacing = hh ? '10px' : '4px';
+  const chars = [...text], tw = ctx.measureText(text).width;
+  const pw = tw + 150, ph = 116, x0 = 92, cy = NP_Y - NP_H / 2 + 4;
+  const swing = (idx ? 0.07 * Math.exp(-local / 12) * Math.sin(local / 2.6) : 0) + Math.sin(f / 34) * 0.012;
+  ctx.translate(x0, cy - 40); ctx.rotate(-0.07 + swing); ctx.translate(0, 40);   // hangs from its left nail
+  ctx.strokeStyle = hh ? 'rgba(243,220,162,0.45)' : 'rgba(255,255,255,0.35)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(30, -ph / 2); ctx.lineTo(10, -ph / 2 - 34); ctx.lineTo(pw - 30, -ph / 2); ctx.stroke();
+  ctx.fillStyle = hh ? '#f3dca2' : '#fff'; ctx.beginPath(); ctx.arc(10, -ph / 2 - 34, 5, 0, Math.PI * 2); ctx.fill();
+  rrect(ctx, 0, -ph / 2, pw, ph, hh ? 10 : ph / 2); ctx.fillStyle = hh ? 'rgba(11,10,12,0.9)' : 'rgba(16,8,34,0.88)'; ctx.fill();
+  const trace = out(clamp(t / 14)), per = 2 * (pw + ph);
+  ctx.setLineDash([per * trace, per]);
+  if (hh) { rrect(ctx, 0, -ph / 2, pw, ph, 10); ctx.lineWidth = 2.5; ctx.strokeStyle = SIGN; ctx.stroke(); rrect(ctx, 7, -ph / 2 + 7, pw - 14, ph - 14, 6); ctx.lineWidth = 1; ctx.stroke(); }
+  else {
+    rrect(ctx, 0, -ph / 2, pw, ph, ph / 2);
+    ctx.shadowColor = SIGN; ctx.shadowBlur = 20 + kick * 20; ctx.lineWidth = 5; ctx.strokeStyle = SIGN; ctx.stroke();
+    ctx.shadowBlur = 0; ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  if (trace > 0.3) npNeonIcon(ctx, th.signIcon, 58, 0, 24, -0.4, th.signIconColor, clamp((trace - 0.3) * 3), hh);
+  const blinkAt = Math.floor(f / 75), blinkIdx = Math.floor(hash(blinkAt, 11) * chars.length);
+  let x = 104;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  chars.forEach((ch, i) => {
+    const cw = ctx.measureText(ch).width;
+    const on = t - 12 - i * 4;
+    let a = 0;
+    if (hh) a = out(clamp(on / 10));
+    else {
+      if (on >= 8) a = 1;
+      else if (on >= 0) a = hash(i * 31 + Math.floor(f / 2), 13) > 0.45 ? 1 : 0.15;
+      if (on >= 8 && i === blinkIdx && f % 75 > 60 && f % 75 < 64) a = 0.2;
+    }
+    if (a > 0 && ch.trim()) {
+      ctx.globalAlpha = a;
+      if (hh) {
+        // a gold glint runs across the letters once they are lit
+        const glint = clamp(1 - Math.abs(((f % 120) / 120) * (chars.length + 6) - 3 - i) / 2);
+        ctx.shadowColor = 'rgba(243,220,162,0.6)'; ctx.shadowBlur = 8 + glint * 18;
+        ctx.fillStyle = glint > 0.3 ? '#fff6dc' : '#f5efe8'; ctx.fillText(ch, x, 4);
+        ctx.shadowBlur = 0;
+      } else {
+        ctx.shadowColor = SIGN; ctx.shadowBlur = 16 + kick * 18; ctx.fillStyle = '#FFE3F0'; ctx.fillText(ch, x, 3);
+        ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; ctx.fillText(ch, x, 3);
+      }
+    }
+    x += cw;
+  });
+  ctx.restore();
+  ctx.globalAlpha = 1; ctx.textBaseline = 'alphabetic'; ctx.letterSpacing = '0px'; ctx.textAlign = 'center';
+}
+
+// The middle third: three wide panels, each cutting on its own beat (EP02 Emberfall's grammar — the channel's
+// best short), sliding in from alternate sides, with a mirrored pulse of the music underneath.
+const TRI_Y = 530, TRI_H = 310, TRI_GAP = 20;
+function npTriptych(ctx, d, f, kick) {
+  const { images, bp, th } = d, [s0, s1] = d.tri, t = f - s0, n = images.length, hh = HH(th), r = hh ? 6 : 30;
+  const leave = out(clamp((f - (s1 - 7)) / 7));
+  for (let k = 0; k < 3; k++) {
+    const side = k % 2 ? 1 : -1;
+    const own = t - k * bp, cut = Math.max(0, Math.floor(own / (3 * bp))), since = own - cut * 3 * bp;
+    const at = (c) => images[(Math.floor(s0 / d.step) + c * 3 + k) % n];
+    const neon = th.neon[(cut + k) % th.neon.length];
+    let x = (W - NP_W) / 2, y = TRI_Y + k * (TRI_H + TRI_GAP), a = 1 - leave, clipW = NP_W;
+    if (hh) {
+      // curtains: each panel opens from its centre, one after another, and the whole set fades away at the end
+      clipW = NP_W * inOut(clamp((t - k * 5) / 16));
+    } else {
+      // drops in from the top with a bounce, flies back up at the end; on a cut the panel glitches sideways
+      const e = clamp((t - k * 5) / 14);
+      y += -(1 - (e >= 1 ? 1 : back(e))) * 700 - leave * 900;
+      if (own >= 0 && cut > 0 && since < 6) x += (hash(f * 3 + k, 51) - 0.5) * 40;
+    }
+    if (clipW < 2) continue;
+    ctx.save(); ctx.globalAlpha = a;
+    const cx0 = x + (NP_W - clipW) / 2;
+    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 14;
+    rrect(ctx, cx0, y, clipW, TRI_H, r); ctx.fillStyle = '#0b0718'; ctx.fill();
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    ctx.save(); rrect(ctx, cx0, y, clipW, TRI_H, r); ctx.clip();
+    if (hh) {
+      // each panel drifts with its own move (Clockface 하루) and dissolves into the next photo
+      const prog = clamp(Math.max(0, since) / (3 * bp)), mvOf = (c, q) => blackMove(DAY_MOVES[(c * 3 + k) % DAY_MOVES.length], q, side);
+      if (cut > 0 && since < 12) npPhoto(ctx, at(cut - 1), x, y, NP_W, TRI_H, mvOf(cut - 1, 1));
+      ctx.globalAlpha = a * (cut > 0 ? inOut(clamp(since / 12)) : 1);
+      npPhoto(ctx, at(cut), x, y, NP_W, TRI_H, mvOf(cut, prog));
+    } else {
+      npPhoto(ctx, at(cut), x, y, NP_W, TRI_H, { scale: 1.08 + 0.05 * clamp(since / (3 * bp)), x: 0, y: 0, rot: 0 });
+      if (own >= 0 && cut > 0 && since < 5) { ctx.globalAlpha = (1 - since / 5) * 0.5; ctx.fillStyle = '#d9c2ff'; ctx.fillRect(x, y, NP_W, TRI_H); }
+    }
+    ctx.restore();
+    ctx.globalAlpha = a;
+    npFrame(ctx, cx0, y, clipW, TRI_H, r, th, neon, kick);
+    ctx.restore();
+  }
+  npPulse(ctx, d, f, kick, TRI_Y + 3 * TRI_H + 2 * TRI_GAP + 82, out(clamp(t / 14)) * (1 - leave));
+}
+
+// the pulse: mirrored bars from the centre out, low notes in the middle
+function npPulse(ctx, d, f, kick, cy, alpha) {
+  const { th } = d, spec = d.spec, bands = d.bands, half = 28, gap = 15;
+  const band = (i) => (spec ? spec[Math.min(f, spec.length / bands - 1) * bands + i] || 0 : 0);
+  ctx.save(); ctx.globalAlpha = alpha; ctx.lineCap = 'round'; ctx.lineWidth = HH(th) ? 5 : 9;
+  for (let i = 0; i < half; i++) {
+    const v = spec ? band(Math.min(bands - 1, Math.round(i * 1.6))) : 0.03 + 0.03 * kick;
+    const h = 10 + Math.min(1, Math.sqrt(v / 0.2)) * 120;   // spectrum values are small (median ~0.01) - the root spreads them
+    const col = th.neon[Math.floor(i / 7) % th.neon.length];
+    ctx.strokeStyle = col; ctx.shadowColor = col; ctx.shadowBlur = HH(th) ? 6 : 14;
+    for (const sgn of [-1, 1]) {
+      const x = W / 2 + sgn * (i * gap + gap / 2);
+      ctx.beginPath(); ctx.moveTo(x, cy - h / 2); ctx.lineTo(x, cy + h / 2); ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+// The Her Hours dress has its own skeleton (영샘 10-18: "이미지 모션이 핼러윈판이랑 거의 같아 — 완전 다르게"):
+// no card — the photo fills the whole frame and drifts with Clockface 하루's moves, dissolving shot to shot, under a
+// fine gold border; the middle third sinks to ink and becomes EP01 Window Band's wide strip, photos gliding sideways
+// through it on the beat, the gold pulse breathing underneath. Embers float over everything.
+const BAND_Y = 600, BAND_H = 540;
+function npHHPhotos(ctx, d, f, idx, local, kick, inTri) {
+  const { images, step, bp } = d, n = images.length;
+  const mvOf = (i, q) => blackMove(DAY_MOVES[i % DAY_MOVES.length], q, i % 2 ? -1 : 1);
+  if (inTri) {
+    const [s0, s1] = d.tri, t = f - s0;
+    const open = inOut(clamp(t / 16)), leave = inOut(clamp((f - (s1 - 12)) / 12));
+    const h = BAND_H * open * (1 - leave), y = BAND_Y + (BAND_H - h) / 2;
+    const per = 2 * bp, cut = Math.floor(t / per), since = t - cut * per;
+    const at = (c) => images[(Math.floor(s0 / step) + c) % n];
+    const glide = (c, q) => ({ scale: 1.18, x: (c % 2 ? -6 + 12 * q : 6 - 12 * q), y: 0, rot: 0 });
+    if (h > 1) {
+      // the band sits exactly inside the frame's gold border (영샘 10-18)
+      const bx = 35, bw = W - 70;
+      ctx.save(); ctx.beginPath(); ctx.rect(bx, y, bw, h); ctx.clip();
+      if (cut > 0 && since < 10) npPhoto(ctx, at(cut - 1), bx, BAND_Y, bw, BAND_H, glide(cut - 1, 1));
+      ctx.globalAlpha = cut > 0 ? inOut(clamp(since / 10)) : 1;
+      npPhoto(ctx, at(cut), bx, BAND_Y, bw, BAND_H, glide(cut, clamp(since / per)));
+      ctx.restore(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#f3dca2'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(bx, y); ctx.lineTo(bx + bw, y); ctx.moveTo(bx, y + h); ctx.lineTo(bx + bw, y + h); ctx.stroke();
+    }
+    npWave(ctx, d, f, 1250, out(clamp(t / 14)) * (1 - leave));
+  } else {
+    const k = clamp(local / step);
+    const afterTri = d.tri && idx * step === d.tri[1];
+    const fade = idx && !afterTri ? inOut(clamp(local / 18)) : out(clamp((f - (idx ? idx * step : 4)) / 18));
+    if (idx > 0 && fade < 1 && !afterTri) npPhoto(ctx, images[(idx - 1) % n], 0, 0, W, H, mvOf(idx - 1, 1));
+    ctx.globalAlpha = fade; npPhoto(ctx, images[idx % n], 0, 0, W, H, mvOf(idx, k)); ctx.globalAlpha = 1;
+    // a warm light leak sweeping across on each cut
+    if (idx > 0 && local < 26) {
+      const lx = -300 + (local / 26) * (W + 600);
+      ctx.save(); ctx.globalCompositeOperation = 'screen';
+      const lg = ctx.createRadialGradient(lx, 700, 0, lx, 700, 640);
+      lg.addColorStop(0, `rgba(255,190,120,${0.4 * Math.sin((local / 26) * Math.PI)})`); lg.addColorStop(1, 'rgba(255,150,80,0)');
+      ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+    // ink above and below, so the gold type reads over any photo
+    const top = ctx.createLinearGradient(0, 0, 0, 720);
+    top.addColorStop(0, 'rgba(11,10,12,0.88)'); top.addColorStop(1, 'rgba(11,10,12,0)');
+    ctx.fillStyle = top; ctx.fillRect(0, 0, W, 720);
+    const bot = ctx.createLinearGradient(0, 1250, 0, H);
+    bot.addColorStop(0, 'rgba(11,10,12,0)'); bot.addColorStop(1, 'rgba(11,10,12,0.9)');
+    ctx.fillStyle = bot; ctx.fillRect(0, 1250, W, H - 1250);
+  }
+  npEmbers(ctx, f);
+  // a fine gold border round the whole frame
+  ctx.strokeStyle = 'rgba(243,220,162,0.75)'; ctx.lineWidth = 2; ctx.strokeRect(34, 34, W - 68, H - 68);
+  ctx.strokeStyle = 'rgba(243,220,162,0.35)'; ctx.lineWidth = 1; ctx.strokeRect(46, 46, W - 92, H - 92);
+}
+
+// ---- Halloween you can see (영샘 10-18: "핼러윈인데 호박 박쥐 등도 나와야겠지?") ----
+// a flock of bats crossing the sky every few seconds, wings beating
+function npBats(ctx, f) {
+  const period = 150, flock = Math.floor(f / period), p = (f % period) / 96;
+  if (p > 1) return;
+  const dir = flock % 2 ? -1 : 1;
+  for (let k = 0; k < 7; k++) {
+    const lag = k * 0.06, q = p - lag;
+    if (q < 0 || q > 1) continue;
+    const x = dir > 0 ? -120 + q * (W + 240) : W + 120 - q * (W + 240);
+    const y = 150 + hash(flock * 7 + k, 21) * 420 + Math.sin(q * 9 + k) * 26;
+    const s = 26 + hash(flock * 7 + k, 23) * 26, flap = 0.35 + 0.65 * Math.abs(Math.sin(f * 0.55 + k * 1.7));
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, flap);
+    npIcon(ctx, 1, s);
+    ctx.fillStyle = '#07040d'; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(181,124,255,0.55)'; ctx.stroke();
+    ctx.restore();
+  }
+}
+// a lit jack-o'-lantern: orange lobes, a stem, and a face that flickers with the candle and the beat
+function npPumpkin(ctx, x, y, r, f, kick, seed) {
+  const bob = 1 + kick * 0.06;
+  ctx.save(); ctx.translate(x, y); ctx.scale(bob, 1 / bob);
+  ctx.shadowColor = 'rgba(255,138,61,0.55)'; ctx.shadowBlur = 40;
+  for (const [ox, rx] of [[-0.45, 0.62], [0.45, 0.62], [0, 0.66]]) {
+    ctx.beginPath(); ctx.ellipse(ox * r, 0, rx * r, 0.82 * r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = ox ? '#d9621f' : '#f07a2a'; ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(120,40,10,0.55)'; ctx.lineWidth = 2;
+  for (const ox of [-0.32, 0.32]) { ctx.beginPath(); ctx.ellipse(ox * r, 0, 0.18 * r, 0.78 * r, 0, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.fillStyle = '#4a6b2a'; ctx.beginPath(); ctx.moveTo(-0.08 * r, -0.78 * r); ctx.lineTo(0.12 * r, -1.05 * r); ctx.lineTo(0.2 * r, -0.98 * r); ctx.lineTo(0.08 * r, -0.76 * r); ctx.fill();
+  const flick = 0.65 + 0.25 * kick + 0.1 * hash(Math.floor(f / 3), seed);
+  ctx.fillStyle = `rgba(255,214,102,${flick})`; ctx.shadowColor = '#FFD166'; ctx.shadowBlur = 18 * flick;
+  ctx.beginPath(); ctx.moveTo(-0.42 * r, -0.12 * r); ctx.lineTo(-0.2 * r, -0.4 * r); ctx.lineTo(-0.08 * r, -0.1 * r); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(0.42 * r, -0.12 * r); ctx.lineTo(0.2 * r, -0.4 * r); ctx.lineTo(0.08 * r, -0.1 * r); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-0.46 * r, 0.12 * r);
+  for (let i = 0; i <= 6; i++) ctx.lineTo(-0.46 * r + (i * 0.92 * r) / 6, (i % 2 ? 0.4 : 0.22) * r);
+  ctx.lineTo(0.46 * r, 0.12 * r); ctx.quadraticCurveTo(0, 0.3 * r, -0.46 * r, 0.12 * r); ctx.fill();
+  ctx.restore(); ctx.shadowBlur = 0;
+}
+// a spider letting itself down on a thread at the top right, bobbing to the beat
+function npSpider(ctx, f, kick) {
+  const x = 1012, y = 300 + Math.sin(f / 40) * 70 + kick * 14;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, y - 14); ctx.stroke();
+  ctx.strokeStyle = '#120a1c'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  for (const sgn of [-1, 1]) for (let i = 0; i < 4; i++) {
+    const a = -0.6 + i * 0.4 + Math.sin(f / 6 + i) * 0.08;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + sgn * 20, y + (a - 0.3) * 22, x + sgn * 28, y + a * 30); ctx.stroke();
+  }
+  ctx.fillStyle = '#120a1c'; ctx.beginPath(); ctx.arc(x, y + 4, 13, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y - 10, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(181,124,255,0.6)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y + 4, 13, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x - 3, y - 11, 2, 0, Math.PI * 2); ctx.arc(x + 3, y - 11, 2, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+// gold embers rising through the frame — the Her Hours dress's own sparkle (Triptych's 불티)
+function npEmbers(ctx, f) {
+  const spr = sprite('#ffcf8a');
+  for (let i = 0; i < 46; i++) {
+    const sp = 0.6 + hash(i, 31) * 1.4, y = H - ((f * sp + hash(i, 32) * H) % (H + 80)) + 40;
+    const x = hash(i, 33) * W + Math.sin(f / 30 + i) * 18;
+    const s = 6 + hash(i, 34) * 14;
+    ctx.globalAlpha = (0.25 + 0.5 * hash(i, 35)) * clamp(y / 400);
+    ctx.drawImage(spr, x - s, y - s, s * 2, s * 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// a single gold line that rides the music — the Her Hours dress's own pulse (Halloween keeps its bars)
+function npWave(ctx, d, f, cy, alpha) {
+  const spec = d.spec, bands = d.bands, pts = 48, x0 = 110, x1 = 970;
+  const band = (i) => (spec ? spec[Math.min(f, spec.length / bands - 1) * bands + i] || 0 : 0);
+  const ys = [];
+  for (let i = 0; i <= pts; i++) {
+    const m = Math.abs(i - pts / 2) / (pts / 2);          // low notes in the middle
+    const v = band(Math.min(bands - 1, Math.round(m * 70)));
+    const amp = Math.min(1, Math.sqrt(v / 0.2)) * 90 * (1 - m * 0.6);
+    ys.push(cy - amp * Math.sin(i * 0.9 + f * 0.25));
+  }
+  const path = () => {
+    ctx.beginPath(); ctx.moveTo(x0, ys[0]);
+    for (let i = 1; i <= pts; i++) {
+      const xa = x0 + ((i - 1) * (x1 - x0)) / pts, xb = x0 + (i * (x1 - x0)) / pts;
+      ctx.quadraticCurveTo(xa, ys[i - 1], (xa + xb) / 2, (ys[i - 1] + ys[i]) / 2);
+    }
+    ctx.lineTo(x1, ys[pts]);
+  };
+  ctx.save(); ctx.globalAlpha = alpha; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  path(); ctx.shadowColor = '#ffb063'; ctx.shadowBlur = 12; ctx.lineWidth = 3; ctx.strokeStyle = '#f3dca2'; ctx.stroke();
+  ctx.shadowBlur = 0; ctx.globalAlpha = alpha * 0.35; ctx.translate(0, 2 * cy); ctx.scale(1, -1);   // its faint reflection
+  path(); ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+}
+
+// The Her Hours dress, drawn on its own so it shares nothing with the Halloween one (영샘 10-18: "두 개를 비교해서
+// 같은 부분이 하나도 없게"): full-frame photos, an opening credit instead of a sign, the lyric up top as a whole line,
+// the title in the bottom-left like a magazine cover, a timecode instead of a progress line, a gold wave instead of
+// bars, the band later in the song, and an end card instead of a badge.
+function drawMinjeongDay(ctx, f, N, d) {
+  const { phrases, step, bp } = d;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.letterSpacing = '0px'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+  const idx = Math.floor(f / step), local = f - idx * step;
+  const kick = 1 - out(clamp(((f % bp) / bp) * 3));
+  const outroAt = N - d.outro, endT = f - outroAt;
+  const inBand = d.tri && f >= d.tri[0] && f < d.tri[1];
+
+  ctx.fillStyle = '#0b0a0c'; ctx.fillRect(0, 0, W, H);
+  npHHPhotos(ctx, d, f, idx, local, kick, inBand);
+
+  const fadeTitle = endT > 0 ? 1 - clamp(endT / 10) : 1;
+
+  // the class name as gold foil, top centre (영샘 10-18: the credit read like a document): gold rules draw outward,
+  // the letters rise in one by one, and a sheen of light runs across the foil every few seconds
+  if (d.brand) {
+    const cy = 176;
+    ctx.save(); ctx.globalAlpha = fadeTitle; ctx.textAlign = 'left';
+    ctx.font = `62px ${F_NP_SERIFCAPS}`; ctx.letterSpacing = '8px';
+    const chars = [...d.brand], tw = ctx.measureText(d.brand).width, x0 = W / 2 - tw / 2;
+    const rule = inOut(clamp((f - 4) / 22)) * 150;
+    ctx.fillStyle = '#f3dca2';
+    ctx.fillRect(x0 - 28 - rule, cy - 20, rule, 2); ctx.fillRect(x0 + tw + 20, cy - 20, rule, 2);
+    if (rule > 20) for (const dx of [x0 - 28 - rule, x0 + tw + 20 + rule]) { ctx.beginPath(); ctx.arc(dx, cy - 19, 4, 0, Math.PI * 2); ctx.fill(); }
+    const foil = ctx.createLinearGradient(0, cy - 60, 0, cy + 10);
+    foil.addColorStop(0, '#fff3d0'); foil.addColorStop(0.45, '#f3dca2'); foil.addColorStop(0.55, '#c99a52'); foil.addColorStop(1, '#f7e2b0');
+    let x = x0;
+    chars.forEach((ch, i) => {
+      const cw = ctx.measureText(ch).width, a = out(clamp((f - 8 - i * 3) / 12));
+      if (a > 0 && ch.trim()) {
+        ctx.globalAlpha = a * fadeTitle; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 14;
+        ctx.fillStyle = foil; ctx.fillText(ch, x, cy + (1 - a) * 18);
+        ctx.shadowBlur = 0;
+      }
+      x += cw;
+    });
+    const sp = (f % 120) / 30;
+    if (sp < 1 && f > 40) {
+      const sx = x0 - 60 + sp * (tw + 120), sg = ctx.createLinearGradient(sx - 50, 0, sx + 50, 0);
+      sg.addColorStop(0, 'rgba(255,250,235,0)'); sg.addColorStop(0.5, 'rgba(255,250,235,0.95)'); sg.addColorStop(1, 'rgba(255,250,235,0)');
+      ctx.globalAlpha = fadeTitle; ctx.fillStyle = sg; ctx.fillText(d.brand, x0, cy);
+    }
+    ctx.restore();
+  }
+  // a small gold-label record spinning with the music, top-right (it took the place of a timecode that read like a document)
+  {
+    const rx = W - 128, ry = 176, R = 46 * (1 + kick * 0.05);
+    ctx.save(); ctx.globalAlpha = fadeTitle * out(clamp((f - 10) / 16));
+    ctx.translate(rx, ry); ctx.rotate(f * 0.14);
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = '#100d0c'; ctx.fill();
+    ctx.strokeStyle = 'rgba(243,220,162,0.18)'; ctx.lineWidth = 1;
+    for (let g = R - 6; g > 20; g -= 5) { ctx.beginPath(); ctx.arc(0, 0, g, 0, Math.PI * 2); ctx.stroke(); }
+    ctx.strokeStyle = 'rgba(255,240,205,0.45)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, R - 12, -0.5, 0.3); ctx.stroke();   // the sheen turning with it
+    ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fillStyle = '#f3dca2'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fillStyle = '#100d0c'; ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = '#f3dca2'; ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.rotate(-f * 0.14);
+    ctx.strokeStyle = '#f3dca2'; ctx.lineWidth = 3; ctx.lineCap = 'round';   // tonearm
+    ctx.beginPath(); ctx.moveTo(52, -50); ctx.lineTo(44, 4); ctx.lineTo(24, 22); ctx.stroke();
+    ctx.beginPath(); ctx.arc(52, -50, 5, 0, Math.PI * 2); ctx.fillStyle = '#f3dca2'; ctx.fill();
+    ctx.restore();
+  }
+
+  // the lyric, up top, a whole line at a time — its letters close in as it arrives
+  const line = f < outroAt && phrases.find((p) => f >= p.start && f < p.end);
+  if (line) {
+    const lo = out(Math.min(clamp((f - line.start) / 10), clamp((line.end - f) / 8)));
+    let size = 58 * krScale(line.text);
+    ctx.save(); ctx.globalAlpha = lo; ctx.letterSpacing = `${2 + (1 - lo) * 12}px`;
+    ctx.font = `${size}px ${F_LYRIC}`;
+    let lines = wrap(ctx, line.text.split(/\s+/).map((w) => ({ w })), 860, 16);
+    if (lines.length > 2) { size *= 0.82; ctx.font = `${size}px ${F_LYRIC}`; lines = wrap(ctx, line.text.split(/\s+/).map((w) => ({ w })), 880, 13); }
+    lines = lines.slice(0, 3);
+    ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 24; ctx.fillStyle = LYRIC; ctx.textAlign = 'center';
+    lines.forEach((ln, li) => ctx.fillText(ln.words.map((w) => w.w).join(' '), W / 2, 330 + li * size * 1.25));
+    ctx.restore();
+  }
+
+  // the title, bottom-left like a magazine cover: the script wipes in from the left, a glint passes now and then
+  if (d.title1) {
+    const wipe = inOut(clamp((f - 6) / 24));
+    ctx.save(); ctx.globalAlpha = fadeTitle;
+    ctx.beginPath(); ctx.rect(0, 1300, 92 + wipe * 960, 420); ctx.clip();
+    let size = 150; ctx.font = `${size}px ${F_TITLE}`; ctx.textAlign = 'left';
+    const tw = ctx.measureText(d.title1).width;
+    if (tw > 880) { size = Math.max(64, size * 880 / tw); ctx.font = `${size}px ${F_TITLE}`; }
+    ctx.shadowColor = 'rgba(0,0,0,0.75)'; ctx.shadowBlur = 20; ctx.fillStyle = '#f5efe8';
+    ctx.fillText(d.title1, 92, 1570);
+    const gp = (f % 150) / 40;
+    if (gp < 1) {
+      const w = ctx.measureText(d.title1).width, gx0 = 92 - 80 + gp * (w + 160);
+      const gg = ctx.createLinearGradient(gx0 - 70, 0, gx0 + 70, 0);
+      gg.addColorStop(0, 'rgba(255,236,190,0)'); gg.addColorStop(0.5, 'rgba(255,240,205,0.95)'); gg.addColorStop(1, 'rgba(255,236,190,0)');
+      ctx.shadowBlur = 0; ctx.fillStyle = gg; ctx.fillText(d.title1, 92, 1570);
+    }
+    if (d.title2) {
+      ctx.letterSpacing = '12px'; ctx.font = `36px ${F_NP_CAPS}`; ctx.fillStyle = '#f3dca2'; ctx.shadowBlur = 10;
+      ctx.fillText(d.title2, 96, 1640);
+    }
+    // a short gold rule under the title
+    ctx.fillStyle = '#f3dca2'; ctx.fillRect(96, 1668, 120 * wipe, 2);
+    ctx.restore();
+  }
+
+  // the end card: everything sinks to ink, then 「참 잘했어요」 with a gold rule drawn out from the centre
+  if (endT >= 0) {
+    const sink = clamp(endT / 14);
+    ctx.fillStyle = `rgba(11,10,12,${0.86 * inOut(sink)})`; ctx.fillRect(0, 0, W, H);
+    const a = out(clamp((endT - 8) / 14));
+    ctx.save(); ctx.globalAlpha = a; ctx.textAlign = 'center';
+    ctx.font = `30px ${F_TITLE}`; ctx.fillStyle = '#f3dca2'; ctx.font = `64px ${F_TITLE}`; ctx.fillText('fin.', W / 2, 820);
+    ctx.letterSpacing = `${2 + (1 - a) * 14}px`; ctx.font = `96px ${F_SERIF}`; ctx.fillStyle = '#f5efe8';
+    ctx.shadowColor = 'rgba(243,220,162,0.5)'; ctx.shadowBlur = 18;
+    ctx.fillText('참 잘했어요', W / 2, 980);
+    ctx.shadowBlur = 0;
+    const rw = 520 * inOut(clamp((endT - 14) / 16));
+    ctx.fillStyle = '#f3dca2'; ctx.fillRect(W / 2 - rw / 2, 1020, rw, 2);
+    ctx.letterSpacing = '10px'; ctx.font = `26px ${F_NP_CAPS}`; ctx.fillStyle = '#f3dca2';
+    ctx.globalAlpha = a * out(clamp((endT - 20) / 12));
+    ctx.fillText(`MINJEONG CLASS · ${d.year}`, W / 2 + 5, 1090);
+    ctx.restore();
+  }
+
+  // grain
+  ctx.globalAlpha = 0.1; ctx.globalCompositeOperation = 'overlay';
+  const sh = (f % 7) * 13;
+  ctx.save(); ctx.translate(sh, -sh); ctx.fillStyle = grainPattern(ctx); ctx.fillRect(-sh, sh, W, H); ctx.restore();
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+
+  // the maker's line runs up the right border
+  ctx.save(); ctx.translate(W - 62, H - 110); ctx.rotate(-Math.PI / 2);
+  ctx.globalAlpha = 0.5; ctx.letterSpacing = '6px'; ctx.font = `18px ${F_NP_CAPS}`; ctx.fillStyle = '#f5efe8'; ctx.textAlign = 'left';
+  ctx.fillText(d.footR, 0, 0);
+  ctx.restore(); ctx.globalAlpha = 1; ctx.letterSpacing = '0px'; ctx.textAlign = 'center';
+}
+
+function drawMinjeong(ctx, f, N, d) {
+  const { images, phrases, step, bp } = d;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.letterSpacing = '0px'; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+
+  const idx = Math.floor(f / step), local = f - idx * step;
+  const kick = 1 - out(clamp(((f % bp) / bp) * 3));   // 1 on the beat, fading
+  const th = d.th, hh = HH(th), NEON = th.neon, neon = NEON[idx % NEON.length];
+  const outroAt = N - d.outro;
+
+  // ground: the theme's gradient and a glow that breathes with the music; stars at night, embers in the Her Hours dress
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, th.sky[0]); sky.addColorStop(0.55, th.sky[1]); sky.addColorStop(1, th.sky[2]);
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  const [gx, gy] = th.glowAt, gc = th.glow.join(',');
+  const mg = ctx.createRadialGradient(gx, gy, 0, gx, gy, 620);
+  mg.addColorStop(0, `rgba(${gc},${(hh ? 0.22 : 0.42) + kick * 0.1})`); mg.addColorStop(0.35, `rgba(${gc},${hh ? 0.08 : 0.16})`); mg.addColorStop(1, `rgba(${gc},0)`);
+  ctx.fillStyle = mg; ctx.fillRect(0, 0, W, H);
+  if (!hh) {
+    for (let i = 0; i < 70; i++) {
+      const tw = 0.35 + 0.65 * Math.abs(Math.sin(f / (18 + hash(i, 1) * 30) + i));
+      ctx.globalAlpha = tw * 0.8; ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(hash(i, 2) * W, hash(i, 3) * H, 1.2 + hash(i, 4) * 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (th.halloween) npBats(ctx, f);
+  }
+
+  const inTri = d.tri && f >= d.tri[0] && f < d.tri[1];
+  if (hh) npHHPhotos(ctx, d, f, idx, local, kick, inTri);
+  else if (inTri) npTriptych(ctx, d, f, kick);
+  else {
+    const afterTri = d.tri && idx * step === d.tri[1];   // coming back from the triptych, nothing to fade out
+    const n = images.length, k = clamp(local / step), dir = idx % 2 ? -1 : 1;
+    {
+      // Black Cut (09-19): each shot its own move; on the cut the lights go out for a beat, then lightning
+      const BC = ['push', 'tilt', 'hold-snap', 'pull', 'rise', 'slideL'];
+      const mv = blackMove(BC[idx % BC.length], k, dir);
+      const t0 = f - 6, first = !idx;
+      const drop = first ? clamp(t0 / 14) : 1;
+      const yOff = first ? -(1 - (drop >= 1 ? 1 : back(drop))) * 900 : 0;
+      // the first card hangs like a portrait on a nail and swings to rest; after that, a handheld wobble
+      const swing = first ? 0.16 * Math.exp(-Math.max(0, t0) / 14) * Math.cos(Math.max(0, t0) / 3.2) : 0;
+      const rot = swing + Math.sin(f / 17) * 0.008;
+      if (!first || t0 > 0) npCard(ctx, images[idx % n], W / 2, NP_Y + yOff, 1, 1, neon, f, kick + (local < 9 ? 1 : 0), th, mv, rot);
+      if (!first && local < 3) {   // lights out
+        ctx.save(); ctx.translate(W / 2, NP_Y); ctx.rotate(rot); rrect(ctx, -NP_W / 2, -NP_H / 2, NP_W, NP_H, 44); ctx.fillStyle = 'rgba(5,2,12,0.94)'; ctx.fill(); ctx.restore();
+      } else if (!first && local < 9) {   // lightning
+        ctx.globalAlpha = (1 - (local - 3) / 6) * 0.38; ctx.fillStyle = '#e6d8ff'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+      }
+    }
+
+    // cut counter on the card's right shoulder (the class name is the sign below)
+    ctx.letterSpacing = '6px'; ctx.font = `28px ${F_NP_CAPS}`;
+    ctx.textAlign = 'right'; ctx.fillStyle = neon; ctx.fillText(`${String(idx + 1).padStart(2, '0')} / ${String(Math.ceil(N / step)).padStart(2, '0')}`, W / 2 + NP_W / 2 - 6, NP_Y - NP_H / 2 - 22);
+    ctx.letterSpacing = '0px'; ctx.textAlign = 'center';
+  }
+
+  // neon icons around the card, a new set each cut; odd ones flicker on the beat
+  if (th.icons.length) {
+    const spots = [[62, 820], [995, 640], [70, 1160], [1010, 1220], [110, 1480], [985, 1500]];
+    spots.forEach(([x, y], k) => {
+      const born = clamp((local - 3 - k * 2) / 10);
+      if (!idx && f < 18) return;
+      const kind = th.icons[Math.floor(hash(idx * 6 + k, 7) * th.icons.length)];
+      const s = (26 + hash(idx * 6 + k, 9) * 18) * out(born);
+      if (s < 1) return;
+      const a = k % 2 ? 0.45 + 0.55 * kick : 0.9;
+      npNeonIcon(ctx, kind, x + Math.sin(f / 28 + k) * 7, y + Math.cos(f / 32 + k) * 9, s, Math.sin(f / 40 + k) * 0.25, k % 3 ? neon : '#fff', a * out(born));
+    });
+  }
+  if (th.halloween) {
+    npSpider(ctx, f, kick);
+    npPumpkin(ctx, 72, 1655, 44, f, kick, 1);
+    npPumpkin(ctx, 1008, 1660, 38, f + 11, kick, 2);
+  }
+
+  if (d.brand) npSign(ctx, d.brand, f, local, idx, kick, th);
+
+  // title (영샘 10-18: "텍스트 스타일도 차별화"). Halloween: hand-cut poster caps — each letter leans its own way,
+  // odd ones hop on the beat, and neon paint drips from the bottom. Her Hours: the title script rising out of a
+  // soft fade, a gold glint passing over it now and then.
+  const t1 = d.title1, t2 = d.title2;
+  if (t1) {
+    ctx.save();
+    if (hh) {
+      const a = out(clamp((f - 2) / 18));
+      let size = 170; ctx.font = `${size}px ${F_TITLE}`;
+      const w = ctx.measureText(t1).width;
+      if (w > 940) { size = Math.max(70, size * 940 / w); ctx.font = `${size}px ${F_TITLE}`; }
+      ctx.globalAlpha = a; ctx.shadowColor = 'rgba(243,220,162,0.55)'; ctx.shadowBlur = 16 + kick * 10;
+      ctx.fillStyle = '#f5efe8'; ctx.fillText(t1, W / 2, 300 + (1 - a) * 24);
+      // the glint: a narrow gold band sliding across the letters every five seconds
+      const gp = (f % 150) / 40;
+      if (gp < 1) {
+        const tw = ctx.measureText(t1).width, gx0 = W / 2 - tw / 2 - 80 + gp * (tw + 160);
+        const gg = ctx.createLinearGradient(gx0 - 70, 0, gx0 + 70, 0);
+        gg.addColorStop(0, 'rgba(255,236,190,0)'); gg.addColorStop(0.5, 'rgba(255,240,205,0.95)'); gg.addColorStop(1, 'rgba(255,236,190,0)');
+        ctx.shadowBlur = 0; ctx.globalCompositeOperation = 'source-atop';
+        ctx.fillStyle = gg; ctx.fillText(t1, W / 2, 300 + (1 - a) * 24);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    } else {
+      let size = 168; ctx.font = `${size}px ${F_NP_DISPLAY}`; ctx.letterSpacing = '4px';
+      const w = ctx.measureText(t1).width;
+      if (w > 940) { size = Math.max(70, size * 940 / w); ctx.font = `${size}px ${F_NP_DISPLAY}`; }
+      const chars = [...t1], full = ctx.measureText(t1).width;
+      let x = W / 2 - full / 2;
+      ctx.textAlign = 'left';
+      chars.forEach((ch, i) => {
+        const cw = ctx.measureText(ch).width;
+        const drop = out(clamp((f - 2 - i * 1.5) / 10));   // letters fall in one by one
+        if (drop > 0 && ch.trim()) {
+          const hop = i % 2 ? kick * 10 : 0, tilt = (hash(i, 41) - 0.5) * 0.12;
+          ctx.save(); ctx.translate(x + cw / 2, 300 - (1 - drop) * 140 - hop); ctx.rotate(tilt);
+          ctx.globalAlpha = clamp(drop * 1.5);
+          ctx.shadowColor = neon; ctx.shadowBlur = 30 + kick * 24;
+          ctx.fillStyle = '#fff'; ctx.fillText(ch, -cw / 2, 0);
+          ctx.restore();
+        }
+        x += cw;
+      });
+      // drips: each grows down from the letters, holds, and starts again on its own clock
+      ctx.lineCap = 'round';
+      for (let k = 0; k < 9; k++) {
+        const dx = W / 2 - full / 2 + (k + 0.5) * (full / 9) + (hash(k, 43) - 0.5) * 40;
+        const cyc = 90 + hash(k, 44) * 60, ph = ((f + hash(k, 45) * cyc) % cyc) / cyc;
+        const len = (10 + hash(k, 46) * 24) * out(clamp(ph * 1.6)) * clamp(f / 30);   // short of the second line
+        if (len < 2) continue;
+        ctx.globalAlpha = 1 - clamp((ph - 0.8) / 0.2);
+        ctx.strokeStyle = neon; ctx.shadowColor = neon; ctx.shadowBlur = 12; ctx.lineWidth = 8 + hash(k, 47) * 5;
+        ctx.beginPath(); ctx.moveTo(dx, 300 - 6); ctx.lineTo(dx, 300 + len); ctx.stroke();
+        ctx.fillStyle = neon; ctx.beginPath(); ctx.arc(dx, 300 + len + 3, ctx.lineWidth * 0.75, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+  if (t2) {
+    const a2 = out(clamp((f - 12) / 12));
+    ctx.globalAlpha = a2; ctx.letterSpacing = hh ? '14px' : '12px';
+    fit(ctx, t2, hh ? 44 : 54, hh ? F_NP_CAPS : F_NP_POSTER, 900);
+    ctx.fillStyle = hh ? '#f3dca2' : neon; ctx.fillText(t2, W / 2 + 7, (hh ? 380 : 392) + (1 - a2) * 16);
+    ctx.globalAlpha = 1; ctx.letterSpacing = '0px';
+  }
+
+  // caption: the song's lyric, or the class's own lines, word by word as they are sung.
+  // Halloween: heavy poster letters in a glass pill, each word popping orange on its beat.
+  // Her Hours: the app's gold lyric with no box, each word warming from pale cream to gold.
+  const line = f < outroAt && phrases.find((p) => f >= p.start && f < p.end);   // the badge has the ending to itself
+  if (line) {
+    const lo = out(Math.min(clamp((f - line.start) / 6), clamp((line.end - f) / 6)));
+    const face = hh ? F_LYRIC : F_NP_POSTER, base = hh ? 54 * krScale(line.text) : 54;
+    let size = base; ctx.font = `${size}px ${face}`;
+    const words = line.words?.length ? line.words.map((x) => ({ w: x.w, t: x.t })) : line.text.split(/\s+/).map((w) => ({ w, t: line.start }));
+    let lines = wrap(ctx, words, 800, 14);
+    if (lines.length > 2) { size = base * 0.85; ctx.font = `${size}px ${face}`; lines = wrap(ctx, words, 820, 12); }
+    if (lines.length > 1 && lines[lines.length - 1].words.length === 1) {   // no word alone on the last line
+      const even = wrap(ctx, words, (lines.reduce((s, l) => s + l.width, 0) / lines.length) * 1.15, 14);
+      if (even.length === lines.length) lines = even;
+    }
+    lines = lines.slice(0, 3);
+    const gap = 14;
+    const bh = lines.length * size * 1.3 + 44, bw = Math.max(...lines.map((l) => l.width)) + 80;
+    const by = hh ? (inTri ? BAND_Y + BAND_H + 40 : 1600 - bh) : (inTri ? TRI_Y + 3 * TRI_H + 2 * TRI_GAP : NP_Y + NP_H / 2) - bh - 34;
+    ctx.save(); ctx.globalAlpha = lo;
+    if (hh) {   // a soft smoke band, so gold reads on a bright sunset photo too
+      ctx.save(); ctx.filter = 'blur(16px)'; rrect(ctx, W / 2 - bw / 2 + 10, by + 6, bw - 20, bh - 12, 40); ctx.fillStyle = 'rgba(11,10,12,0.55)'; ctx.fill(); ctx.restore();
+    } else {
+      rrect(ctx, W / 2 - bw / 2, by + (1 - lo) * 14, bw, bh, 30);
+      ctx.fillStyle = 'rgba(18,10,36,0.66)'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.stroke();
+    }
+    ctx.textAlign = 'left';
+    lines.forEach((ln, li) => {
+      let x = W / 2 - ln.width / 2;
+      const y = by + (1 - lo) * 14 + 22 + size * 0.95 + li * size * 1.3;
+      for (const w of ln.words) {
+        const since = f - (w.t ?? line.start), sung = since >= 0;
+        if (hh) {
+          const warm = clamp(since / 8);
+          ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 22; ctx.shadowOffsetY = 2;
+          ctx.globalAlpha = lo * (0.45 + 0.55 * warm);
+          ctx.fillStyle = warm > 0.5 ? LYRIC : '#f5efe8';
+          ctx.fillText(w.w, x, y - warm * 3);
+        } else {
+          const pop = sung && since < 8 ? 1 + 0.28 * (1 - out(since / 8)) : 1;
+          ctx.save(); ctx.translate(x + w.ww / 2, y - size * 0.35); ctx.scale(pop, pop);
+          ctx.globalAlpha = lo * (sung ? 1 : 0.5);
+          if (sung && since < 14) { ctx.shadowColor = '#FF8A3D'; ctx.shadowBlur = 18; }
+          ctx.fillStyle = sung && since < 14 ? '#FFB066' : '#fff';
+          ctx.fillText(w.w, -w.ww / 2, size * 0.35);
+          ctx.restore();
+        }
+        x += w.ww + gap;
+      }
+    });
+    ctx.restore(); ctx.textAlign = 'center';
+  }
+
+  // progress: a thin line with a glowing head
+  const L0 = 150, L1 = 930, px = L0 + (L1 - L0) * clamp(f / N);
+  ctx.lineCap = 'round'; ctx.lineWidth = hh ? 2 : 4; ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.beginPath(); ctx.moveTo(L0, 1692); ctx.lineTo(L1, 1692); ctx.stroke();
+  ctx.strokeStyle = hh ? '#f3dca2' : neon; ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = hh ? 6 : 14;
+  ctx.beginPath(); ctx.moveTo(L0, 1692); ctx.lineTo(px, 1692); ctx.stroke();
+  ctx.beginPath(); ctx.arc(px, 1692, (hh ? 6 : 9) + kick * 4, 0, Math.PI * 2); ctx.fillStyle = hh ? '#f5efe8' : '#fff'; ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // the badge: the teacher's stamp, grown up
+  const bt = f - outroAt;
+  if (bt >= 0) {
+    const t = clamp(bt / 10), sc = 1.7 - 0.7 * out(t);
+    const cx = 790, cy = 1300, R = 190;
+    if (bt < 6) { ctx.globalAlpha = (1 - bt / 6) * (hh ? 0.2 : 0.35); ctx.fillStyle = hh ? '#fff3d6' : '#fff'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.rotate(-0.12 + (1 - out(t)) * 0.5);
+    ctx.globalAlpha = clamp(t * 2);
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = hh ? 'rgba(11,10,12,0.92)' : 'rgba(16,8,34,0.9)'; ctx.fill();
+    ctx.shadowColor = th.badge; ctx.shadowBlur = hh ? 10 : 30; ctx.lineWidth = hh ? 3 : 6; ctx.strokeStyle = th.badge; ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.lineWidth = hh ? 1 : 2; ctx.strokeStyle = hh ? 'rgba(243,220,162,0.6)' : 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(0, 0, R - 50, 0, Math.PI * 2); ctx.stroke();
+    // ring text, turning slowly
+    const ring = `MINJEONG CLASS  ✦  ${th.ring} ${d.year}  ✦  `;
+    ctx.font = `${hh ? 22 : 26}px ${F_NP_CAPS}`; ctx.fillStyle = hh ? '#f5efe8' : '#fff';
+    const chars = [...ring], per = (Math.PI * 2) / chars.length, spin = bt * 0.012;
+    chars.forEach((ch, i) => {
+      ctx.save(); ctx.rotate(spin + i * per); ctx.translate(0, -(R - 26)); ctx.fillText(ch, 0, 9); ctx.restore();
+    });
+    ctx.rotate(0.12 - (1 - out(t)) * 0.5 + 0.12);   // centre words sit level-ish
+    ctx.font = hh ? `50px ${F_SERIF}` : `54px ${F_NP_POSTER}`; ctx.fillStyle = hh ? '#f5efe8' : '#fff'; ctx.fillText('참 잘했어요', 0, 8);
+    ctx.letterSpacing = '6px'; ctx.font = `22px ${F_NP_CAPS}`; ctx.fillStyle = th.badge; ctx.fillText('GREAT JOB', 3, 50); ctx.letterSpacing = '0px';
+    ctx.restore();
+    if (bt < 30) {
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2 + 0.4, r = R + 30 + out(bt / 30) * 200;
+        npNeonIcon(ctx, 3, cx + Math.cos(a) * r, cy + Math.sin(a) * r, 22 * (1 - bt / 30), a, NEON[k % NEON.length], 1, hh);
+      }
+    }
+  }
+
+  // grain
+  ctx.globalAlpha = hh ? 0.1 : 0.08; ctx.globalCompositeOperation = 'overlay';
+  const sh = (f % 7) * 13;
+  ctx.save(); ctx.translate(sh, -sh); ctx.fillStyle = grainPattern(ctx); ctx.fillRect(-sh, sh, W, H); ctx.restore();
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+
+  // footer
+  ctx.globalAlpha = 0.45; ctx.letterSpacing = '5px'; ctx.font = `22px ${F_NP_CAPS}`; ctx.fillStyle = hh ? '#f5efe8' : '#fff';
+  ctx.fillText(d.footR, W / 2, 1745);
+  ctx.globalAlpha = 1; ctx.letterSpacing = '0px';
+}
+
+function minjeongLook(id, name, sub, theme) {
+  return {
+    id, name, sub, draw: theme === 'everyday' ? drawMinjeongDay : drawMinjeong, kids: true, theme,
+    build: (base, beat) => {
+      const N = base.N ?? 960, step = beatStep(beat, 60), outro = Math.min(80, Math.round(N * 0.13));
+      // the middle third becomes the three-panel triptych with the pulse (영샘 10-18), on cut boundaries
+      // the Her Hours dress takes its band later in the song than Halloween's triptych
+      const [p0, p1] = theme === 'everyday' ? [0.5, 0.8] : [0.34, 0.68];
+      const s0 = Math.max(1, Math.round((N * p0) / step)) * step;
+      const s1 = Math.min(Math.round((N * p1) / step) * step, N - outro);
+      return {
+        ...base, th: NP_THEMES[theme],
+        // the Her Hours dress writes the title in the script face, which wants Title Case (same rule as Window Band)
+        title1: theme === 'everyday' ? titleCase(base.title1, true) : base.title1.toUpperCase(), title2: base.title2.toUpperCase(),
+        step, bp: beat?.beat || 15, outro,
+        tri: s1 - s0 >= 2 * step ? [s0, s1] : null,
+        spec: beat?.spec ?? null, bands: 128,
+        year: new Date().getFullYear(),
+      };
+    },
+  };
+}
+
 export const LOOKS = [
   {
     id: 'halloween', name: 'Halloween', sub: T('아치 창문 · 박쥐와 불티 · 줄마다 다른 가사', 'a gothic arch window · bats and embers · every line sung differently'),
@@ -1496,6 +2331,9 @@ export const LOOKS = [
       return { ...base, outroLen, title: `${base.title1} ${base.title2}`.trim(), lines, period: beatStep(beat, 60) };   // ~2s, on the beat
     },
   },
+  // shown only through the class link (?class=kids) — ui.js puts these first there and leaves them out elsewhere
+  minjeongLook('minjeong-hw', '민정샘 · 핼러윈', T('핼러윈 특집 · 네온 사진 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'Halloween special · neon photos · three panels with a pulse · a 「well done」 badge'), 'halloween'),
+  minjeongLook('minjeong', '민정샘', T('노을빛 네온 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'pastel dusk neon · three panels with a pulse · a 「well done」 badge'), 'everyday'),
 ];
 // How many photos each look actually shows for this song, and which shape suits it.
 // slots = distinct picture places in N frames; fewer photos than `min` and the repeats show.
@@ -1509,6 +2347,8 @@ const PHOTO = {
   'clockface-day': { min: 10, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
   'clockface-night': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.shot) },
   lyricbloom: { min: 4, shape: 'tall', slots: (d) => Math.max(1, d.lines.length) },
+  minjeong: { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) + 6 },
+  'minjeong-hw': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) + 6 },
 };
 for (const l of LOOKS) l.photo = PHOTO[l.id];
 

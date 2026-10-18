@@ -455,5 +455,13 @@ export const SONGS = [
   { id: 'app_pulse_synth', name: 'Pulse Synth', group: 'tension', json: 'assets/songs/app_pulse_synth.json', file: 'assets/songs/app_pulse_synth.mp3', lyrics: false },
   { id: 'app_strings_chase', name: 'Strings Chase', group: 'tension', json: 'assets/songs/app_strings_chase.json', file: 'assets/songs/app_strings_chase.mp3', lyrics: false },
   { id: 'app_dark_minimal', name: 'Dark Minimal', group: 'tension', json: 'assets/songs/app_dark_minimal.json', file: 'assets/songs/app_dark_minimal.mp3', lyrics: false },
+  // 민정샘 반 노래 (10-18): our first all-Korean songs, written for the class, 영샘 ear 3/3 — only the class link lists them
+  { id: 'kids_attendance', name: '우리 반 출석 완료', group: 'kids', json: 'assets/songs/kids_attendance.json', file: 'assets/songs/kids_attendance.mp3' },
+  { id: 'kids_paper_plane', name: '종이비행기', group: 'kids', json: 'assets/songs/kids_paper_plane.json', file: 'assets/songs/kids_paper_plane.mp3' },
+  { id: 'kids_playground', name: '방과 후 운동장', group: 'kids', json: 'assets/songs/kids_playground.json', file: 'assets/songs/kids_playground.mp3' },
 ];
+// The class link (?class=kids, 10-18 민정샘's primary-school class) shows only these, in this order: our class songs,
+// then bright songs whose words suit 11-13 year olds — no night or love lyrics.
+export const KIDS_SONGS = ['kids_attendance', 'kids_paper_plane', 'kids_playground', 'hw_ivelle_off_the_page', 'hw_violet_one_candle_left', 'wings', 'green', 'app_sunny_acoustic', 'app_dream_sparkle', 'app_indie_clap', 'app_lofi_bounce', 'app_citypop_groove', 'app_piano_morning'];
+export const loadDemoKids = (set) => Promise.all([1, 2, 3, 4, 5, 6].map((i) => loadImage(`assets/demo_kids/${set}${i}.jpg`)));
 export const loadTemplate = async (song = SONGS[0]) => (await fetch(song.json)).json();
