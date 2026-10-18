@@ -2,23 +2,29 @@
 // The shell supplies the markup and two hooks (window.hhOpen / window.hhClose); everything
 // below is identical in both so the two designs cannot drift apart in behaviour.
 import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, trimBuffer,
-         encode, buildData, loadDemo, loadDemoHw, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS } from './core.js';
+         encode, buildData, loadDemo, loadDemoHw, loadDemoKids, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS, KIDS_SONGS } from './core.js';
 import { LOOKS, lookById } from './looks.js';
 import { analyze, findChorus } from './beats.js';
 import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
 import { getDraft, putDraft, dropDraft, listMade, addMade, dropMade } from './store.js';
 
 const $ = (id) => document.getElementById(id);
+// 10-18 class link: herhours.github.io/test/kids/ → ?class=kids. 민정샘's primary-school class gets the 「민정샘」 look first,
+// only the kids' songs, picture-book demo pictures, and its own words kept when a song is picked.
+const KIDS = ['kids', 'minjeong'].includes(new URLSearchParams(location.search).get('class'));
+const QLOOK = new URLSearchParams(location.search).get('look');
+// each class template opens with its own words; switching templates swaps them only if the class has not changed them
+const KIDS_TEXT = { 'minjeong-hw': { brand: '민정샘 반', t1: 'HALLOWEEN', t2: 'NIGHT PARTY' }, minjeong: { brand: '민정샘 반', t1: 'OUR CLASS', t2: 'BEST DAY EVER' } };
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 const S = {
-  tpl: null, images: [], photoFiles: [], demo: [], demoHw: [],
-  useOurs: true, song: SONGS[0], audioFile: null,
+  tpl: null, images: [], photoFiles: [], demo: [], demoHw: [], demoKids: { halloween: [], everyday: [] },
+  useOurs: true, song: KIDS ? SONGS.find((s) => s.id === KIDS_SONGS[0]) : SONGS[0], audioFile: null,
   d: null, N: 960, seconds: MAX_SEC,
   vf: 0,            // virtual frame shown while the song is not playing
   started: false,   // has the user pressed play at least once
   busy: false, blob: null, every: 1,
-  look: lookById(new URLSearchParams(location.search).get('look')), beat: null,
+  look: lookById(QLOOK || (KIDS ? 'minjeong-hw' : null)), beat: null,
   clipGain: 0.35,
   userPhrases: [], tap: null,   // lyrics the user timed to their own song by tapping   // clip sound under the song: present, never on top of it
   // which part of the song becomes the short (영샘 10-03): length, start, and where the chorus is
@@ -53,7 +59,7 @@ function rebuild() {
   S.d = S.look.build(base, S.beat);
   saveSoon();
 }
-const demoFor = (look) => (look.id === 'halloween' && S.demoHw.length ? S.demoHw : S.demo);
+const demoFor = (look) => (KIDS && S.demoKids[look.theme || 'everyday']?.length ? S.demoKids[look.theme || 'everyday'] : look.id === 'halloween' && S.demoHw.length ? S.demoHw : S.demo);
 function shiftPhrases(ps, by, N) {
   return ps.map((p) => ({ ...p, start: p.start + by, end: p.end + by, words: p.words?.map((w) => ({ ...w, t: w.t + by })) }))
     .filter((p) => p.end > 0 && p.start < N);
@@ -106,12 +112,17 @@ function renderLooks() {
   const box = $('looks'); if (!box) return;
   const keep = box.scrollLeft;
   box.innerHTML = '';
-  for (const l of LOOKS) {
+  const shown = KIDS ? [...LOOKS.filter((l) => l.kids), ...LOOKS.filter((l) => !l.kids)] : LOOKS.filter((l) => !l.kids);
+  for (const l of shown) {
     const b = document.createElement('button');
     b.className = 'tile' + (l.id === S.look.id ? ' on' : '');
     // a real frame of the look, not a colour swatch — the choice is judged by what the video will look like (10-11)
     b.innerHTML = `<img class="lkimg" src="assets/looks/${l.id}.jpg" alt="" loading="lazy" decoding="async"><span>${l.name.replace(' · ', '<br>')}</span>`;
-    b.onclick = () => { S.look = l; renderLooks(); rebuild(); chips(); };
+    b.onclick = () => {
+      const was = KIDS_TEXT[S.look.id], now = KIDS_TEXT[l.id];
+      if (KIDS && was && now && $('t1').value === was.t1 && $('t2').value === was.t2) { $('t1').value = now.t1; $('t2').value = now.t2; }
+      S.look = l; renderLooks(); rebuild(); chips();
+    };
     box.appendChild(b);
   }
   box.scrollLeft = keep;
@@ -330,11 +341,19 @@ const SONG_GROUPS = [
   ['bright', () => T('밝은', 'Bright')],
   ['tension', () => T('긴장감', 'Tension')],
 ];
+// the class sees shelves of its own: its own Korean songs, then other songs with words, then the bright instrumentals
+const KIDS_GROUPS = [
+  [(s) => s.group === 'kids', () => T('🎤 민정샘 반 노래 · 우리말 가사', '🎤 Our class songs · in Korean')],
+  [(s) => KIDS_SONGS.includes(s.id) && s.group !== 'kids' && s.lyrics !== false, () => T('🎃 영어 가사 노래', '🎃 Songs with English lyrics')],
+  [(s) => KIDS_SONGS.includes(s.id) && s.lyrics === false, () => T('✨ 신나는 연주곡', '✨ Upbeat instrumentals')],
+];
 function renderSongs() {
-  $('ourSongs').innerHTML = SONG_GROUPS.map(([g, label]) => `<p class="song-group">${label()}</p>` + SONGS.filter((s) => s.group === g).map((s) => `<button class="opt${S.useOurs && s.id === S.song.id ? ' on' : ''}" data-song="${s.id}">
-      ${s.group === 'lyrics' || s.group === 'vocal' || s.group === 'halloween'
+  const groups = KIDS ? KIDS_GROUPS.map(([pick, label]) => [SONGS.filter(pick).sort((a, b) => KIDS_SONGS.indexOf(a.id) - KIDS_SONGS.indexOf(b.id)), label])
+    : SONG_GROUPS.map(([g, label]) => [SONGS.filter((s) => s.group === g), label]);
+  $('ourSongs').innerHTML = groups.map(([list, label]) => `<p class="song-group">${label()}</p>` + list.map((s) => `<button class="opt${S.useOurs && s.id === S.song.id ? ' on' : ''}" data-song="${s.id}">
+      ${!KIDS && (s.group === 'lyrics' || s.group === 'vocal' || s.group === 'halloween')
         ? `<img class="cov" src="assets/covers/${s.id}.jpg" alt="" loading="lazy" decoding="async">`
-        : `<span class="cov gr-${s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
+        : `<span class="cov gr-${KIDS ? 'bright' : s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
       <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span></button>`).join('')).join('');
   $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song)); });
 }
@@ -346,7 +365,7 @@ async function pickSong(song) {
   S.tpl = await loadTemplate(song);
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
   S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || MAX_SEC; applyCut();
-  $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
+  if (!KIDS) { $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2; }
   $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작점은 아래에서.', 'Pick a song file. Length and start point below.');
   rebuild(); chips(); syncPlay();
   fetch(song.file).then((r) => r.arrayBuffer()).then(listen);
@@ -625,6 +644,25 @@ const rlog = (m) => {
 if (SHEET_LOG) { rlog(`open ${innerWidth}x${innerHeight} dpr${devicePixelRatio} ${navigator.language}`); const n = document.getElementById('testnote'); if (n) n.hidden = false; }
 // 10-17 시험 실측: 아이폰 사진 선택 뒤 대기는 iCloud 원본 내려받기(방금 찍은 사진은 빠름) — 앱이 못 줄이니 미리 알린다
 if (isIOS()) { const tip = document.getElementById('iosTip'); if (tip) tip.hidden = false; }
+// 10-18 feedback (영샘: 앱 안 의견 버튼 — a teacher collecting it by hand is too much). One emoji and one line go to
+// the same sheet as the step log; no name is asked (the class is under 14) and the line says not to write one.
+if (SHEET_LOG || REMOTE_LOG || KIDS) {
+  $('fbOpen').hidden = false;
+  let emo = '';
+  $('fbOpen').onclick = () => { $('fbHint').textContent = T('이모지만 눌러도 돼요. 이름이나 사진은 보내지 않아요.', 'An emoji alone is fine. No names or photos are sent.'); window.hhOpen('fb'); };
+  $('fbEmo').querySelectorAll('button').forEach((b) => {
+    b.onclick = () => { emo = b.dataset.emo; $('fbEmo').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); };
+  });
+  $('fbSend').onclick = () => {
+    const text = $('fbText').value.replace(/\s+/g, ' ').trim().slice(0, 80);
+    if (!emo && !text) { $('fbHint').textContent = T('이모지를 하나 골라 주세요 😊', 'Pick an emoji first 😊'); return; }
+    rlog(`FEEDBACK ${emo || '-'} ${KIDS ? '[kids] ' : ''}${S.look.id} | ${text}`);
+    if (SHEET_LOG) sheetFlush();
+    $('fbText').value = ''; emo = ''; $('fbEmo').querySelectorAll('button').forEach((x) => x.classList.remove('on'));
+    $('fbHint').textContent = T('고마워요! 잘 받았어요 💌', 'Thank you! Got it 💌');
+    setTimeout(() => window.hhClose(), 1400);
+  };
+}
 addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
@@ -664,7 +702,9 @@ async function make() {
     if (canvas !== stage) rlog('stage tainted - exporting on a clean canvas');
     rebuild();
     status(T('글꼴 준비 중… 멈춘 게 아니에요', 'Loading fonts… it hasn’t stopped'));
-    await within(Promise.all([hangulReady(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
+    // the class templates' Halloween poster face is sliced by Google like Gaegu - fetch the syllables this short uses
+    const kidsFont = S.look.kids ? document.fonts.load('80px "Black Han Sans"', [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
+    await within(Promise.all([hangulReady(), kidsFont, ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
     const stepper = exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
@@ -754,8 +794,14 @@ async function caps() {
 
 (async () => {
   try {
-    S.tpl = await loadTemplate();
-    $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2;
+    S.tpl = await loadTemplate(S.song);
+    const txt = KIDS ? KIDS_TEXT[S.look.id] || KIDS_TEXT['minjeong-hw'] : { brand: S.tpl.brand, t1: S.tpl.title1, t2: S.tpl.title2 };
+    $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2;
+    if (KIDS) {
+      document.body.classList.add('kids'); rlog('class kids');
+      document.fonts.load('80px "Black Han Sans"', '민정샘 반 참 잘했어요 HALLOWEEN NIGHT PARTY').catch(() => {});
+      for (const set of ['halloween', 'everyday']) loadDemoKids(set).then((ims) => { S.demoKids[set] = ims; if (!S.images.length) { rebuild(); renderLooks(); } }).catch(() => {});
+    }
     await loadFonts();
     S.demo = await loadDemo();
     loadDemoHw().then((ims) => { S.demoHw = ims; if (!S.images.length) rebuild(); }).catch(() => {});

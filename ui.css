@@ -133,7 +133,8 @@ body[data-pane="text"] .pane-text,
 body[data-pane="info"] .pane-info,
 body[data-pane="welcome"] .pane-welcome,
 body[data-pane="resume"] .pane-resume,
-body[data-pane="made"] .pane-made{display:block}
+body[data-pane="made"] .pane-made,
+body[data-pane="fb"] .pane-fb{display:block}
 
 /* ---------- 10-11 phone test fixes ---------- */
 .top .lnks{display:flex;gap:8px}
@@ -239,3 +240,11 @@ body.ready .boot{opacity:0;pointer-events:none}
 .failmsg:empty{display:none}
 body:not(.ready) .tap{visibility:hidden}
 @media (prefers-reduced-motion: reduce){.boot i{animation:none}}
+
+/* ---------- 10-18 feedback (test builds) ---------- */
+.fbopen{display:block;margin:10px auto 0;padding:10px 18px;min-height:44px;border-radius:999px;font-size:var(--t-s);color:var(--cream);border:2px dashed var(--line-2);background:transparent}
+.fbopen[hidden]{display:none}
+.fbemo{display:flex;justify-content:space-between;gap:8px;margin:6px 0 14px}
+.fbemo button{flex:1;font-size:38px;line-height:1;min-height:64px;border-radius:18px;border:2px solid var(--line);background:transparent;transition:transform .12s}
+.fbemo button.on{border-color:var(--cream);background:rgba(255,255,255,.12);transform:scale(1.08)}
+#fbText{width:100%;min-height:var(--hit);font-size:var(--t-m);padding:0 14px;border-radius:14px;border:2px solid var(--line-2);background:transparent;color:var(--cream)}

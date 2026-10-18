@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./ui.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&display=swap">
 <script type="importmap">{"imports":{"mediabunny":"./vendor/mediabunny.min.mjs"}}</script>
 <style>
 /* ---- Design B: 무대 + 도구줄 (stage & rail) — the reel fills the screen, tools float on it ---- */
@@ -212,6 +212,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <a class="pill ghost" id="save"><svg width="20" height="20"><use href="#i-save"/></svg>저장</a>
       <button class="again" id="again">다시 만들기</button>
     </div>
+    <button class="fbopen" id="fbOpen" hidden>💬 의견 보내기</button>
   </div>
 </div>
 
@@ -328,6 +329,16 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <p class="resume-info" id="resumeInfo"></p>
     <button class="pill" id="resumeGo">이어서 만들기</button>
     <button class="again" id="resumeNew" style="margin-top:10px">새로 시작</button>
+  </div>
+
+  <div class="pane pane-fb">
+    <h2>어땠어요?</h2>
+    <div class="fbemo" id="fbEmo">
+      <button data-emo="😍">😍</button><button data-emo="😀">😀</button><button data-emo="🙂">🙂</button><button data-emo="😐">😐</button><button data-emo="😢">😢</button>
+    </div>
+    <input type="text" id="fbText" maxlength="80" autocomplete="off" placeholder="한 줄 의견 (이름은 쓰지 말아 주세요)">
+    <p class="hint" id="fbHint">이모지만 눌러도 돼요. 이름이나 사진은 보내지 않아요.</p>
+    <button class="pill done" id="fbSend">보내기</button>
   </div>
 
   <div class="pane pane-made">
