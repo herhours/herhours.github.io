@@ -317,7 +317,9 @@ async function usePhotos(files) {
   });
   rlog(`photos ${files.length} in ${Math.round(performance.now() - t0)}ms`);
   const ok = r.filter((x) => x.status === 'fulfilled').map((x) => x.value);
-  const bad = r.map((x, i) => (x.status === 'rejected' ? files[i].name : null)).filter(Boolean);
+  // 10-19 영샘 S20+: several videos failed in ~0.1s and nothing said why - log the reason (type, size, codec) and show it
+  r.forEach((x, i) => { if (x.status === 'rejected') rlog(`photo fail ${i + 1}/${files.length} ${files[i].type || '?'} ${(files[i].size / 1048576).toFixed(1)}MB ${x.reason?.message || x.reason}`); });
+  const bad = r.map((x, i) => (x.status === 'rejected' ? `${files[i].name}${x.reason?.message ? ` (${x.reason.message})` : ''}` : null)).filter(Boolean);
   if (ok.length) { S.images = ok; S.demoChosen = false; setMake(); rebuild(); renderLooks(); }
   $('focusTip').hidden = !ok.length;
   $('clipGainRow').hidden = !ok.some((x) => x.live);
@@ -510,6 +512,8 @@ $('lyrics').addEventListener('input', () => saveSoon());
 
 document.querySelectorAll('[data-open]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.open); });
 document.querySelectorAll('[data-close]').forEach((el) => { el.onclick = () => window.hhClose(); });
+// 10-19 영샘: "사진 고르고 다음 음악 갔다가 다시 뒤로 사진" - each step has 「← 이전」
+document.querySelectorAll('[data-prev]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.prev); });
 
 // ---------- the four steps in order (10-11: 1 and 2) ----------
 // Each sheet's button goes on to the next one: style → photos → song → text → back to the video, ready to make.
@@ -520,14 +524,31 @@ window.hhOpen = (name) => {
   shellOpen(name);
   if (STEPS.includes(name)) { seenSteps.add(name); if (seenSteps.size === STEPS.length) flowDone(); }
 };
+// The phone's back button (and the installed app's) steps back one sheet instead of leaving the page: one history
+// entry while a sheet is open; back = the previous step, or close.
+{
+  const PREV = { photo: 'look', song: 'photo', text: 'song', focus: 'photo', lyrics: 'song' };
+  let pushed = false;
+  const stepOpen = window.hhOpen, shellClose = window.hhClose;
+  window.hhOpen = (name) => { stepOpen(name); if (!pushed) { history.pushState({ hhSheet: 1 }, ''); pushed = true; } };
+  window.hhClose = () => { shellClose(); if (pushed) { pushed = false; history.back(); } };
+  addEventListener('popstate', () => {
+    if (!pushed) return;                                  // our own history.back() after a close
+    pushed = false;
+    if (!document.body.classList.contains('panel-open')) return;
+    const prev = PREV[document.body.dataset.pane];
+    if (prev) window.hhOpen(prev); else shellClose();
+  });
+}
 function flowDone() {
   if (S.flowDone) return;
   S.flowDone = true; setMake();
   try { localStorage.setItem('hh-flowed', '1'); } catch {}
 }
 // 10-19 랩코 점검 A2: in class mode a child who skipped the photo step got a finished video of the demo pictures and
-// thought it was theirs. There the button asks for their photos first; the demo still works if 「예시로」 was tapped.
-const needPhotos = () => KIDS && !S.images.length && !S.demoChosen;
+// thought it was theirs. The button asks for their photos first; the demo still works if 「예시로」 was tapped.
+// Same evening 영샘: the same in the regular app - 「쇼츠 만들기」 on the first screen made the example straight away.
+const needPhotos = () => !S.images.length && !S.demoChosen;
 function setMake() {
   $('make').textContent = !S.flowDone ? T('① 스타일부터 고르기', '① Start with a style')
     : needPhotos() ? T('② 내 사진부터 골라요', '② Pick your photos first') : T('쇼츠 만들기', 'Make my Short');
@@ -825,7 +846,9 @@ async function make() {
     const url = URL.createObjectURL(blob);
     $('out').src = url;
     $('out').muted = false; $('out').volume = 1;   // the finished short is always heard
-    $('save').href = url; $('save').download = `herhours_${Date.now()}.mp4`;
+    $('save').href = url;
+    { const d = new Date(), p = (n) => String(n).padStart(2, '0');
+      $('fname').value = `${cleanName($('brand').value) || 'herhours'}_${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; setFname(); }
     $('doneMeta').textContent = T(`${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`, `${seconds.toFixed(0)}s · ${(blob.size / 1048576).toFixed(0)}MB · made in ${elapsed.toFixed(0)}s`);
     // an iPhone saves a download to Files, not Photos — the share sheet's 'Save Video' is the way to Photos
     $('credit').textContent = S.useOurs ? `Music: Her Hours — ${S.song.name}` : '';
@@ -852,7 +875,7 @@ $('again').onclick = () => {
 
 $('share').onclick = async () => {
   if (!S.blob) return;
-  const file = new File([S.blob], `herhours_${Date.now()}.mp4`, { type: 'video/mp4' });
+  const file = new File([S.blob], `${S.fname || `herhours_${Date.now()}`}.mp4`, { type: 'video/mp4' });
   rlog(`share ${(S.blob.size / 1048576).toFixed(1)}MB`);
   // canShare() says yes to any size, but Chrome then refuses files over 50MB
   if (S.blob.size > 49 * 1048576) {
@@ -884,6 +907,11 @@ $('share').onclick = async () => {
   }
 };
 $('save').addEventListener('click', () => $('save').classList.remove('nudge'));
+// 10-19 영샘: "저장할 때 파일 이름 설정" - what is typed names both the download and the shared file
+function cleanName(s) { return String(s || '').replace(/[\\/:*?"<>|#%\u0000-\u001f]/g, '').replace(/\s+/g, '_').replace(/^\.+/, '').slice(0, 40).trim(); }
+function setFname() { S.fname = cleanName($('fname').value) || `herhours_${Date.now()}`; $('save').download = `${S.fname}.mp4`; }
+$('fname').addEventListener('input', setFname);
+$('fname').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
 // ---------- boot ----------
 async function caps() {

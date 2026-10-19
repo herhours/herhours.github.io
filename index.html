@@ -211,6 +211,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   </div>
   <div class="donebox">
     <p class="done-meta" id="doneMeta"></p>
+    <!-- 10-19 영샘: the saved file can carry a name the person chooses -->
+    <div class="fname"><label for="fname">파일 이름</label><input type="text" id="fname" maxlength="40" autocomplete="off" enterkeyhint="done"><span>.mp4</span></div>
     <p class="done-credit" id="credit"></p>
     <button class="pill" id="share"><svg width="22" height="22"><use href="#i-share"/></svg>인스타에 올리기</button>
     <div class="two">
@@ -252,7 +254,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <b id="clipGainV">35%</b>
     </div>
     <p class="hint" id="clipGainHint" style="margin-top:2px">영상이 화면에 나올 때만 노래 밑에 깔려요.</p>
-    <button class="pill done" data-next="song">다음 · 노래</button>
+    <div class="two stepnav"><button class="pill ghost" data-prev="look">← 스타일</button><button class="pill done" data-next="song">다음 · 노래</button></div>
   </div>
 
   <!-- 10-19 테스터 의견: 사진 프레임 안에서 보이고 싶은 부분이 보이게 — the whole photo, one ring on the part to keep in view -->
@@ -287,7 +289,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <svg width="22" height="22"><use href="#i-type"/></svg>
       <span class="t"><b>글 넣기 · 가사나 한마디</b><span id="lyricsBtnSub">붙여넣고 톡톡 눌러 맞춰요</span></span>
     </button>
-    <button class="pill done" data-next="text">다음 · 글자</button>
+    <div class="two stepnav"><button class="pill ghost" data-prev="photo">← 사진</button><button class="pill done" data-next="text">다음 · 글자</button></div>
   </div>
 
   <div class="pane pane-lyrics">
@@ -314,7 +316,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
     <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">기기 정보</button></div>
-    <button class="pill done" data-finish>다 됐어요</button>
+    <div class="two stepnav"><button class="pill ghost" data-prev="song">← 노래</button><button class="pill done" data-finish>다 됐어요</button></div>
   </div>
 
   <div class="pane pane-info">
