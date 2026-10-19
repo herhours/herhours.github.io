@@ -316,7 +316,9 @@ async function usePhotos(files) {
     for (let k = 0; ; k++) {
       try {
         if (!isVideoFile(f)) return await fileToBitmap(f);
-        const mem = new File([await f.arrayBuffer()], f.name, { type: f.type || 'video/mp4' });
+        // a 269MB camera file showed up in the -9 log - copying that whole into a phone's memory could crash the tab;
+        // big files are read in place (the thumbnail still waits until after our read)
+        const mem = f.size > 100 * 1048576 ? f : new File([await f.arrayBuffer()], f.name, { type: f.type || 'video/mp4' });
         const v = await fileToClip(mem);
         if (slots[i]?.tagName === 'VIDEO') slots[i].src = URL.createObjectURL(mem);
         return v;
