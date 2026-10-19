@@ -297,7 +297,7 @@ async function usePhotos(files) {
     if (isVideoFile(f)) {
       const el = document.createElement('video');
       el.src = URL.createObjectURL(f); el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.className = 'vid';
-      th.appendChild(el); return null;
+      th.appendChild(el); return el;          // kept (not replaced) - its tap opens the position picker once the clip is read
     }
     const d = document.createElement('div'); d.className = 'ph'; th.appendChild(d); return d;
   });
@@ -310,7 +310,8 @@ async function usePhotos(files) {
     const t = performance.now();
     const v = isVideoFile(f) ? await fileToClip(f) : await fileToBitmap(f);
     n++; say();
-    if (slots[i]) { const th = thumbOf(v); if (!v.live) th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); }
+    if (slots[i]?.tagName === 'VIDEO') { const el = slots[i]; el.onclick = () => openFocus(v, el); }   // clips too: their canvas holds the current frame
+    else if (slots[i]) { const th = thumbOf(v); th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); }
     rlog(`photo ${i + 1}/${files.length} ${v.hhPath || 'clip'} ${Math.round(performance.now() - t)}ms ${(f.size / 1048576).toFixed(1)}MB ${f.type} → ${v.width}x${v.height}`);
     return v;
   });
@@ -318,7 +319,7 @@ async function usePhotos(files) {
   const ok = r.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   const bad = r.map((x, i) => (x.status === 'rejected' ? files[i].name : null)).filter(Boolean);
   if (ok.length) { S.images = ok; S.demoChosen = false; setMake(); rebuild(); renderLooks(); }
-  $('focusTip').hidden = !ok.some((x) => !x.live);
+  $('focusTip').hidden = !ok.length;
   $('clipGainRow').hidden = !ok.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
   $('phint').textContent = bad.length
@@ -795,6 +796,7 @@ async function make() {
     S.images = S.images.map((c) => {
       if (!c.live || !tainted(c)) return c;
       const n = document.createElement('canvas'); n.width = c.width; n.height = c.height; n.live = true; n.clip = c.clip;
+      if (c.hhAlign) n.hhAlign = c.hhAlign;   // the clean copy keeps the position the person chose (10-19)
       n.clip.videoOk = false; rlog('clip canvas tainted - swapped for a clean one');
       return n;
     });
