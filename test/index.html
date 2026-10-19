@@ -191,6 +191,11 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <button data-open="made" class="mine-list">
     <span class="b"><svg width="26" height="26"><use href="#i-list"/></svg></span><span class="l">내 영상</span>
   </button>
+  <!-- 10-19 영샘 S20+: the 「정보」 link sits in the top bar, which phones hide - so install lives on the rail too,
+       shown only when this browser can install (or on an iPhone not yet added to the home screen) -->
+  <button id="railInstall" hidden>
+    <span class="b"><svg width="26" height="26"><use href="#i-save"/></svg></span><span class="l">앱 설치</span>
+  </button>
 </nav>
 
 <div class="transport">
