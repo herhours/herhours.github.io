@@ -135,7 +135,8 @@ body[data-pane="welcome"] .pane-welcome,
 body[data-pane="resume"] .pane-resume,
 body[data-pane="made"] .pane-made,
 body[data-pane="fb"] .pane-fb,
-body[data-pane="focus"] .pane-focus{display:block}
+body[data-pane="focus"] .pane-focus,
+body[data-pane="fname"] .pane-fname{display:block}
 
 /* ---------- 10-11 phone test fixes ---------- */
 .top .lnks{display:flex;gap:8px}
@@ -294,5 +295,5 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
   padding:14px 18px calc(20px + var(--safe-b));background:linear-gradient(to top,rgb(19,22,32) 78%,rgba(19,22,32,0))}
 .stepnav .pill{margin-top:0}.stepnav .done{position:static}
 .panel .pane-look > .done{bottom:calc(-20px - var(--safe-b));box-shadow:0 -14px 18px 6px rgb(19,22,32)}
-.fname{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:var(--t-s)}.fname label,.fname span{color:var(--cream);flex:0 0 auto;text-shadow:0 1px 3px #000}
-.fname input{flex:1;min-width:0;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(0,0,0,.6);color:var(--cream)}
+.fname{display:flex;align-items:center;gap:8px;margin:6px 0 4px;font-size:var(--t-m)}.fname label,.fname span{color:var(--cream);flex:0 0 auto;text-shadow:0 1px 3px #000}
+.fname input{flex:1;min-width:0;font-size:18px;padding:14px 14px;border-radius:10px;border:1px solid var(--line-2);background:rgba(0,0,0,.6);color:var(--cream)}

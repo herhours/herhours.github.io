@@ -897,7 +897,7 @@ $('again').onclick = () => {
   $('out').pause(); S.vf = 0; S.started = false;
 };
 
-$('share').onclick = async () => {
+async function doShare() {
   if (!S.blob) return;
   const file = new File([S.blob], `${S.fname || `herhours_${Date.now()}`}.mp4`, { type: 'video/mp4' });
   rlog(`share ${(S.blob.size / 1048576).toFixed(1)}MB`);
@@ -929,13 +929,31 @@ $('share').onclick = async () => {
       ? T('앱 안 브라우저라 바로 공유가 안 돼요. 크롬·사파리로 열어서 다시 만들거나, 「저장」으로 받아서 인스타에서 올려주세요.', 'This in-app browser can’t share. Open the page in Chrome or Safari, or tap “Save” and post it from Instagram.')
       : T('이 브라우저는 바로 공유가 안 돼요. 「저장」으로 받아서 인스타에서 올려주세요.', 'This browser can’t share directly. Tap “Save”, then post it from Instagram.');
   }
-};
+}
 $('save').addEventListener('click', () => $('save').classList.remove('nudge'));
-// 10-19 영샘: "저장할 때 파일 이름 설정" - what is typed names both the download and the shared file
+// 10-19 영샘: "저장할 때 파일 이름 설정" - what is typed names both the download and the shared file.
+// Then "칸이 잘 안 보여 — 저장 누를 때 창": 「저장」 and share open the 「파일 이름」 sheet first; its button does the real thing
+// (still inside the tap, so the download and the share sheet are allowed).
 function cleanName(s) { return String(s || '').replace(/[\\/:*?"<>|#%\u0000-\u001f]/g, '').replace(/\s+/g, '_').replace(/^\.+/, '').slice(0, 40).trim(); }
 function setFname() { S.fname = cleanName($('fname').value) || `herhours_${Date.now()}`; $('save').download = `${S.fname}.mp4`; }
 $('fname').addEventListener('input', setFname);
-$('fname').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+let nameNext = null, nameOk = false;
+function askName(next, label) {
+  nameNext = next; $('fnameGo').textContent = label; window.hhOpen('fname');
+  setTimeout(() => { const i = $('fname'); i.focus(); i.select(); }, 280);
+}
+$('save').addEventListener('click', (e) => {
+  if (nameOk) return;                      // the second, real click from 「저장하기」
+  e.preventDefault(); askName('save', T('저장하기', 'Save'));
+});
+$('share').onclick = () => askName('share', $('share').textContent.trim() || T('보내기', 'Send'));
+$('fnameGo').onclick = () => {
+  setFname(); rlog(`file name ${S.fname}`);
+  const next = nameNext; window.hhClose();
+  if (next === 'save') { nameOk = true; $('save').click(); nameOk = false; }
+  else if (next === 'share') doShare();
+};
+$('fname').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('fnameGo').click(); } });
 
 // ---------- boot ----------
 async function caps() {
