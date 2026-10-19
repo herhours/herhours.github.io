@@ -686,7 +686,9 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
   $('updToast').textContent = T('새 버전이 나왔어요 · 눌러서 새로 고침', 'A new version is ready · tap to reload');
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   let deferred = null;
-  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; });
+  const hideInstall = () => { $('installBtn').hidden = true; $('railInstall').hidden = true; };
+  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; $('railInstall').hidden = false; rlog('installable'); });
+  $('railInstall').querySelector('.l').textContent = T('앱 설치', 'Install');
   $('installBtn').textContent = T('앱으로 설치', 'Install as an app');
   // 10-19 영샘 폰: tapping showed nothing and said nothing. Now every outcome is logged, and whenever the browser's own
   // sheet does not come up (or is closed), the menu route is written under the button - it always works.
@@ -705,12 +707,15 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
       await ev.prompt();
       const r = await ev.userChoice;
       rlog(`install prompt ${r?.outcome || '?'}`);
-      if (r?.outcome === 'accepted') { $('installBtn').hidden = true; return; }
+      if (r?.outcome === 'accepted') { hideInstall(); return; }
     } catch (e) { rlog(`install prompt error ${e?.name || ''} ${e?.message || e}`); }
-    menuWay();
+    menuWay(); window.hhOpen('info');
   };
-  addEventListener('appinstalled', () => { $('installBtn').hidden = true; rlog('appinstalled'); });
+  // rail button: Android → the browser's install window straight away (same handler); otherwise the info sheet with the steps
+  $('railInstall').onclick = () => { rlog('install rail tap'); if (deferred) $('installBtn').onclick(); else { if (!isIOS()) menuWay(); window.hhOpen('info'); } };
+  addEventListener('appinstalled', () => { hideInstall(); rlog('appinstalled'); });
   if (!standalone && isIOS()) {
+    $('railInstall').hidden = false;
     $('installHint').textContent = T('아이폰·아이패드: 사파리 아래(아이패드는 위) 공유 버튼 → 「홈 화면에 추가」 하면 앱처럼 열려요.',
       'iPhone/iPad: Safari Share button → “Add to Home Screen” to open it like an app.');
     $('installHint').hidden = false;
