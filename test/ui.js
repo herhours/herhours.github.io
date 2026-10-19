@@ -688,10 +688,26 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
   let deferred = null;
   addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; });
   $('installBtn').textContent = T('앱으로 설치', 'Install as an app');
+  // 10-19 영샘 폰: tapping showed nothing and said nothing. Now every outcome is logged, and whenever the browser's own
+  // sheet does not come up (or is closed), the menu route is written under the button - it always works.
+  const samsung = /SamsungBrowser/i.test(navigator.userAgent);      // 갤럭시 기본 브라우저 — 메뉴가 아래 ≡ 에 있다
+  const menuWay = () => {
+    $('installHint').textContent = samsung
+      ? T('설치 창이 안 뜨면: 삼성 인터넷 아래 ≡ 메뉴 → 「현재 페이지 추가」 → 「홈 화면」을 눌러 주세요.', 'If no install window opens: Samsung Internet menu ≡ → “Add page to” → “Home screen”.')
+      : T('설치 창이 안 뜨면: 크롬 오른쪽 위 ⋮ 메뉴 → 「앱 설치」 또는 「홈 화면에 추가」를 눌러 주세요.', 'If no install window opens: Chrome menu ⋮ → “Install app” or “Add to Home screen”.');
+    $('installHint').hidden = false;
+  };
   $('installBtn').onclick = async () => {
-    if (!deferred) return;
-    deferred.prompt(); const r = await deferred.userChoice.catch(() => ({})); rlog(`install prompt ${r.outcome || '?'}`);
-    deferred = null; $('installBtn').hidden = true;
+    rlog(`install tap deferred=${!!deferred}`);
+    if (!deferred) { menuWay(); return; }
+    const ev = deferred; deferred = null;
+    try {
+      await ev.prompt();
+      const r = await ev.userChoice;
+      rlog(`install prompt ${r?.outcome || '?'}`);
+      if (r?.outcome === 'accepted') { $('installBtn').hidden = true; return; }
+    } catch (e) { rlog(`install prompt error ${e?.name || ''} ${e?.message || e}`); }
+    menuWay();
   };
   addEventListener('appinstalled', () => { $('installBtn').hidden = true; rlog('appinstalled'); });
   if (!standalone && isIOS()) {
