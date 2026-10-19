@@ -285,5 +285,5 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
 .focusbox{position:relative;margin:6px auto 4px;width:fit-content;max-width:100%;touch-action:none;border-radius:12px;overflow:hidden;background:#000}
 #focusCv{display:block;max-width:100%;max-height:46vh;width:auto;height:auto}
 .focusbox .ring{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 3px rgba(0,0,0,.55),inset 0 0 0 3px rgba(0,0,0,.35);pointer-events:none}
-.thumbs .th{cursor:pointer}
-.thumbs .th.aligned{outline:3px solid var(--cream);outline-offset:-3px}
+.thumbs .th,.thumbs .vid{cursor:pointer}
+.thumbs .th.aligned,.thumbs .vid.aligned{outline:3px solid var(--cream);outline-offset:-3px}
