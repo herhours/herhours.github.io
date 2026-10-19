@@ -243,6 +243,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <input type="file" id="photos" accept="image/*,image/heic,image/heif,video/*" multiple>
     <div class="thumbs" id="thumbs"></div>
     <p class="hint" id="phint">고르면 바로 위 화면에 나와요.</p>
+    <p class="hint" id="focusTip" hidden>✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.</p>
     <p class="hint" id="iosTip" hidden>아이폰: 오래된 사진은 iCloud에서 원본을 받아 오느라 몇 초 걸려요. 방금 찍은 사진은 바로 들어가요. 빠르게 하려면 설정 → 사진 → 「다운로드 및 원본 유지」(저장 공간을 더 써요).</p>
     <p class="hint" id="padv"></p>
     <div class="gain" id="clipGainRow" hidden>
@@ -252,6 +253,17 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     </div>
     <p class="hint" id="clipGainHint" style="margin-top:2px">영상이 화면에 나올 때만 노래 밑에 깔려요.</p>
     <button class="pill done" data-next="song">다음 · 노래</button>
+  </div>
+
+  <!-- 10-19 테스터 의견: 사진 프레임 안에서 보이고 싶은 부분이 보이게 — the whole photo, one ring on the part to keep in view -->
+  <div class="pane pane-focus">
+    <h2>보일 부분 고르기</h2>
+    <div class="focusbox" id="focusBox"><canvas id="focusCv"></canvas><i class="ring" id="focusRing"></i></div>
+    <p class="hint" id="focusHint">보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.</p>
+    <div class="two">
+      <button class="pill ghost" id="focusReset">처음대로</button>
+      <button class="pill" id="focusDone">다 됐어요</button>
+    </div>
   </div>
 
   <div class="pane pane-song">

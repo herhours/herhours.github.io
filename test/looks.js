@@ -246,9 +246,13 @@ function gradedImage(img, grade) {
   if (m.has(grade)) return m.get(grade);
   const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
   const g = c.getContext('2d'); g.filter = grade; g.drawImage(img, 0, 0);
+  c.hhSrc = img;                       // the graded copy still follows the photo's chosen position (AL below)
   m.set(grade, c);
   return c;
 }
+// 10-19 테스터 의견 "사진 프레임 안에서 보이고 싶은 부분이 보이게": a photo the person positioned carries hhAlign
+// {x, y} (0 = left/top edge of the photo shows, 1 = right/bottom) - it replaces the look's own default framing.
+const AL = (img, fx, fy) => { const a = img?.hhAlign || img?.hhSrc?.hhAlign; return a ? [a.x, a.y] : [fx, fy]; };
 
 function drawBlackCut(ctx, f, N, d) {
   const { images, phrases, accent, grade, motions, step, gap, openHold } = d;
@@ -261,7 +265,7 @@ function drawBlackCut(ctx, f, N, d) {
   if (f < from + hold) {
     const t = clamp((f - from) / hold);
     const dir = i % 2 === 0 ? 1 : -1;
-    const [fx, fy] = FOCUS[i % FOCUS.length];
+    const [fx, fy] = AL(images[i % images.length], ...FOCUS[i % FOCUS.length]);
     const mv = blackMove(motions[i % motions.length], t, dir);
     const inEdge = from === 0 ? 1 : clamp((f - from) / 2);   // frame 0 is already a picture
     const edge = Math.min(inEdge, clamp((from + hold - f) / 2));
@@ -425,7 +429,8 @@ function drawPulse(ctx, f, N, d) {
   ctx.translate(W / 2, H / 2); ctx.scale(sc, sc); ctx.translate(-W / 2, -H / 2);
   const s = Math.max(W / img.width, H / img.height), dw = img.width * s, dh = img.height * s;
   if (src.live) ctx.filter = grade;
-  ctx.drawImage(img, (W - dw) * 0.5, (H - dh) * 0.45, dw, dh);
+  const [ax, ay] = AL(src, 0.5, 0.45);
+  ctx.drawImage(img, (W - dw) * ax, (H - dh) * ay, dw, dh);
   ctx.filter = 'none';
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -594,21 +599,22 @@ function drawClockface(ctx, f, N, d) {
     if (a <= 0) return;
     const k = clamp((f - i * shot) / shot), dir = i % 2 === 0 ? 1 : -1;
     const img = images[i % n];
-    const fx = clamp(CLOCK_FOCUS[i % CLOCK_FOCUS.length] + dir * (0.5 - k) * 0.05);
+    const [bx, cy] = AL(img, CLOCK_FOCUS[i % CLOCK_FOCUS.length], 0.42);
+    const fx = clamp(bx + dir * (0.5 - k) * 0.05);
     ctx.globalAlpha = master * a;
     if (night) {
       const sc = 1.06 + 0.07 * k;
       const s = Math.max(W / img.width, H / img.height) * sc, dw = img.width * s, dh = img.height * s;
-      ctx.drawImage(img, (W - dw) * fx, (H - dh) * 0.42, dw, dh);
+      ctx.drawImage(img, (W - dw) * fx, (H - dh) * cy, dw, dh);
     } else {
       // 하루: every shot its own move, so the cuts do not all breathe the same way
       const mv = blackMove(DAY_MOVES[i % DAY_MOVES.length], k, dir);
-      const ox = fx * W, oy = 0.42 * H;
+      const ox = fx * W, oy = cy * H;
       const s = Math.max(W / img.width, H / img.height), dw = img.width * s, dh = img.height * s;
       ctx.save();
       ctx.translate(ox, oy); ctx.scale(mv.scale, mv.scale);
       ctx.translate(mv.x / 100 * W, mv.y / 100 * H); ctx.rotate(mv.rot * Math.PI / 180); ctx.translate(-ox, -oy);
-      ctx.drawImage(img, (W - dw) * fx, (H - dh) * 0.42, dw, dh);
+      ctx.drawImage(img, (W - dw) * fx, (H - dh) * cy, dw, dh);
       ctx.restore();
     }
   };
@@ -931,7 +937,8 @@ function drawLyricBloom(ctx, f, N, d) {
   const s = Math.max(W / img.width, H / img.height) * push, dw = img.width * s, dh = img.height * s;
   ctx.globalAlpha = master;
   if (src.live) ctx.filter = 'brightness(1.10) contrast(1.06)';
-  ctx.drawImage(img, (W - dw) / 2, (H - dh) * 0.38 + drift, dw, dh);
+  const [ax, ay] = AL(src, 0.5, 0.38);
+  ctx.drawImage(img, (W - dw) * ax, (H - dh) * ay + drift, dw, dh);
   ctx.filter = 'none';
   // only enough of the line's colour to bind the frame — never enough to hide the picture
   ctx.globalCompositeOperation = 'color'; ctx.globalAlpha = master * 0.42;
@@ -1028,7 +1035,8 @@ function drawLyricBloom(ctx, f, N, d) {
         const pic = src.live ? src : gradedImage(src, 'contrast(1.45) brightness(2.0) saturate(1.35)');
         if (src.live) g.filter = 'contrast(1.45) brightness(2.0) saturate(1.35)';
         const ps = Math.max(lw * 2.3 / pic.width, 420 / pic.height);
-        g.drawImage(pic, (lw - pic.width * ps) / 2, (420 - pic.height * ps) * 0.34, pic.width * ps, pic.height * ps);
+        const [bx, by] = AL(src, 0.5, 0.34);
+        g.drawImage(pic, (lw - pic.width * ps) * bx, (420 - pic.height * ps) * by, pic.width * ps, pic.height * ps);
         g.filter = 'none';
         ctx.drawImage(bloomLayer, 0, 0, lw, 420, -20, -330, lw, 420);
       } else {
@@ -1121,8 +1129,8 @@ function hwMove(m, u) {
 function hwPhoto(ctx, img, x, y, w, h, mv) {
   const iw = img.videoWidth || img.width, ih = img.videoHeight || img.height;
   const s = Math.max(w / iw, h / ih) * mv.z, dw = iw * s, dh = ih * s;
-  const fy = ih > iw * 1.1 ? 0.3 : 0.45;   // faces sit high in a portrait
-  ctx.drawImage(img, x + (w - dw) / 2 + mv.px * w, y + (h - dh) * fy + mv.py * h, dw, dh);
+  const [ax, ay] = AL(img, 0.5, ih > iw * 1.1 ? 0.3 : 0.45);   // faces sit high in a portrait
+  ctx.drawImage(img, x + (w - dw) * ax + mv.px * w, y + (h - dh) * ay + mv.py * h, dw, dh);
 }
 
 function hwBat(ctx, x, y, s, flap, color) {
