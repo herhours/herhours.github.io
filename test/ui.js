@@ -306,9 +306,22 @@ async function usePhotos(files) {
   const say = () => { $('phint').textContent = T(`불러오는 중… ${n} / ${files.length}`, `Reading… ${n} / ${files.length}`); };
   say();
   const t0 = performance.now();
-  const r = await pool(files, 2, async (f, i) => {
+  // 10-19 영샘 S20+ (2026.10.19-8 log): two clips failed with "network error" - a read of the picked file that failed,
+  // not the internet - and the same sizes had read fine 6 minutes before. So a failed read is tried twice more, and
+  // clips are read one at a time (the gallery hands over one file at a time more reliably than two).
+  const readOne = async (f, i) => {
+    for (let k = 0; ; k++) {
+      try { return isVideoFile(f) ? await fileToClip(f) : await fileToBitmap(f); }
+      catch (e) {
+        if (k >= 2 || !/network|NotReadable|could not be read|NotFound/i.test(`${e?.name} ${e?.message}`)) throw e;
+        rlog(`photo retry ${i + 1} #${k + 1} ${e?.message}`);
+        await new Promise((res) => setTimeout(res, 600 * (k + 1)));
+      }
+    }
+  };
+  const r = await pool(files, files.some(isVideoFile) ? 1 : 2, async (f, i) => {
     const t = performance.now();
-    const v = isVideoFile(f) ? await fileToClip(f) : await fileToBitmap(f);
+    const v = await readOne(f, i);
     n++; say();
     if (slots[i]?.tagName === 'VIDEO') { const el = slots[i]; el.onclick = () => openFocus(v, el); }   // clips too: their canvas holds the current frame
     else if (slots[i]) { const th = thumbOf(v); th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); }
