@@ -634,12 +634,26 @@ const SHEET_LOG = location.hostname === 'herhours.github.io' && location.pathnam
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyqtLZmTaCfgtkU3UKY_xOnIspwRhsPtxFKOvi-xAvsBgXYFBArOjS5-wu7-F8tlkyI/exec';
 const SID = Math.random().toString(36).slice(2, 10);
 const sheetQ = [];
+// 10-19: a classroom phone that drops off the wifi used to lose its lines (and a sent feedback) - keep them on the phone
+// until it is online again. Same content as before, only held back; capped so storage can't fill.
+const LQ = 'hh-logq';
+const sheetHold = () => { try { localStorage.setItem(LQ, JSON.stringify(JSON.parse(localStorage.getItem(LQ) || '[]').concat(sheetQ.splice(0)).slice(-300))); } catch (e) { sheetQ.length = 0; } };
+const sheetRestore = () => {
+  try {
+    const old = JSON.parse(localStorage.getItem(LQ) || '[]');
+    if (old.length && navigator.onLine) { localStorage.removeItem(LQ); sheetQ.unshift(...old.map((l) => ({ ...l, m: `[offline] ${l.m}` }))); sheetFlush(); }
+  } catch (e) {}
+};
 const sheetFlush = () => {
   if (!sheetQ.length) return;
+  if (!navigator.onLine) { sheetHold(); return; }
   const body = JSON.stringify({ app: 'hh-shorts-test', sid: SID, ua: navigator.userAgent.slice(0, 140), ver: self.HH_VERSION, lines: sheetQ.splice(0, 60) });
   if (!(navigator.sendBeacon && navigator.sendBeacon(SHEET_URL, new Blob([body], { type: 'text/plain' })))) fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', body }).catch(() => {});
 };
-if (SHEET_LOG) { setInterval(sheetFlush, 4000); addEventListener('visibilitychange', () => { if (document.hidden) sheetFlush(); }); addEventListener('pagehide', sheetFlush); }
+if (SHEET_LOG) {
+  setInterval(sheetFlush, 4000); addEventListener('visibilitychange', () => { if (document.hidden) sheetFlush(); }); addEventListener('pagehide', sheetFlush);
+  addEventListener('online', sheetRestore); setTimeout(sheetRestore, 1500);
+}
 const rlog = (m) => {
   if (REMOTE_LOG) fetch('/log', { method: 'POST', body: `${new Date().toISOString().slice(11, 19)} ${navigator.userAgent.slice(0, 80)} | ${m}`.slice(0, 1500) }).catch(() => {});
   if (SHEET_LOG) { sheetQ.push({ t: new Date().toTimeString().slice(0, 8), m: String(m).slice(0, 600) }); if (sheetQ.length >= 20) sheetFlush(); }
@@ -665,6 +679,27 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
     $('fbHint').textContent = T('고마워요! 잘 받았어요 💌', 'Thank you! Got it 💌');
     setTimeout(() => window.hhClose(), 1400);
   };
+}
+// 10-19 PWA install (영샘 목표 = 스토어 앱, 첫 계단). Android Chrome offers its own prompt - we keep it for the 「정보」 button so it
+// never pops over a video being made. iOS has no prompt: say where Safari hides it. Already installed → nothing shown.
+{
+  $('updToast').textContent = T('새 버전이 나왔어요 · 눌러서 새로 고침', 'A new version is ready · tap to reload');
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let deferred = null;
+  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; });
+  $('installBtn').textContent = T('앱으로 설치', 'Install as an app');
+  $('installBtn').onclick = async () => {
+    if (!deferred) return;
+    deferred.prompt(); const r = await deferred.userChoice.catch(() => ({})); rlog(`install prompt ${r.outcome || '?'}`);
+    deferred = null; $('installBtn').hidden = true;
+  };
+  addEventListener('appinstalled', () => { $('installBtn').hidden = true; rlog('appinstalled'); });
+  if (!standalone && isIOS()) {
+    $('installHint').textContent = T('아이폰·아이패드: 사파리 아래(아이패드는 위) 공유 버튼 → 「홈 화면에 추가」 하면 앱처럼 열려요.',
+      'iPhone/iPad: Safari Share button → “Add to Home Screen” to open it like an app.');
+    $('installHint').hidden = false;
+  }
+  if (standalone) rlog('opened as installed app');
 }
 addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
