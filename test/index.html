@@ -365,7 +365,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   // app comes back to the front, and when one takes over say so - reloading on our own could throw away a video being made.
   if ('serviceWorker' in navigator) {
     let had = !!navigator.serviceWorker.controller;   // first visit: the first take-over is the install itself, not a new release
-    navigator.serviceWorker.register('./sw.js').then((reg) => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {   // version.js inside sw.js too, not from the 10-minute cache
       addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
     }).catch(() => {});
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) document.getElementById('updToast').hidden = false; had = true; });
