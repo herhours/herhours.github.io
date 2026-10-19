@@ -288,6 +288,11 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
 .thumbs .th,.thumbs .vid{cursor:pointer}
 .thumbs .th.aligned,.thumbs .vid.aligned{outline:3px solid var(--cream);outline-offset:-3px}
 /* 10-19 step back buttons (영샘: 사진 → 노래 갔다가 다시 사진으로) and the file name on the done screen */
-.stepnav{margin-top:12px}.stepnav .pill{margin-top:0}
+/* the row is the sticky thing now (a sticky button inside a short row stopped sticking, 10-19 영샘 "한참 스크롤해야 다음") -
+   it stays at the bottom of the sheet while a long song list scrolls under it */
+.panel .stepnav{position:sticky;bottom:calc(-20px - var(--safe-b));z-index:3;margin:12px -18px calc(-20px - var(--safe-b));
+  padding:14px 18px calc(20px + var(--safe-b));background:linear-gradient(to top,rgb(19,22,32) 78%,rgba(19,22,32,0))}
+.stepnav .pill{margin-top:0}.stepnav .done{position:static}
+.panel .pane-look > .done{bottom:calc(-20px - var(--safe-b));box-shadow:0 -14px 18px 6px rgb(19,22,32)}
 .fname{display:flex;align-items:center;gap:8px;margin:6px 0 10px;font-size:var(--t-s)}.fname label,.fname span{color:var(--cream);flex:0 0 auto;text-shadow:0 1px 3px #000}
 .fname input{flex:1;min-width:0;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:rgba(0,0,0,.6);color:var(--cream)}
