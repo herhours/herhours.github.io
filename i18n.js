@@ -68,6 +68,7 @@
     '① 스타일': '① Style', '② 사진 · 영상': '② Photos · Videos', '③ 노래': '③ Song', '④ 글자': '④ Text',
     '다음 · 사진': 'Next · Photos', '다음 · 노래': 'Next · Song', '다음 · 글자': 'Next · Text', '다 됐어요': 'All set',
     '← 스타일': '← Style', '← 사진': '← Photos', '← 노래': '← Song', '파일 이름': 'File name',
+    '이 이름으로 저장돼요. 그대로 둬도 돼요.': 'Your video is saved under this name. You can leave it as it is.', '저장하기': 'Save', '취소': 'Cancel',
     '보일 부분 고르기': 'Choose what shows', '처음대로': 'Reset',
     '보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.': 'Tap or drag onto the part you want in view. The video above follows.',
     '✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.': '✋ Tap a photo to choose the part that stays in view (a face, say).',
