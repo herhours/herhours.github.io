@@ -3,6 +3,7 @@
   "short_name": "HH Shorts",
   "description": "사진과 노래 하나로 Her Hours 룩 쇼츠를 만들어요.",
   "lang": "ko",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -303,6 +303,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <div class="pane pane-info">
     <h2>기기 정보</h2>
     <div id="caps"></div>
+    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
+    <p class="hint" id="installHint" hidden></p>
     <p class="hint" id="ver"></p>
     <div class="two" style="margin-top:12px">
       <button class="pill ghost" data-open="welcome">사용법</button>
@@ -349,6 +351,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   </div>
 </section>
 
+<button class="toast" id="updToast" hidden>새 버전이 나왔어요 · 눌러서 새로 고침</button>
 <audio id="pv" preload="auto" playsinline></audio>
 <script>
   window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); document.querySelector('.panel').scrollTop = 0; };
@@ -358,7 +361,16 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   new ResizeObserver(([e]) => document.body.style.setProperty('--sheet-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
     .observe(document.querySelector('.panel'));
   document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  // 10-19 PWA: a phone that keeps the installed app open for days never reloads, so look for a new release each time the
+  // app comes back to the front, and when one takes over say so - reloading on our own could throw away a video being made.
+  if ('serviceWorker' in navigator) {
+    let had = !!navigator.serviceWorker.controller;   // first visit: the first take-over is the install itself, not a new release
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) document.getElementById('updToast').hidden = false; had = true; });
+    document.getElementById('updToast').onclick = () => location.reload();
+  }
   // First visit only: three steps over the already-playing preview. Storage can be blocked - then it just shows again.
   try { if (!localStorage.getItem('hh-welcomed')) { hhOpen('welcome'); localStorage.setItem('hh-welcomed', '1'); } } catch (e) { hhOpen('welcome'); }
 </script>

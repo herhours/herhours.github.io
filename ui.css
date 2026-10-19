@@ -274,3 +274,7 @@ body.th-everyday #share,body.th-everyday #make{font-family:"HHKr",serif;font-wei
   background:linear-gradient(180deg,#fff3d0,#f3dca2 45%,#c99a52);box-shadow:0 4px 18px rgba(201,154,82,.35)}
 body.th-everyday #save,body.th-everyday #again,body.th-everyday .fbopen{font-family:"HHKr",serif;letter-spacing:2px;color:#f3dca2;border-color:rgba(243,220,162,.6)}
 body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .done-meta,body.th-everyday .done-meta{word-break:keep-all}
+
+/* 10-19 PWA: new release notice - top centre, big enough to read without glasses, tap to reload */
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translateX(-50%);z-index:999;max-width:calc(100% - 32px);padding:14px 22px;border:0;border-radius:999px;background:var(--cream);color:#111;font-size:var(--t-m);font-weight:700;text-align:center;line-height:1.35;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.toast[hidden]{display:none}
