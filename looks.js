@@ -23,7 +23,7 @@ function fit(ctx, text, size, family, maxW) {
   return s;
 }
 
-function wrap(ctx, words, maxW, gap) {
+function wrapGreedy(ctx, words, maxW, gap) {
   const lines = []; let line = []; let lw = 0;
   for (const w of words) {
     const ww = ctx.measureText(w.w).width;
@@ -32,6 +32,15 @@ function wrap(ctx, words, maxW, gap) {
   }
   if (line.length) lines.push({ words: line, width: lw });
   return lines;
+}
+// 10-19 랩코 점검 D3: filling each line greedily left 「떠」 alone under 「알람 소리에 겨우 눈을」. Keep the same number of
+// lines but use the narrowest width that still fits them, so the lines come out even (CSS text-wrap: balance).
+function wrap(ctx, words, maxW, gap) {
+  const first = wrapGreedy(ctx, words, maxW, gap);
+  if (first.length < 2) return first;
+  let lo = 0, hi = maxW;
+  for (let i = 0; i < 10; i++) { const mid = (lo + hi) / 2; if (wrapGreedy(ctx, words, mid, gap).length <= first.length) hi = mid; else lo = mid; }
+  return wrapGreedy(ctx, words, hi, gap);
 }
 
 // ---------- sparks: pre-drawn glow dots, so 80 of them cost 80 drawImage calls, not 80 blurs ----------

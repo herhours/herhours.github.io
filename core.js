@@ -198,7 +198,15 @@ export function drawCover(ctx, img, x, y, w, h, scale, txPct) {
   ctx.drawImage(img, dx, dy, dw, dh);
 }
 
+// balanced like looks.js wrap() - same number of lines, even lengths, no single word left on the last line (10-19 D3)
 function wrapWords(ctx, words, maxW, gap) {
+  const first = wrapWordsGreedy(ctx, words, maxW, gap);
+  if (first.length < 2) return first;
+  let lo = 0, hi = maxW;
+  for (let i = 0; i < 10; i++) { const mid = (lo + hi) / 2; if (wrapWordsGreedy(ctx, words, mid, gap).length <= first.length) hi = mid; else lo = mid; }
+  return wrapWordsGreedy(ctx, words, hi, gap);
+}
+function wrapWordsGreedy(ctx, words, maxW, gap) {
   const lines = []; let line = []; let lw = 0;
   for (const w of words) {
     const ww = ctx.measureText(w.w).width;
@@ -419,7 +427,8 @@ export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases
     title1: t1, title2: t2,
     tag: useOurs ? tpl.tag : `♪ ${(t1 + ' ' + t2).trim().toUpperCase()}`,
     accent: tpl.accent, ink: tpl.ink, cream: tpl.cream, shot: tpl.shot, crossfade: tpl.crossfade,
-    footL: '@' + B.toLowerCase().replace(/[^a-z0-9]/g, ''), footR: 'MADE WITH HER HOURS',
+    // a Korean name like 「민정샘 반」 leaves no a-z0-9 - then no handle at all, not a lone '@' (10-19 랩코 점검 D2)
+    footL: ((h) => (h ? '@' + h : ''))(B.toLowerCase().replace(/[^a-z0-9]/g, '')), footR: 'MADE WITH HER HOURS',
   };
 }
 
