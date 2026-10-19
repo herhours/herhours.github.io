@@ -296,7 +296,7 @@ async function usePhotos(files) {
     if (i >= 24) return null;
     if (isVideoFile(f)) {
       const el = document.createElement('video');
-      el.src = URL.createObjectURL(f); el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.className = 'vid';
+      el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.className = 'vid';   // src only after the one read (below)
       th.appendChild(el); return el;          // kept (not replaced) - its tap opens the position picker once the clip is read
     }
     const d = document.createElement('div'); d.className = 'ph'; th.appendChild(d); return d;
@@ -309,9 +309,18 @@ async function usePhotos(files) {
   // 10-19 영샘 S20+ (2026.10.19-8 log): two clips failed with "network error" - a read of the picked file that failed,
   // not the internet - and the same sizes had read fine 6 minutes before. So a failed read is tried twice more, and
   // clips are read one at a time (the gallery hands over one file at a time more reliably than two).
+  // -9 log: the first clip still failed all three reads while later ones read at once. The thumbnail <video> started
+  // reading the gallery file the moment it was picked, at the same time as our own read - so a clip is now read ONCE
+  // into memory, and the thumbnail, the decoder and the preview all use that copy.
   const readOne = async (f, i) => {
     for (let k = 0; ; k++) {
-      try { return isVideoFile(f) ? await fileToClip(f) : await fileToBitmap(f); }
+      try {
+        if (!isVideoFile(f)) return await fileToBitmap(f);
+        const mem = new File([await f.arrayBuffer()], f.name, { type: f.type || 'video/mp4' });
+        const v = await fileToClip(mem);
+        if (slots[i]?.tagName === 'VIDEO') slots[i].src = URL.createObjectURL(mem);
+        return v;
+      }
       catch (e) {
         if (k >= 2 || !/network|NotReadable|could not be read|NotFound/i.test(`${e?.name} ${e?.message}`)) throw e;
         rlog(`photo retry ${i + 1} #${k + 1} ${e?.message}`);
