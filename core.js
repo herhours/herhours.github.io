@@ -190,10 +190,12 @@ export function drawCover(ctx, img, x, y, w, h, scale, txPct) {
   const iw = img.width, ih = img.height;
   const s = Math.max(w / iw, h / ih) * scale;
   const dw = iw * s, dh = ih * s;
-  const dx = x + (w - dw) / 2 + (txPct / 100) * w;
   // A phone portrait cut into a wide band loses its top or bottom. Faces sit in the upper
-  // third of a portrait, so tall photos keep their upper part instead of the centre.
-  const fy = ih > iw * 1.1 ? 0.3 : 0.5;
+  // third of a portrait, so tall photos keep their upper part instead of the centre -
+  // unless the person dragged the photo to the part they want (hhAlign, 10-19).
+  const a = img.hhAlign || img.hhSrc?.hhAlign;
+  const ax = a ? a.x : 0.5, fy = a ? a.y : (ih > iw * 1.1 ? 0.3 : 0.5);
+  const dx = x + (w - dw) * ax + (txPct / 100) * w;
   const dy = y + (h - dh) * fy;
   ctx.drawImage(img, dx, dy, dw, dh);
 }

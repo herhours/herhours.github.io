@@ -310,7 +310,7 @@ async function usePhotos(files) {
     const t = performance.now();
     const v = isVideoFile(f) ? await fileToClip(f) : await fileToBitmap(f);
     n++; say();
-    if (slots[i]) slots[i].replaceWith(thumbOf(v));
+    if (slots[i]) { const th = thumbOf(v); if (!v.live) th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); }
     rlog(`photo ${i + 1}/${files.length} ${v.hhPath || 'clip'} ${Math.round(performance.now() - t)}ms ${(f.size / 1048576).toFixed(1)}MB ${f.type} → ${v.width}x${v.height}`);
     return v;
   });
@@ -318,6 +318,7 @@ async function usePhotos(files) {
   const ok = r.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   const bad = r.map((x, i) => (x.status === 'rejected' ? files[i].name : null)).filter(Boolean);
   if (ok.length) { S.images = ok; S.demoChosen = false; setMake(); rebuild(); renderLooks(); }
+  $('focusTip').hidden = !ok.some((x) => !x.live);
   $('clipGainRow').hidden = !ok.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
   $('phint').textContent = bad.length
@@ -328,6 +329,35 @@ async function usePhotos(files) {
   S.photoBlobs = await shrinkAll(ok.filter((x) => !x.live));
   saveSoon();
 }
+
+// ---------- photo position (10-19 테스터 의견: "사진 프레임 안에서 띄우고 싶은 부분이 보이도록") ----------
+// The whole photo with one ring: the spot under the ring stays in view in every look (looks.js AL / core drawCover read
+// img.hhAlign). A spot, not a crop box, because each look frames differently - an arch, a band, three panels.
+let focusImg = null, focusTh = null, focusDown = false;
+const autoAlign = (img) => ({ x: 0.5, y: img.height > img.width * 1.1 ? 0.3 : 0.5 });
+const placeRing = () => {
+  const a = focusImg.hhAlign || autoAlign(focusImg);
+  $('focusRing').style.left = `${a.x * 100}%`; $('focusRing').style.top = `${a.y * 100}%`;
+};
+function openFocus(img, th) {
+  focusImg = img; focusTh = th;
+  const cv = $('focusCv'), k = Math.min(1, 900 / Math.max(img.width, img.height));
+  cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+  cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+  placeRing(); window.hhOpen('focus');
+}
+const focusAt = (e) => {
+  const r = $('focusCv').getBoundingClientRect();
+  const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  focusImg.hhAlign = { x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000 };
+  placeRing(); focusTh?.classList.add('aligned');
+};
+$('focusBox').addEventListener('pointerdown', (e) => { if (!focusImg) return; focusDown = true; $('focusBox').setPointerCapture(e.pointerId); focusAt(e); });
+$('focusBox').addEventListener('pointermove', (e) => { if (focusDown) focusAt(e); });
+const focusUp = () => { if (!focusDown) return; focusDown = false; rlog(`photo focus ${focusImg.hhAlign?.x},${focusImg.hhAlign?.y}`); rebuild(); };   // rebuild: a look may lay out per photo in build(); it also saves the draft
+$('focusBox').addEventListener('pointerup', focusUp); $('focusBox').addEventListener('pointercancel', focusUp);
+$('focusReset').onclick = () => { if (!focusImg) return; delete focusImg.hhAlign; placeRing(); focusTh?.classList.remove('aligned'); saveSoon(); };
+$('focusDone').onclick = () => window.hhOpen('photo');
 
 $('useDemo').onclick = () => {
   pausePreview(S.images);
@@ -516,6 +546,7 @@ function snapshot() {
     brand: $('brand').value, t1: $('t1').value, t2: $('t2').value,
     lyrics: $('lyrics').value, phrases: S.userPhrases,
     photos: S.photoBlobs, clips: S.photoFiles.filter(isVideoFile).length,
+    aligns: S.images.filter((x) => !x.live).map((x) => x.hhAlign || null),   // same order as photos (shrinkAll of the non-clips)
   };
 }
 let saveT = 0;
@@ -543,7 +574,11 @@ async function restore(w) {
     applyCut();
     $('brand').value = w.brand ?? $('brand').value; $('t1').value = w.t1 ?? $('t1').value; $('t2').value = w.t2 ?? $('t2').value;
     $('lyrics').value = w.lyrics || ''; S.userPhrases = w.phrases || []; lyricHint();
-    if (w.photos?.length) await usePhotos(w.photos.map((b, i) => new File([b], `photo_${i + 1}.jpg`, { type: 'image/jpeg' })));
+    if (w.photos?.length) {
+      await usePhotos(w.photos.map((b, i) => new File([b], `photo_${i + 1}.jpg`, { type: 'image/jpeg' })));
+      if (w.aligns) S.images.filter((x) => !x.live).forEach((x, i) => { if (w.aligns[i]) x.hhAlign = w.aligns[i]; });
+      [...$('thumbs').querySelectorAll('.th')].forEach((th, i) => th.classList.toggle('aligned', !!w.aligns?.[i]));
+    }
     if (w.clips) $('phint').textContent += ' ' + T(`영상 ${w.clips}개는 다시 골라 주세요.`, `Please pick the ${w.clips} video clip(s) again.`);
     measureCut(); chips(); renderLooks(); renderSongs();
   } finally { S.restoring = false; }
