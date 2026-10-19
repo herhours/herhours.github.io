@@ -317,7 +317,7 @@ async function usePhotos(files) {
   rlog(`photos ${files.length} in ${Math.round(performance.now() - t0)}ms`);
   const ok = r.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   const bad = r.map((x, i) => (x.status === 'rejected' ? files[i].name : null)).filter(Boolean);
-  if (ok.length) { S.images = ok; rebuild(); renderLooks(); }
+  if (ok.length) { S.images = ok; S.demoChosen = false; setMake(); rebuild(); renderLooks(); }
   $('clipGainRow').hidden = !ok.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
   $('phint').textContent = bad.length
@@ -333,6 +333,7 @@ $('useDemo').onclick = () => {
   pausePreview(S.images);
   S.photoFiles = []; S.images = []; S.photoBlobs = []; $('thumbs').innerHTML = ''; $('clipGainRow').hidden = true;
   $('photos').value = ''; $('phint').textContent = T('예시 사진 6장으로 보여주는 중이에요.', 'Showing the 6 demo photos.');
+  S.demoChosen = true; setMake();
   rebuild(); chips(); renderLooks();
 };
 
@@ -493,9 +494,13 @@ function flowDone() {
   S.flowDone = true; setMake();
   try { localStorage.setItem('hh-flowed', '1'); } catch {}
 }
+// 10-19 랩코 점검 A2: in class mode a child who skipped the photo step got a finished video of the demo pictures and
+// thought it was theirs. There the button asks for their photos first; the demo still works if 「예시로」 was tapped.
+const needPhotos = () => KIDS && !S.images.length && !S.demoChosen;
 function setMake() {
-  $('make').textContent = S.flowDone ? T('쇼츠 만들기', 'Make my Short') : T('① 스타일부터 고르기', '① Start with a style');
-  $('make').classList.toggle('first', !S.flowDone);
+  $('make').textContent = !S.flowDone ? T('① 스타일부터 고르기', '① Start with a style')
+    : needPhotos() ? T('② 내 사진부터 골라요', '② Pick your photos first') : T('쇼츠 만들기', 'Make my Short');
+  $('make').classList.toggle('first', !S.flowDone || needPhotos());
 }
 document.querySelectorAll('[data-next]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.next); });
 document.querySelectorAll('[data-finish]').forEach((el) => {
@@ -787,7 +792,8 @@ async function make() {
     $('doneMeta').textContent = T(`${seconds.toFixed(0)}초 · ${(blob.size / 1048576).toFixed(0)}MB · ${elapsed.toFixed(0)}초 만에 완성`, `${seconds.toFixed(0)}s · ${(blob.size / 1048576).toFixed(0)}MB · made in ${elapsed.toFixed(0)}s`);
     // an iPhone saves a download to Files, not Photos — the share sheet's 'Save Video' is the way to Photos
     $('credit').textContent = S.useOurs ? `Music: Her Hours — ${S.song.name}` : '';
-    if (isIOS()) $('doneMeta').textContent += T(' · 사진 앱에 넣으려면 「인스타에 올리기」 → 「동영상 저장」', ' · For Photos: “Share to Instagram” → “Save Video”');
+    if (isIOS()) $('doneMeta').textContent += KIDS ? T(' · 「사진 앱에 저장」 → 「동영상 저장」을 눌러요', ' · Tap “Save to Photos” → “Save Video”')
+      : T(' · 사진 앱에 넣으려면 「인스타에 올리기」 → 「동영상 저장」', ' · For Photos: “Share to Instagram” → “Save Video”');
     document.body.classList.remove('is-making'); document.body.classList.add('is-done'); $('eta').textContent = '';
     $('out').play?.().catch(() => {});
     status('');
@@ -800,7 +806,7 @@ async function make() {
     $('failMsg').textContent = T(`만들기에 실패했어요. 다시 눌러 주세요. (${e.message || e})`, `Couldn’t make it. Please try again. (${e.message || e})`);
   } finally { S.busy = false; }
 }
-$('make').onclick = () => (S.flowDone ? make() : window.hhOpen('look'));
+$('make').onclick = () => (!S.flowDone ? window.hhOpen('look') : needPhotos() ? window.hhOpen('photo') : make());
 
 $('again').onclick = () => {
   document.body.classList.remove('is-done');
@@ -817,7 +823,7 @@ $('share').onclick = async () => {
   } else if (navigator.canShare && navigator.canShare({ files: [file] })) {
     // Instagram refused a share that carried text alongside the video (영샘's Android 10-10: "can't ..."), so the
     // video goes alone, as on 10-04, and the music credit rides the clipboard into the caption instead.
-    const credit = S.useOurs ? `Music: Her Hours — ${S.song.name}` : '';
+    const credit = S.useOurs && !KIDS ? `Music: Her Hours — ${S.song.name}` : '';   // the class does not post - no caption to copy
     if (credit) {
       try { await navigator.clipboard.writeText(credit); $('credit').textContent = T(`「${credit}」 복사했어요 · 인스타 설명에 붙여 넣어 주세요`, `Copied “${credit}” · paste it into the caption`); } catch {}
     }
@@ -825,10 +831,12 @@ $('share').onclick = async () => {
     try {
       await navigator.share({ files: [file], title: 'Her Hours Shorts' });
       // 10-11 (4): sending to Instagram does not keep a copy on the phone - people assumed it did
-      $('doneMeta').textContent = isIOS()
-        ? T('보냈어요. 폰 사진 앱에는 아직 없어요 — 한 번 더 눌러 「동영상 저장」을 골라 두세요.', 'Sent. It isn’t in Photos yet — tap again and choose “Save Video”.')
-        : T('보냈어요. 폰에는 아직 저장 안 됐어요 — 아래 「저장」도 눌러 두세요.', 'Sent. It isn’t saved on the phone yet — tap “Save” below too.');
-      $('doneMeta').textContent += ' ' + T('인스타에서 「할 수 없습니다」가 뜨면 한 번 더 눌러 주세요.', 'If Instagram says it can’t, tap share once more.');
+      $('doneMeta').textContent = KIDS
+        ? T('「동영상 저장」을 눌렀다면 사진 앱에 들어갔어요 📷', 'If you chose “Save Video”, it’s in Photos now 📷')
+        : isIOS()
+          ? T('보냈어요. 폰 사진 앱에는 아직 없어요 — 한 번 더 눌러 「동영상 저장」을 골라 두세요.', 'Sent. It isn’t in Photos yet — tap again and choose “Save Video”.')
+          : T('보냈어요. 폰에는 아직 저장 안 됐어요 — 아래 「저장」도 눌러 두세요.', 'Sent. It isn’t saved on the phone yet — tap “Save” below too.');
+      if (!KIDS) $('doneMeta').textContent += ' ' + T('인스타에서 「할 수 없습니다」가 뜨면 한 번 더 눌러 주세요.', 'If Instagram says it can’t, tap share once more.');
       $('save').classList.add('nudge');
     }
     catch (e) { rlog(`share failed ${e.name} ${e.message}`); if (e.name !== 'AbortError') $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; }
@@ -859,6 +867,13 @@ async function caps() {
     $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2;
     if (KIDS) {
       document.body.classList.add('kids'); rlog('class kids');
+      // 10-19 랩코 점검 A1: the class is under 14 - Instagram must not be the biggest button. Android: 「저장」 becomes the
+      // main button and share goes. iPhone: a download lands in Files, not Photos, so the share sheet stays, renamed to
+      // what it does for a child ("Save Video" is in it) - no Instagram anywhere on the screen.
+      if (isIOS()) $('share').lastChild.textContent = T('사진 앱에 저장', 'Save to Photos');
+      else { $('share').hidden = true; $('save').classList.remove('ghost'); }
+      // A3: the first text box is printed on the video - 「이름」 invites the child's own name
+      $('brandLbl').textContent = T('반 이름', 'Class name');
       document.fonts.load('80px "Black Han Sans"', '민정샘 반 참 잘했어요 HALLOWEEN NIGHT PARTY').catch(() => {});
       for (const set of ['halloween', 'everyday']) loadDemoKids(set).then((ims) => { S.demoKids[set] = ims; if (!S.images.length) { rebuild(); renderLooks(); } }).catch(() => {});
     }
