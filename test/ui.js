@@ -157,6 +157,27 @@ function chips() {
   set('vSum', `${photo} · ${song}`);
   document.querySelectorAll('[data-chip="photo"]').forEach((e) => e.classList.toggle('mine', !!S.photoFiles.length));
   document.querySelectorAll('[data-chip="song"]').forEach((e) => e.classList.toggle('mine', !S.useOurs));
+  makeSum();
+}
+// 10-20 PT 리뷰 4: the choices live in four sheets, so before 「쇼츠 만들기」 one line says what will be made - each part
+// opens its sheet, and the demo photos are marked so an example is not taken for one's own
+function makeSum() {
+  const el = $('makeSum'); if (!el) return;
+  const on = !!S.flowDone && !!(S.images.length || S.demoChosen);
+  el.hidden = !on; document.body.classList.toggle('has-sum', on);
+  if (!on) return;
+  const nv = S.photoFiles.filter(isVideoFile).length, np = S.photoFiles.length - nv;
+  const photo = S.photoFiles.length ? [np && T(`내 사진 ${np}장`, `${np} photos`), nv && T(`영상 ${nv}개`, `${nv} videos`)].filter(Boolean).join(' · ')
+    : T('예시 사진으로', 'demo photos');
+  const song = S.useOurs ? S.song.name : (S.audioFile?.name || T('내 음악', 'My song'));
+  el.textContent = '';
+  [[S.look.name, 'look'], [photo, 'photo', !S.photoFiles.length], [song, 'song'], [`${Math.round(S.seconds || S.len)}${T('초', 's')}`, 'song']]
+    .forEach(([t, pane, demo], i) => {
+      if (i) el.append(' · ');
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = t;
+      if (demo) b.className = 'demo';
+      b.onclick = () => window.hhOpen(pane); el.append(b);
+    });
 }
 
 // ---------- preview loop ----------
@@ -223,6 +244,7 @@ function applyCut() {
   if (S.vf >= S.N) S.vf = 0;
   $('seek').max = S.N - 1;
   $('tdur').textContent = mmss(S.seconds);
+  makeSum();
   const off = $('offset'); if (!off) return;
   off.max = Math.max(0, dur - S.seconds); off.value = S.offset;
   off.disabled = +off.max === 0;
@@ -447,11 +469,14 @@ const KIDS_GROUPS = [
   [(s) => KIDS_SONGS.includes(s.id) && s.group !== 'kids' && s.lyrics !== false, () => T('🎃 영어 가사 노래', '🎃 Songs with English lyrics')],
   [(s) => KIDS_SONGS.includes(s.id) && s.lyrics === false, () => T('✨ 신나는 연주곡', '✨ Upbeat instrumentals')],
 ];
+// 10-20 영샘: "이미지 아이콘 없는 노래도 이미지 넣어서 아이콘 만들자" - the instrumentals and class songs got scene covers
+// (no singer, so no face). The class link still keeps our characters' faces off its list: only the scene covers show there.
+const hasCover = (s) => (KIDS ? /^(kids|app)_/.test(s.id) : true);
 function renderSongs() {
   const groups = KIDS ? KIDS_GROUPS.map(([pick, label]) => [SONGS.filter(pick).sort((a, b) => KIDS_SONGS.indexOf(a.id) - KIDS_SONGS.indexOf(b.id)), label])
     : SONG_GROUPS.map(([g, label]) => [SONGS.filter((s) => s.group === g), label]);
   $('ourSongs').innerHTML = groups.map(([list, label]) => `<p class="song-group">${label()}</p>` + list.map((s) => `<button class="opt${S.useOurs && s.id === S.song.id ? ' on' : ''}" data-song="${s.id}">
-      ${!KIDS && (s.group === 'lyrics' || s.group === 'vocal' || s.group === 'halloween')
+      ${hasCover(s)
         ? `<img class="cov" src="assets/covers/${s.id}.jpg" alt="" loading="lazy" decoding="async">`
         : `<span class="cov gr-${KIDS ? 'bright' : s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
       <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span></button>`).join('')).join('');
@@ -634,6 +659,7 @@ function setMake() {
   $('make').textContent = !S.flowDone ? T('① 스타일부터 고르기', '① Start with a style')
     : needPhotos() ? T('② 내 사진부터 골라요', '② Pick your photos first') : T('쇼츠 만들기', 'Make my Short');
   $('make').classList.toggle('first', !S.flowDone || needPhotos());
+  makeSum();
 }
 document.querySelectorAll('[data-next]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.next); });
 document.querySelectorAll('[data-finish]').forEach((el) => {
@@ -750,6 +776,7 @@ function inAppBrowser() {
 function isIOS() { const ua = navigator.userAgent; return /iPhone|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); }
 function warnInApp() {
   const kind = inAppBrowser(); if (!kind) return;
+  $('helpInApp').hidden = false;
   const ios = isIOS();
   const box = $('inapp'), go = $('inappGo');
   $('inappMsg').textContent = T('앱 안에서 열려서 인스타로 바로 보내기가 안 돼요.', 'This opened inside another app, so sharing to Instagram won’t work here.');

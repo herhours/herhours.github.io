@@ -54,6 +54,18 @@
     '제목 2': 'Title 2',
     '치는 대로 위 영상에 바로 반영돼요.': 'What you type shows up in the video right away.',
     '기기 정보': 'Device info',
+    '도움말': 'Help', '기기 진단 펼치기': 'Device check (for us)',
+    '저장은 어디로?': 'Where does it save?',
+    '완성 화면 「저장」 → 이름 정하기. 안드로이드는 다운로드 폴더, 아이폰은 「파일」 앱에 들어가요.':
+      'On the finished screen, “Save” → name it. Android puts it in Downloads, iPhone in the Files app.',
+    '아이폰 사진첩에 넣으려면': 'Into the iPhone Photos app',
+    '완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.': 'On the finished screen, “Share to Instagram” → “Save Video” in the share sheet.',
+    '카톡에서 열었나요?': 'Opened inside KakaoTalk?',
+    '앱 안 브라우저에서는 인스타로 바로 보내기가 안 될 수 있어요. 크롬·사파리로 열면 돼요.':
+      'An in-app browser may not share to Instagram. Open the page in Chrome or Safari.',
+    '멈춘 것 같을 때': 'Looks stuck?',
+    '처음 열 때 노래·글꼴을 받느라 몇 초 걸려요. 「다시 불러오기」가 보이면 눌러 주세요.':
+      'The first open takes a few seconds to fetch the song and fonts. If “Try again” appears, tap it.',
     '닫기': 'Close',
     '불러오는 중…': 'Loading…',
     '사용법': 'How it works',
