@@ -61,6 +61,10 @@ function rebuild() {
   // 10-18 (영샘, Galaxy test): on the class link the making/done screens wear the chosen template's type too
   document.body.classList.toggle('th-halloween', KIDS && S.look.theme === 'halloween');
   document.body.classList.toggle('th-everyday', KIDS && S.look.theme === 'everyday');
+  document.querySelectorAll('.row .cnt').forEach((c) => {   // 10-20: how many letters are left, so a title is not cut off mid-word
+    const i = $(c.dataset.for), n = [...i.value].length, max = +i.maxLength;
+    c.textContent = `${n}/${max}`; c.classList.toggle('full', n >= max);
+  });
   saveSoon();
 }
 const demoFor = (look) => (KIDS && S.demoKids[look.theme || 'everyday']?.length ? S.demoKids[look.theme || 'everyday'] : look.id === 'halloween' && S.demoHw.length ? S.demoHw : S.demo);
@@ -576,6 +580,13 @@ $('lyrics').addEventListener('input', () => saveSoon());
 
 document.querySelectorAll('[data-open]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.open); });
 document.querySelectorAll('[data-close]').forEach((el) => { el.onclick = () => window.hhClose(); });
+// 10-20 시험자 의견: "글자 창이 열려 있을 때 위 칸에서 영상 일시정지가 가능했으면" - with a sheet open the video sits above
+// it, under the see-through scrim. A tap on the video now plays / pauses it; a tap beside it still closes the sheet.
+document.querySelector('.scrim').onclick = (e) => {
+  const f = document.querySelector('.frame').getBoundingClientRect();
+  if (e.clientX >= f.left && e.clientX <= f.right && e.clientY >= f.top && e.clientY <= f.bottom) { togglePlay(); return; }
+  window.hhClose();
+};
 // 10-19 영샘: "사진 고르고 다음 음악 갔다가 다시 뒤로 사진" - each step has 「← 이전」
 document.querySelectorAll('[data-prev]').forEach((el) => { el.onclick = () => window.hhOpen(el.dataset.prev); });
 
@@ -585,6 +596,12 @@ const STEPS = ['look', 'photo', 'song', 'text'];
 const seenSteps = new Set();
 const shellOpen = window.hhOpen;
 window.hhOpen = (name) => {
+  // 10-20 시험자 의견: someone who starts with the photos had to go back to reach the styles - until the style step has
+  // been seen, the photo step's button leads there, then on to the song as before
+  if (name === 'photo') {
+    const nx = document.querySelector('.pane-photo .stepnav [data-next]'), toLook = !seenSteps.has('look');
+    nx.dataset.next = toLook ? 'look' : 'song'; nx.textContent = toLook ? T('다음 · 스타일', 'Next · Style') : T('다음 · 노래', 'Next · Song');
+  }
   shellOpen(name);
   if (STEPS.includes(name)) { seenSteps.add(name); if (seenSteps.size === STEPS.length) flowDone(); }
 };
@@ -859,7 +876,8 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
 // 10-20: in the test build an error also shows on the phone itself, so a tester (or 영샘 by remote) can read it off the screen
 const showErr = (m) => {
   if (!SHEET_LOG && !REMOTE_LOG) return;
-  if (/AbortError|NotAllowedError|play\(\)|interrupted|ResizeObserver/i.test(String(m))) return;   // harmless media/layout noise - log only
+  // harmless media/layout noise, and Safari's detail-less "Script error." from another origin (10-20 log ×2) - log only
+  if (/AbortError|NotAllowedError|play\(\)|interrupted|ResizeObserver|^Script error\.?\s*@?:?0?$/i.test(String(m).trim())) return;
   let b = document.getElementById('errBar');
   if (!b) { b = document.createElement('div'); b.id = 'errBar'; b.style.cssText = 'position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top) + 8px);z-index:9999;background:#b3261e;color:#fff;font:600 14px/1.35 system-ui,sans-serif;padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-all'; b.onclick = () => b.remove(); document.body.appendChild(b); }
   b.textContent = `⚠ ${self.HH_VERSION} · ${String(m).slice(0, 300)}  (눌러서 닫기)`;
@@ -1023,9 +1041,23 @@ async function caps() {
   $('caps').textContent = l.join('\n');
 }
 
+// 10-20 시험 기록: three iPhones (Safari 26, one installed) stopped one second after opening on "준비 실패: A network error
+// occurred." - a file read that broke off mid-way, not the app's code. Each boot read gets two more tries, the log says
+// which one failed, and a failure leaves a 「다시 불러오기」 button instead of a dead screen.
+let bootStep = '';
+async function boot(label, fn) {
+  for (let k = 0; ; k++) {
+    try { bootStep = label; return await fn(); }
+    catch (e) {
+      if (k >= 2 || !/network|load failed|failed to fetch|NotReadable|abort/i.test(`${e?.name} ${e?.message}`)) throw e;
+      rlog(`boot retry ${label} #${k + 1} ${e?.name} ${e?.message}`);
+      await new Promise((res) => setTimeout(res, 700 * (k + 1)));
+    }
+  }
+}
 (async () => {
   try {
-    S.tpl = await loadTemplate(S.song);
+    S.tpl = await boot('template', () => loadTemplate(S.song));
     const txt = KIDS ? KIDS_TEXT[S.look.id] || KIDS_TEXT['minjeong-hw'] : { brand: S.tpl.brand, t1: S.tpl.title1, t2: S.tpl.title2 };
     if (KIDS) {
       // 10-20 영샘: "글자를 넣지 않으면 정해진 문구가 들어가는데 들어가지 않도록" - the boxes start empty, the class words
@@ -1045,14 +1077,14 @@ async function caps() {
       document.fonts.load('80px "Black Han Sans"', '민정샘 반 참 잘했어요 HALLOWEEN NIGHT PARTY').catch(() => {});
       for (const set of ['halloween', 'everyday']) loadDemoKids(set).then((ims) => { S.demoKids[set] = ims; if (!S.images.length) { rebuild(); renderLooks(); } }).catch(() => {});
     }
-    await loadFonts();
-    S.demo = await loadDemo();
+    await boot('fonts', () => loadFonts());
+    S.demo = await boot('demo', () => loadDemo());
     loadDemoHw().then((ims) => { S.demoHw = ims; if (!S.images.length) rebuild(); }).catch(() => {});
     pv.src = S.song.file;
     renderSongs();
     applyCut();
     rebuild(); chips(); renderLooks();
-    await listen(await (await fetch(S.song.file)).arrayBuffer());
+    await listen(await boot('song', async () => (await fetch(S.song.file)).arrayBuffer()));
     document.body.classList.add('ready');
     S.vf = 120;                       // open on a frame where the look is fully on screen
     requestAnimationFrame(loop);
@@ -1061,9 +1093,14 @@ async function caps() {
     S.ready = true;
     if (!document.body.classList.contains('panel-open')) await offerResume();
   } catch (e) {
+    rlog(`boot fail at ${bootStep} ${e?.name} ${e?.message}`);
     status(`${T('준비 실패', 'Setup failed')}: ${e.message}`, true);
     // the loading card would otherwise spin forever over a blank stage
-    document.querySelector('.boot span').textContent = `${T('준비 실패', 'Setup failed')}: ${e.message}`;
+    const card = document.querySelector('.boot span');
+    card.textContent = T('불러오다가 끊겼어요. 인터넷을 확인하고 다시 불러와 주세요.', 'Loading was interrupted. Check the connection and try again.');
     document.querySelector('.boot i').hidden = true;
+    const again = document.createElement('button'); again.className = 'pill'; again.style.cssText = 'margin-top:14px;min-height:48px;padding:0 22px;width:auto;white-space:nowrap;flex:0 0 auto';
+    again.textContent = T('다시 불러오기', 'Try again'); again.onclick = () => { rlog('boot reload tap'); location.reload(); };
+    document.querySelector('.boot').appendChild(again);
   }
 })();

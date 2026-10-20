@@ -73,6 +73,9 @@ body.is-done .dock{background:var(--ink)}
 .donelinks button:not(.fbopen){min-height:40px;padding:0 8px;color:var(--dim);text-decoration:underline;text-underline-offset:3px}
 .donelinks .fbopen{margin:0 6px 0 0;min-height:40px;padding:6px 14px;font-size:var(--t-xs)}
 #railInfo[hidden]{display:none}
+/* 10-20 시험자 의견: 글자 제한이 몇 자인지 보이게 - 0/14 beside each box, gold when full */
+.row .cnt{flex:0 0 auto;font-size:14px;color:var(--dim);font-variant-numeric:tabular-nums}
+.row .cnt.full{color:#ffc27a;font-weight:700}
 .live{left:auto;right:12px;bottom:auto;top:56px}
 body[data-pane="look"] .pane-look{display:block}
 /* Looks are a strip you swipe sideways: seven stacked cards filled the sheet and hid the video
@@ -350,9 +353,9 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 
   <div class="pane pane-text">
     <h2>④ 글자</h2>
-    <div class="row"><label id="brandLbl">이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"></div>
-    <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"></div>
-    <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"></div>
+    <div class="row"><label id="brandLbl">이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"><span class="cnt" data-for="brand"></span></div>
+    <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"><span class="cnt" data-for="t1"></span></div>
+    <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"><span class="cnt" data-for="t2"></span></div>
     <!-- 10-20 class link: our song's lyric captions only when asked for -->
     <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics" style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
