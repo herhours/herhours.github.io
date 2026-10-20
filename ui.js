@@ -813,8 +813,10 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
   $('updToast').textContent = T('새 버전이 나왔어요 · 눌러서 새로 고침', 'A new version is ready · tap to reload');
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   let deferred = null;
-  const hideInstall = () => { $('installBtn').hidden = true; $('railInstall').hidden = true; };
-  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; $('railInstall').hidden = false; rlog('installable'); });
+  // 10-20: 「정보」 holds the install button's place on the rail - one of the two shows, never both (the install sheet is 정보)
+  const hideInstall = () => { $('installBtn').hidden = true; $('railInstall').hidden = true; $('railInfo').hidden = false; };
+  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('installBtn').hidden = false; $('railInstall').hidden = false; $('railInfo').hidden = true; rlog('installable'); });
+  $('railInfo').querySelector('.l').textContent = T('정보', 'Info');
   $('railInstall').querySelector('.l').textContent = T('앱 설치', 'Install');
   $('installBtn').textContent = T('앱으로 설치', 'Install as an app');
   // 10-19 영샘 폰: tapping showed nothing and said nothing. Now every outcome is logged, and whenever the browser's own
@@ -851,7 +853,7 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
   // rail button: Android → the browser's install window straight away (same handler); otherwise the info sheet with the steps
   $('railInstall').onclick = () => { rlog('install rail tap'); if (deferred) $('installBtn').onclick(); else { menuWay(); window.hhOpen('info'); } };
   addEventListener('appinstalled', () => { hideInstall(); rlog('appinstalled'); });
-  if (!standalone && isIOS()) { $('railInstall').hidden = false; $('installBtn').hidden = true; iosWay(); }
+  if (!standalone && isIOS()) { $('railInstall').hidden = false; $('railInfo').hidden = true; $('installBtn').hidden = true; iosWay(); }
   if (standalone) rlog('opened as installed app');
 }
 // 10-20: in the test build an error also shows on the phone itself, so a tester (or 영샘 by remote) can read it off the screen

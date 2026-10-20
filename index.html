@@ -65,6 +65,14 @@ body.is-done .makebox,body.is-done .rail{display:none}
 body.is-done .donebox{display:flex}
 body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none}
 body.is-done .done-meta{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
+/* 10-20 영샘 아이폰 완성 화면: the buttons sat on the video's last lines (MADE WITH HER HOURS under 「다시 만들기」) -
+   the finished video now ends above the dock, and the done screen keeps a door to 내 영상 / 정보 */
+body.is-done .stage{bottom:var(--dock-h,0px)}
+body.is-done .dock{background:var(--ink)}
+.donelinks{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 8px;font-size:var(--t-xs);color:var(--dim)}
+.donelinks button:not(.fbopen){min-height:40px;padding:0 8px;color:var(--dim);text-decoration:underline;text-underline-offset:3px}
+.donelinks .fbopen{margin:0 6px 0 0;min-height:40px;padding:6px 14px;font-size:var(--t-xs)}
+#railInfo[hidden]{display:none}
 .live{left:auto;right:12px;bottom:auto;top:56px}
 body[data-pane="look"] .pane-look{display:block}
 /* Looks are a strip you swipe sideways: seven stacked cards filled the sheet and hid the video
@@ -168,6 +176,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
 <symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l5 5-1.4 1.4L13 6.3V15h-2V6.3L8.4 8.9 7 7.5l5-5zM4 13h2v6h12v-6h2v8H4v-8z"/></symbol>
 <symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v8.2l2.6-2.6L17 10l-5 5-5-5 1.4-1.4L11 11.2V3zM4 18h16v3H4z"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm-1 6h2v7h-2v-7zm0-3h2v2h-2V7z"/></symbol>
 </defs></svg>
 
 <div class="inapp" id="inapp" hidden>
@@ -223,6 +232,11 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <button id="railInstall" hidden>
     <span class="b"><svg width="26" height="26"><use href="#i-save"/></svg></span><span class="l">앱 설치</span>
   </button>
+  <!-- 10-20 영샘 아이폰: the top bar (내 영상 · 정보) hides on phones, so 정보 had no door - it takes the install
+       button's place whenever that one is not showing -->
+  <button id="railInfo" data-open="info">
+    <span class="b"><svg width="26" height="26"><use href="#i-info"/></svg></span><span class="l">정보</span>
+  </button>
 </nav>
 
 <div class="transport">
@@ -244,7 +258,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <a class="pill ghost" id="save"><svg width="20" height="20"><use href="#i-save"/></svg>저장</a>
       <button class="again" id="again">다시 만들기</button>
     </div>
-    <button class="fbopen" id="fbOpen" hidden>💬 의견 보내기</button>
+    <div class="donelinks"><button class="fbopen" id="fbOpen" hidden>💬 의견 보내기</button><button data-open="made">내 영상</button><span aria-hidden="true">·</span><button data-open="info">정보</button></div>
   </div>
 </div>
 
@@ -415,6 +429,9 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   // the sheets hid the video). The sheet's height follows its content.
   new ResizeObserver(([e]) => document.body.style.setProperty('--sheet-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
     .observe(document.querySelector('.panel'));
+  // 10-20: on the done screen the finished video stops above the buttons instead of running under them
+  new ResizeObserver(([e]) => document.body.style.setProperty('--dock-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
+    .observe(document.querySelector('.dock'));
   document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
   // 10-19 PWA: a phone that keeps the installed app open for days never reloads, so look for a new release each time the
   // app comes back to the front, and when one takes over say so - reloading on our own could throw away a video being made.
