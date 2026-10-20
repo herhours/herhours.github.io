@@ -312,7 +312,10 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="row"><label id="brandLbl">이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"></div>
     <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"></div>
     <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"></div>
+    <!-- 10-20 class link: our song's lyric captions only when asked for -->
+    <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics" style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
+    <p class="hint" id="blankHint" hidden>비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.</p>
     <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">기기 정보</button></div>
     <div class="two stepnav"><button class="pill ghost" data-prev="song">← 노래</button><button class="pill done" data-finish>다 됐어요</button></div>
   </div>

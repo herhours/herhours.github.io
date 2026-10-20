@@ -26,6 +26,7 @@ const S = {
   busy: false, blob: null, every: 1,
   look: lookById(QLOOK || (KIDS ? 'minjeong-hw' : null)), beat: null,
   clipGain: 0.35,
+  songLyrics: !KIDS,            // 10-20: on the class link our song's lyric captions are off until 「가사 자막」 is ticked
   userPhrases: [], tap: null,   // lyrics the user timed to their own song by tapping   // clip sound under the song: present, never on top of it
   // which part of the song becomes the short (영샘 10-03): length, start, and where the chorus is
   len: 32, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
@@ -51,7 +52,7 @@ function rebuild() {
     images: S.images.length ? S.images : demoFor(S.look),
     useOurs: S.useOurs,
     brand: $('brand').value, title1: $('t1').value, title2: $('t2').value,
-    phrases: S.userPhrases,
+    phrases: S.userPhrases, blank: KIDS, songLyrics: S.songLyrics,
   });
   base.N = S.N;
   // our own song's lyrics are timed from 0; a later start moves them with it
@@ -92,7 +93,7 @@ function measureCut() {
 // How many photos a look uses depends on the song (its length and beat), so the advice is
 // worked out from the current song, not printed once.
 function advice(look) {
-  const base = buildData({ tpl: S.tpl, images: demoFor(look), useOurs: S.useOurs, brand: $('brand').value, title1: $('t1').value, title2: $('t2').value });
+  const base = buildData({ tpl: S.tpl, images: demoFor(look), useOurs: S.useOurs, brand: $('brand').value, title1: $('t1').value, title2: $('t2').value, blank: KIDS, songLyrics: S.songLyrics });
   base.N = S.N;
   const slots = look.photo.slots(look.build(base, S.beat), S.N);
   const min = Math.min(look.photo.min, slots);
@@ -122,8 +123,8 @@ function renderLooks() {
     // a real frame of the look, not a colour swatch — the choice is judged by what the video will look like (10-11)
     b.innerHTML = `<img class="lkimg" src="assets/looks/${l.id}.jpg" alt="" loading="lazy" decoding="async"><span>${l.name.replace(' · ', '<br>')}</span>`;
     b.onclick = () => {
-      const was = KIDS_TEXT[S.look.id], now = KIDS_TEXT[l.id];
-      if (KIDS && was && now && $('t1').value === was.t1 && $('t2').value === was.t2) { $('t1').value = now.t1; $('t2').value = now.t2; }
+      const now = KIDS_TEXT[l.id];
+      if (KIDS && now) kidsExamples(now);   // 10-20: the class fields start empty - only the faint examples follow the look
       S.look = l; renderLooks(); rebuild(); chips();
     };
     box.appendChild(b);
@@ -340,8 +341,8 @@ async function usePhotos(files) {
     const t = performance.now();
     const v = await readOne(f, i);
     n++; say();
-    if (slots[i]?.tagName === 'VIDEO') { const el = slots[i]; el.onclick = () => openFocus(v, el); }   // clips too: their canvas holds the current frame
-    else if (slots[i]) { const th = thumbOf(v); th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); }
+    if (slots[i]?.tagName === 'VIDEO') { const el = slots[i]; el.onclick = () => openFocus(v, el); v.hhThumb = el; }   // clips too: their canvas holds the current frame
+    else if (slots[i]) { const th = thumbOf(v); th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); v.hhThumb = th; }
     rlog(`photo ${i + 1}/${files.length} ${v.hhPath || 'clip'} ${Math.round(performance.now() - t)}ms ${(f.size / 1048576).toFixed(1)}MB ${f.type} → ${v.width}x${v.height}`);
     return v;
   });
@@ -350,7 +351,7 @@ async function usePhotos(files) {
   // 10-19 영샘 S20+: several videos failed in ~0.1s and nothing said why - log the reason (type, size, codec) and show it
   r.forEach((x, i) => { if (x.status === 'rejected') rlog(`photo fail ${i + 1}/${files.length} ${files[i].type || '?'} ${(files[i].size / 1048576).toFixed(1)}MB ${x.reason?.message || x.reason}`); });
   const bad = r.map((x, i) => (x.status === 'rejected' ? `${files[i].name}${x.reason?.message ? ` (${x.reason.message})` : ''}` : null)).filter(Boolean);
-  if (ok.length) { S.images = ok; S.demoChosen = false; setMake(); rebuild(); renderLooks(); }
+  if (ok.length) { S.images = ok; S.demoChosen = false; renderOrder(); setMake(); rebuild(); renderLooks(); }
   $('focusTip').hidden = !ok.length;
   $('clipGainRow').hidden = !ok.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
@@ -360,6 +361,34 @@ async function usePhotos(files) {
     : T(`${ok.length}개 넣었어요${ok.some((x) => x.live) ? ` (영상 ${ok.filter((x) => x.live).length}개 — 앞 12초까지 반복해서 써요)` : ''}. 위 미리보기에서 바로 돌아가요.`,
         `${ok.length} added${ok.some((x) => x.live) ? ` (${ok.filter((x) => x.live).length} videos — the first 12s loop)` : ''}. They’re playing in the preview above.`);
   S.photoBlobs = await shrinkAll(ok.filter((x) => !x.live));
+  saveSoon();
+}
+
+// ---------- photo order (10-20 영샘: "사진 나오는 순서 정할 수 있도록") ----------
+// Each picture in the strip gets its number and ◀ ▶ under it - one tap moves it one place. Buttons rather than dragging:
+// the class is children on phones, and a drag in a sideways-scrolling strip fights the scroll.
+function renderOrder() {
+  const th = $('thumbs'); th.innerHTML = '';
+  const n = S.images.length;
+  S.images.forEach((v, i) => {
+    if (!v.hhThumb) return;
+    const w = document.createElement('div'); w.className = 'tw';
+    const no = document.createElement('span'); no.className = 'no'; no.textContent = String(i + 1);
+    const mv = document.createElement('div'); mv.className = 'mv';
+    const btn = (label, aria, to) => {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.setAttribute('aria-label', aria);
+      b.disabled = to < 0 || to >= n; b.onclick = () => movePhoto(i, to); return b;
+    };
+    mv.append(btn('◀', T('앞으로', 'Earlier'), i - 1), btn('▶', T('뒤로', 'Later'), i + 1));
+    w.append(v.hhThumb, no, mv); th.appendChild(w);
+  });
+}
+async function movePhoto(from, to) {
+  if (to < 0 || to >= S.images.length || S.busy) return;
+  const [v] = S.images.splice(from, 1); S.images.splice(to, 0, v);
+  rlog(`photo order ${from + 1} → ${to + 1}`);
+  renderOrder(); rebuild();
+  S.photoBlobs = await shrinkAll(S.images.filter((x) => !x.live));   // the draft keeps the new order
   saveSoon();
 }
 
@@ -447,8 +476,10 @@ async function useAudioFile(f) {
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
   S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || S.len; applyCut();
   const base = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().toUpperCase().split(' ');
-  $('t1').value = base.slice(0, Math.ceil(base.length / 2)).join(' ').slice(0, 14) || 'MY SONG';
-  $('t2').value = base.slice(Math.ceil(base.length / 2)).join(' ').slice(0, 18) || 'ON MY PHONE';
+  const g1 = base.slice(0, Math.ceil(base.length / 2)).join(' ').slice(0, 14) || 'MY SONG';
+  const g2 = base.slice(Math.ceil(base.length / 2)).join(' ').slice(0, 18) || 'ON MY PHONE';
+  if (KIDS) { $('t1').placeholder = g1; $('t2').placeholder = g2; }   // 10-20: the class link fills nothing in for them
+  else { $('t1').value = g1; $('t2').value = g2; }
   S.userPhrases = []; S.tap = null; lyricHint();
   $('shint').textContent = T('아래에서 길이와 시작점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.', 'Choose length and start below. “Add words” puts in lyrics or a line.');
   rebuild(); chips(); syncPlay();
@@ -537,6 +568,9 @@ $('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.user
 $('clipGain').addEventListener('input', (e) => { S.clipGain = e.target.value / 100; $('clipGainV').textContent = `${e.target.value}%`; });
 
 for (const id of ['brand', 't1', 't2']) $(id).addEventListener('input', () => { rebuild(); chips(); });
+// 10-20 class link: the class words become faint examples in the empty boxes, never text in the video
+function kidsExamples(txt) { $('brand').placeholder = txt.brand; $('t1').placeholder = txt.t1; $('t2').placeholder = txt.t2; }
+$('songLyrics').addEventListener('change', (e) => { S.songLyrics = e.target.checked; rlog(`song lyrics ${S.songLyrics ? 'on' : 'off'}`); rebuild(); });
 
 $('lyrics').addEventListener('input', () => saveSoon());
 
@@ -596,7 +630,7 @@ function snapshot() {
     song: S.useOurs ? S.song.id : null, audio: S.useOurs ? null : S.audioFile,
     len: S.len, offset: S.offset,
     brand: $('brand').value, t1: $('t1').value, t2: $('t2').value,
-    lyrics: $('lyrics').value, phrases: S.userPhrases,
+    lyrics: $('lyrics').value, phrases: S.userPhrases, songLyrics: S.songLyrics,
     photos: S.photoBlobs, clips: S.photoFiles.filter(isVideoFile).length,
     aligns: S.images.filter((x) => !x.live).map((x) => x.hhAlign || null),   // same order as photos (shrinkAll of the non-clips)
   };
@@ -626,6 +660,7 @@ async function restore(w) {
     applyCut();
     $('brand').value = w.brand ?? $('brand').value; $('t1').value = w.t1 ?? $('t1').value; $('t2').value = w.t2 ?? $('t2').value;
     $('lyrics').value = w.lyrics || ''; S.userPhrases = w.phrases || []; lyricHint();
+    if (typeof w.songLyrics === 'boolean') { S.songLyrics = w.songLyrics; $('songLyrics').checked = w.songLyrics; }
     if (w.photos?.length) {
       await usePhotos(w.photos.map((b, i) => new File([b], `photo_${i + 1}.jpg`, { type: 'image/jpeg' })));
       if (w.aligns) S.images.filter((x) => !x.live).forEach((x, i) => { if (w.aligns[i]) x.hhAlign = w.aligns[i]; });
@@ -990,7 +1025,12 @@ async function caps() {
   try {
     S.tpl = await loadTemplate(S.song);
     const txt = KIDS ? KIDS_TEXT[S.look.id] || KIDS_TEXT['minjeong-hw'] : { brand: S.tpl.brand, t1: S.tpl.title1, t2: S.tpl.title2 };
-    $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2;
+    if (KIDS) {
+      // 10-20 영샘: "글자를 넣지 않으면 정해진 문구가 들어가는데 들어가지 않도록" - the boxes start empty, the class words
+      // are only faint examples, and our song's lyrics show only when 「가사 자막」 is ticked
+      $('brand').value = ''; $('t1').value = ''; $('t2').value = ''; kidsExamples(txt);
+      $('songLyricsRow').hidden = false; $('blankHint').hidden = false; $('songLyrics').checked = S.songLyrics;
+    } else { $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2; }
     if (KIDS) {
       document.body.classList.add('kids'); rlog('class kids');
       // 10-19 랩코 점검 A1: the class is under 14 - Instagram must not be the biggest button. Android: 「저장」 becomes the

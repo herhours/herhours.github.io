@@ -1,8 +1,11 @@
 // Screen language follows the phone: Korean phones get Korean, everyone else English (영샘 10-04).
 // ?lang=en / ?lang=ko overrides it, for testing on one machine.
 (() => {
-  const q = new URLSearchParams(location.search).get('lang');
-  const lang = q === 'en' || q === 'ko' ? q : (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  const p = new URLSearchParams(location.search), q = p.get('lang');
+  // 10-20 영샘: a Galaxy whose Chrome is set to English (log: en-US) showed the class link in English - the class is
+  // Korean children, so the class link is always Korean (?lang=en still overrides for testing)
+  const kids = ['kids', 'minjeong'].includes(p.get('class'));
+  const lang = q === 'en' || q === 'ko' ? q : kids ? 'ko' : (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
   self.HH_LANG = lang;
   // Dynamic strings keep both languages side by side at the call site: T('한국어', 'English').
   self.T = (ko, en) => (lang === 'ko' ? ko : en);
@@ -69,6 +72,7 @@
     '다음 · 사진': 'Next · Photos', '다음 · 노래': 'Next · Song', '다음 · 글자': 'Next · Text', '다 됐어요': 'All set',
     '← 스타일': '← Style', '← 사진': '← Photos', '← 노래': '← Song', '파일 이름': 'File name',
     '이 이름으로 저장돼요. 그대로 둬도 돼요.': 'Your video is saved under this name. You can leave it as it is.', '저장하기': 'Save', '취소': 'Cancel',
+    '가사 자막': 'Lyrics', '노래 가사를 영상 위에 띄워요': 'Show the song’s lyrics on the video', '비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.': 'Empty boxes stay off the video. The faint text is only an example.',
     '보일 부분 고르기': 'Choose what shows', '처음대로': 'Reset',
     '보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.': 'Tap or drag onto the part you want in view. The video above follows.',
     '✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.': '✋ Tap a photo to choose the part that stays in view (a face, say).',

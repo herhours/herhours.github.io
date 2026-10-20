@@ -417,12 +417,14 @@ export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFr
 
 // ---------- frame data ----------
 // One place builds the object drawFrame reads, so the live preview and the exported file cannot drift.
-export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases }) {
-  const B = (brand || 'HER HOURS').toUpperCase();
-  const t1 = titleCase(title1 || tpl.title1, true);
-  const t2 = titleCase(title2 || tpl.title2, false);   // line 2 reads as a continuation
+// blank (10-20 영샘, class link): a field left empty stays empty in the video - no brand, title or song lyric filled in for it.
+// songLyrics: with blank, our song's own lyric captions show only when asked for.
+export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases, blank = false, songLyrics = true }) {
+  const B = (blank ? brand || '' : brand || 'HER HOURS').toUpperCase();
+  const t1 = blank ? (title1 ? titleCase(title1, true) : '') : titleCase(title1 || tpl.title1, true);
+  const t2 = blank ? (title2 ? titleCase(title2, false) : '') : titleCase(title2 || tpl.title2, false);   // line 2 reads as a continuation
   return {
-    useOurs, images, phrases: useOurs ? tpl.phrases : (phrases || []),
+    useOurs, images, phrases: useOurs ? (blank && !songLyrics ? [] : tpl.phrases) : (phrases || []),
     brand: B,
     label: useOurs ? tpl.label : `${B} · MY OWN PLAYLIST`,
     singer: useOurs ? tpl.singer || '' : '',
