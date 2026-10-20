@@ -64,6 +64,19 @@ body{position:fixed;inset:0}
 body.is-done .makebox,body.is-done .rail{display:none}
 body.is-done .donebox{display:flex}
 body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none}
+/* 10-20 PT 리뷰 4: 「쇼츠 만들기」 위 한 줄 요약 - the dock grows by one line, so the time bar rides on its measured height */
+.makesum{margin:0;font-size:15px;line-height:1.35;color:#fff;text-align:center;text-wrap:balance;text-shadow:0 1px 5px rgba(0,0,0,.95)}
+.makesum button{all:unset;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
+.makesum button.demo{color:var(--accent)}
+/* 10-20 PT 리뷰 5: 도움말 */
+.helps{list-style:none;margin:14px 0 4px;padding:0;display:flex;flex-direction:column;gap:12px}
+.helps li{display:flex;flex-direction:column;gap:2px;font-size:var(--t-s);line-height:1.45}
+.helps li[hidden]{display:none}
+.helps b{font-size:var(--t-m)}
+.diag{margin-top:14px;font-size:var(--t-s);color:var(--dim)}
+.diag summary{cursor:pointer;padding:6px 0}
+.diag #caps{white-space:pre-wrap;word-break:break-all}
+body.has-sum:not(.is-done) .transport{bottom:var(--dock-h)}
 body.is-done .done-meta{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
 /* 10-20 영샘 아이폰 완성 화면: the buttons sat on the video's last lines (MADE WITH HER HOURS under 「다시 만들기」) -
    the finished video now ends above the dock, and the done screen keeps a door to 내 영상 / 정보 */
@@ -251,6 +264,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <div class="dock">
   <div class="makebox">
     <p class="failmsg" id="failMsg" role="alert"></p>
+    <p class="makesum" id="makeSum" hidden></p>
     <button class="pill" id="make">쇼츠 만들기</button>
   </div>
   <div class="donebox">
@@ -360,20 +374,27 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics" style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
     <p class="hint" id="blankHint" hidden>비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.</p>
-    <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">기기 정보</button></div>
+    <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">도움말</button></div>
     <div class="two stepnav"><button class="pill ghost" data-prev="song">← 노래</button><button class="pill done" data-finish>다 됐어요</button></div>
   </div>
 
+  <!-- 10-20 PT 리뷰 5: a guest's ways out first - the device readout (for us, when something breaks) folds away below -->
   <div class="pane pane-info">
-    <h2>기기 정보</h2>
-    <div id="caps"></div>
-    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
-    <p class="hint" id="installHint" hidden></p>
-    <p class="hint" id="ver"></p>
-    <div class="two" style="margin-top:12px">
+    <h2>도움말</h2>
+    <div class="two">
       <button class="pill ghost" data-open="welcome">사용법</button>
       <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
     </div>
+    <ul class="helps">
+      <li><b>저장은 어디로?</b><span>완성 화면 「저장」 → 이름 정하기. 안드로이드는 다운로드 폴더, 아이폰은 「파일」 앱에 들어가요.</span></li>
+      <li><b>아이폰 사진첩에 넣으려면</b><span>완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.</span></li>
+      <li id="helpInApp" hidden><b>카톡에서 열었나요?</b><span>앱 안 브라우저에서는 인스타로 바로 보내기가 안 될 수 있어요. 크롬·사파리로 열면 돼요.</span></li>
+      <li><b>멈춘 것 같을 때</b><span>처음 열 때 노래·글꼴을 받느라 몇 초 걸려요. 「다시 불러오기」가 보이면 눌러 주세요.</span></li>
+    </ul>
+    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
+    <p class="hint" id="installHint" hidden></p>
+    <details class="diag"><summary>기기 진단 펼치기</summary><div id="caps"></div></details>
+    <p class="hint" id="ver"></p>
     <button class="pill ghost done" data-close>닫기</button>
   </div>
 
