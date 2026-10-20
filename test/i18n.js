@@ -1,8 +1,11 @@
 // Screen language follows the phone: Korean phones get Korean, everyone else English (영샘 10-04).
 // ?lang=en / ?lang=ko overrides it, for testing on one machine.
 (() => {
-  const q = new URLSearchParams(location.search).get('lang');
-  const lang = q === 'en' || q === 'ko' ? q : (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  const p = new URLSearchParams(location.search), q = p.get('lang');
+  // 10-20 영샘: a Galaxy whose Chrome is set to English (log: en-US) showed the class link in English - the class is
+  // Korean children, so the class link is always Korean (?lang=en still overrides for testing)
+  const kids = ['kids', 'minjeong'].includes(p.get('class'));
+  const lang = q === 'en' || q === 'ko' ? q : kids ? 'ko' : (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
   self.HH_LANG = lang;
   // Dynamic strings keep both languages side by side at the call site: T('한국어', 'English').
   self.T = (ko, en) => (lang === 'ko' ? ko : en);
