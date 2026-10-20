@@ -253,9 +253,15 @@ if ($('offset')) {   // shell A (index.A.html) has no cut controls
 }
 
 // ---------- inputs ----------
+// 10-20 영샘 아이폰(사파리, 반 링크): "사진 골랐는데 안 됨" — a pick whose files all failed the type check did nothing
+// and said nothing. A phone can hand over a file with an empty type, so the extension counts too, and every pick is logged.
+const IMG_EXT = /\.(jpe?g|png|heic|heif|webp|gif|avif|bmp)$/i;
 $('photos').onchange = (e) => {
-  const files = [...e.target.files].filter((f) => f.type.startsWith('image/') || isVideoFile(f));
+  const all = [...e.target.files];
+  rlog(`pick ${all.length}: ${all.slice(0, 6).map((f) => `${f.type || '(no type)'} ${(f.size / 1048576).toFixed(1)}MB`).join(', ')}`);
+  const files = all.filter((f) => f.type.startsWith('image/') || isVideoFile(f) || (!f.type && IMG_EXT.test(f.name)));
   if (files.length) usePhotos(files);
+  else if (all.length) $('phint').textContent = T(`이 파일은 못 넣어요 (${all[0].type || all[0].name}). 사진 앱에서 다른 사진으로 골라 주세요.`, `Can’t use this file (${all[0].type || all[0].name}). Pick another photo.`);
 };
 
 // a few at a time: decoding every photo at once is what made picking slow and heavy on an iPhone (10-11)
@@ -779,7 +785,17 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
   // 10-19 영샘 폰: tapping showed nothing and said nothing. Now every outcome is logged, and whenever the browser's own
   // sheet does not come up (or is closed), the menu route is written under the button - it always works.
   const samsung = /SamsungBrowser/i.test(navigator.userAgent);      // 갤럭시 기본 브라우저 — 메뉴가 아래 ≡ 에 있다
+  // 10-20 영샘 아이폰(사파리 26): the Android button showed there too and tapping it wrote the Chrome ⋮ route over the
+  // iPhone steps - "눌러도 반응이 없다". iPhones get their own steps; Safari 26 keeps Share inside the ··· button.
+  const iosWay = () => {
+    const h = $('installHint'); h.classList.add('ios');
+    $('caps').before(h);   // the steps first, above the device details
+    h.textContent = T('아이폰에서 앱처럼 쓰기\n① 사파리 아래 「···」(또는 공유 버튼 □↑)\n② 「공유」 → 아래로 내려 「홈 화면에 추가」\n③ 오른쪽 위 「추가」 → 홈 화면에 생긴 아이콘으로 열어요',
+      'Use it like an app on iPhone\n① Safari’s “···” button (or Share □↑)\n② “Share” → scroll to “Add to Home Screen”\n③ “Add” → open it from the new home-screen icon');
+    h.style.whiteSpace = 'pre-line'; h.hidden = false;
+  };
   const menuWay = () => {
+    if (isIOS()) { iosWay(); return; }
     $('installHint').textContent = samsung
       ? T('설치 창이 안 뜨면: 삼성 인터넷 아래 ≡ 메뉴 → 「현재 페이지 추가」 → 「홈 화면」을 눌러 주세요.', 'If no install window opens: Samsung Internet menu ≡ → “Add page to” → “Home screen”.')
       : T('설치 창이 안 뜨면: 크롬 오른쪽 위 ⋮ 메뉴 → 「앱 설치」 또는 「홈 화면에 추가」를 눌러 주세요.', 'If no install window opens: Chrome menu ⋮ → “Install app” or “Add to Home screen”.');
@@ -798,18 +814,21 @@ if (SHEET_LOG || REMOTE_LOG || KIDS) {
     menuWay(); window.hhOpen('info');
   };
   // rail button: Android → the browser's install window straight away (same handler); otherwise the info sheet with the steps
-  $('railInstall').onclick = () => { rlog('install rail tap'); if (deferred) $('installBtn').onclick(); else { if (!isIOS()) menuWay(); window.hhOpen('info'); } };
+  $('railInstall').onclick = () => { rlog('install rail tap'); if (deferred) $('installBtn').onclick(); else { menuWay(); window.hhOpen('info'); } };
   addEventListener('appinstalled', () => { hideInstall(); rlog('appinstalled'); });
-  if (!standalone && isIOS()) {
-    $('railInstall').hidden = false;
-    $('installHint').textContent = T('아이폰·아이패드: 사파리 아래(아이패드는 위) 공유 버튼 → 「홈 화면에 추가」 하면 앱처럼 열려요.',
-      'iPhone/iPad: Safari Share button → “Add to Home Screen” to open it like an app.');
-    $('installHint').hidden = false;
-  }
+  if (!standalone && isIOS()) { $('railInstall').hidden = false; $('installBtn').hidden = true; iosWay(); }
   if (standalone) rlog('opened as installed app');
 }
-addEventListener('error', (e) => rlog(`error ${e.message} @${e.filename}:${e.lineno}`));
-addEventListener('unhandledrejection', (e) => rlog(`rejection ${e.reason?.message || e.reason}`));
+// 10-20: in the test build an error also shows on the phone itself, so a tester (or 영샘 by remote) can read it off the screen
+const showErr = (m) => {
+  if (!SHEET_LOG && !REMOTE_LOG) return;
+  if (/AbortError|NotAllowedError|play\(\)|interrupted|ResizeObserver/i.test(String(m))) return;   // harmless media/layout noise - log only
+  let b = document.getElementById('errBar');
+  if (!b) { b = document.createElement('div'); b.id = 'errBar'; b.style.cssText = 'position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top) + 8px);z-index:9999;background:#b3261e;color:#fff;font:600 14px/1.35 system-ui,sans-serif;padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-all'; b.onclick = () => b.remove(); document.body.appendChild(b); }
+  b.textContent = `⚠ ${self.HH_VERSION} · ${String(m).slice(0, 300)}  (눌러서 닫기)`;
+};
+addEventListener('error', (e) => { rlog(`error ${e.message} @${e.filename}:${e.lineno}`); showErr(`${e.message} @${String(e.filename).split('/').pop()}:${e.lineno}`); });
+addEventListener('unhandledrejection', (e) => { rlog(`rejection ${e.reason?.message || e.reason}`); showErr(`rejection ${e.reason?.message || e.reason}`); });
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
 const within = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
 const fill = (p) => { $('fill').style.width = `${Math.round(p * 100)}%`; $('pct').textContent = `${Math.round(p * 100)}%`; };
