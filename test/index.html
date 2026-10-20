@@ -128,6 +128,33 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 .sw-clockface-day{background:linear-gradient(#1b2a5e,#a8742e 30%,#cfd6dc 50%,#d1622a 72%,#141c36)}
 .sw-lyricbloom{background:linear-gradient(135deg,#7a1338 0 45%,#0d1230 45%);box-shadow:inset 0 0 0 3px #ffd58a}
 .sw-clockface-night{background:linear-gradient(#5b3b78,#2b3b6b 40%,#141c36 75%,#1d1430);box-shadow:inset 0 -6px 0 #ffc78a}
+/* ---- 10-20 영샘: "스마트폰을 가로로 볼 때 화면 사이즈에 맞춰지도록" ----
+   A phone on its side is wider than 600px, so the desktop rule penned it into a 430px column and the sheet rose over
+   a thumbnail-sized video. Low and wide: the video fills the height on the left, the tools take the right-hand column,
+   and a sheet slides in from the right beside the video instead of squeezing it. */
+@media (orientation: landscape) and (max-height: 540px){
+  body{--side:min(54vw, 470px);max-width:none;margin:0;box-shadow:none}
+  .stage{inset:0 var(--side) 0 0;padding:6px 0 6px env(safe-area-inset-left,0px)}
+  body.panel-open .stage{top:0;bottom:0}
+  .frame{border-radius:14px}
+  .rail{--vidh:auto;top:10px;left:auto;right:calc(env(safe-area-inset-right,0px) + 12px);width:calc(var(--side) - 24px);
+    transform:none;flex-direction:row;flex-wrap:nowrap;justify-content:space-between;gap:2px}
+  .rail button,.rail .mine-list{flex:1 1 0;width:auto;min-width:0;margin:0}
+  .rail .b{width:38px;height:38px}
+  .rail .b svg{width:19px;height:19px}
+  .rail .l{font-size:12px}
+  .transport{left:auto;right:0;width:var(--side);bottom:calc(84px + var(--safe-b));padding:0 calc(env(safe-area-inset-right,0px) + 18px) 0 18px}
+  .dock{left:auto;right:0;width:var(--side);padding:8px calc(env(safe-area-inset-right,0px) + 16px) calc(10px + var(--safe-b)) 16px;background:none}
+  .dock .pill{min-height:54px;font-size:var(--t-m)}
+  .panel,.scrim{max-width:none}
+  .scrim{left:0;transform:none}
+  .panel{left:auto;right:0;top:0;bottom:0;width:var(--side);max-height:none;border-top:0;border-left:1px solid var(--line);
+    border-radius:22px 0 0 22px;padding:8px calc(env(safe-area-inset-right,0px) + 18px) calc(16px + var(--safe-b)) 18px;
+    transform:translateX(101%)}
+  body.panel-open .panel{transform:translateX(0)}
+  .panel .grab{display:none}
+  #focusCv{max-height:62vh}
+}
 </style>
 </head>
 <body>
