@@ -182,6 +182,25 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   .panel .grab{display:none}
   #focusCv{max-height:62vh}
 }
+/* 10-22 영샘 "눌리는 모든 버튼을 이런 느낌 + 모두 입체감": every key in the app is one family with the main button -
+   light from above, a dark lip underneath, and the press pushes the face down into the lip. Lives here, after the
+   page's own rules, so it wins over their `background:none`. The stage tap, the toast and plain word-links stay flat. */
+.opt,.tile,.chip,.seg button,.again,.top .lnk,.panel .x,.fbopen,.thumbs .mv button,[data-emo],.rail .b{
+  --lip:3px;--lip-c:rgba(0,0,0,.55);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 62%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 var(--lip) 0 var(--lip-c);
+  transition:transform 380ms cubic-bezier(.22,1,.36,1),box-shadow 380ms cubic-bezier(.22,1,.36,1),
+    filter 380ms cubic-bezier(.22,1,.36,1),background-color 380ms cubic-bezier(.22,1,.36,1)}
+.panel .x{background-color:rgba(255,255,255,.06)}
+.tile{margin-bottom:3px}
+:is(.opt,.tile,.chip,.seg button,.again,.top .lnk,.panel .x,.fbopen,.thumbs .mv button,[data-emo]):is(.press,:active){
+  transform:translateY(2px) scale(.97);filter:brightness(1.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 var(--lip-c);
+  transition-duration:110ms;transition-timing-function:cubic-bezier(.3,.7,.4,1)}
+.rail button:is(.press,:active) .b{transform:translateY(2px) scale(.9);filter:brightness(1.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 var(--lip-c)}
+.makesum button,.donelinks button:not(.fbopen),.toast{transition:opacity 380ms cubic-bezier(.22,1,.36,1)}
+:is(.makesum button,.donelinks button:not(.fbopen),.toast):is(.press,:active){opacity:.55;transition-duration:110ms}
 </style>
 </head>
 <body>

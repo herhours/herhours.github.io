@@ -1101,8 +1101,9 @@ $('fname').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preve
 // 10-22 apple-design §1 "respond on pointer-down": the press shows the instant the finger lands, not when the browser has
 // decided it isn't a scroll, and a quick tap still shows for 140ms. A scroll that starts on a button cancels it.
 document.addEventListener('pointerdown', (e) => {
-  const b = e.target.closest?.('.pill,.again,.rail button,.tapbtn');
-  if (!b || b.disabled) return;
+  // every key presses (영샘 10-22 "눌리는 모든 버튼") - except the whole-stage play/pause, which must not shrink the video
+  const b = e.target.closest?.('button,a.pill,label.pill,label.opt,[role="button"]');
+  if (!b || b.disabled || b.classList.contains('tap')) return;
   b.classList.add('press');
   const t0 = performance.now();
   const up = () => {
