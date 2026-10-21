@@ -1,0 +1,76 @@
+/* 10-22 영샘 "기능보다 우리만의 느낌이 확 오는 우리 디자인" — three directions on the real app, switched by ?ui=a|b|c
+   (ui.js keeps the pick and shows the chooser). Only the frame around the video changes; the video looks are untouched.
+   A 샴페인 골드 — the main key in the champagne gold every look already sings its lyrics in (#F3DCA2, 영샘 10-02)
+   B 영화관     — obsidian and warm ivory, one gold line, the sheet titles in the brand script (영샘 웹 미감: 두 극 · 금 한 톤)
+   C 다듬기     — today's mint kept for the main action only, everything else quieter (피티 10-21 제안의 결) */
+
+/* shared by all three: the rail words were 12–13px, under the floor for 영샘's eyes */
+body[class*="ui-"] .rail .l{font-size:14px;letter-spacing:0}
+
+/* ---------- A · 샴페인 골드 ---------- */
+body.ui-a{--accent:#EBCB8B;--accent-ink:#1E1607;--ink:#07080F;--glass:rgba(17,17,25,.95);--glass-2:rgba(30,29,38,.9)}
+body.ui-a .pill:not(.ghost){--lip-c:#7E5B25;
+  background:linear-gradient(180deg,#FFF1CC 0%,#EBCB8B 48%,#CDA35D 100%);color:#1E1607;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -2px 0 rgba(60,40,0,.16),0 var(--lip) 0 var(--lip-c),0 calc(var(--lip) + 6px) 24px rgba(235,203,139,.28)}
+body.ui-a .pill:not(.ghost):is(.press,:active){box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(60,40,0,.16),0 1px 0 var(--lip-c),0 3px 10px rgba(235,203,139,.2)}
+body.ui-a .panel .pane-look > .done{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -2px 0 rgba(60,40,0,.16),0 var(--lip) 0 var(--lip-c),0 -14px 18px 6px rgb(17,17,25)}
+body.ui-a :is(.opt.on,.tile.on,.seg button.on,label.opt[for="audio"]){background-color:rgba(235,203,139,.10)}
+body.ui-a .frame{box-shadow:0 0 0 5px rgba(0,0,0,.55),0 22px 60px rgba(0,0,0,.75),0 0 60px rgba(235,203,139,.12)}
+body.ui-a .opt .sbars i{background:rgba(235,203,139,.35)}
+body.ui-a .opt .sbars.lit i{background:var(--accent)}
+
+/* ---------- B · 영화관 ---------- */
+body.ui-b{--ink:#151415;--glass:rgba(21,20,21,.97);--glass-2:rgba(34,32,31,.92);--cream:#F1EADE;--dim:#C2B9AB;
+  --line:rgba(241,234,222,.14);--line-2:rgba(241,234,222,.28);--accent:#C9A961;--accent-ink:#151415;--gold:#C9A961}
+body.ui-b .mark{font-family:"HHSans",var(--ui);font-weight:600;letter-spacing:.32em;font-size:15px}
+/* the main key is ivory paper, not a colour: dark ink on it, a fine gold ring, a warm lip */
+body.ui-b .pill:not(.ghost){--lip-c:#7D6D52;
+  background:linear-gradient(180deg,#FFFAF0 0%,#F1EADE 50%,#D9CCB6 100%);color:#151415;
+  box-shadow:inset 0 0 0 1px rgba(201,169,97,.6),inset 0 1px 0 #fff,0 var(--lip) 0 var(--lip-c),0 calc(var(--lip) + 8px) 22px rgba(0,0,0,.55)}
+body.ui-b .pill:not(.ghost):is(.press,:active){box-shadow:inset 0 0 0 1px rgba(201,169,97,.6),inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 var(--lip-c),0 3px 8px rgba(0,0,0,.5)}
+body.ui-b .panel .pane-look > .done{box-shadow:inset 0 0 0 1px rgba(201,169,97,.6),inset 0 1px 0 #fff,0 var(--lip) 0 var(--lip-c),0 -14px 18px 6px rgb(21,20,21)}
+body.ui-b .pill.ghost{border-color:rgba(241,234,222,.3)}
+body.ui-b .panel{border-top:1px solid rgba(201,169,97,.45)}
+body.ui-b .panel .stepnav{background:linear-gradient(to top,rgb(21,20,21) 78%,rgba(21,20,21,0))}
+body.ui-b .panel .pane-info > .pill.ghost.done,body.ui-b .panel .pane-made > .pill.ghost.done{background:rgb(21,20,21);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 var(--lip) 0 var(--lip-c),0 -14px 18px 6px rgb(21,20,21)}
+/* the sheet handle becomes the arch of every Her Hours frame */
+body.ui-b .grab{width:58px;height:16px;border:1.5px solid rgba(201,169,97,.85);border-bottom:0;border-radius:29px 29px 0 0;background:none;margin:6px auto 8px}
+/* titles: the brand script large and gold, the Korean small beneath it - the size contrast is the luxury */
+body.ui-b .panel h2{font-size:16px;font-weight:600;color:var(--dim);letter-spacing:.04em;margin:0 0 14px}
+body.ui-b .panel h2::before{display:block;font-family:"HHTitle",cursive;font-weight:400;font-size:40px;line-height:1.05;color:var(--gold);letter-spacing:0;margin-bottom:2px}
+body.ui-b .pane-look h2::before{content:"Style"}
+body.ui-b .pane-photo h2::before{content:"Photographs"}
+body.ui-b .pane-song h2::before{content:"Song"}
+body.ui-b .pane-text h2::before{content:"Words"}
+body.ui-b .pane-info h2::before{content:"Help"}
+body.ui-b .pane-made h2::before{content:"Yours"}
+body.ui-b .pane-welcome h2::before{content:"Her Hours"}
+body.ui-b :is(.opt.on,.tile.on,.seg button.on,label.opt[for="audio"]){border-color:var(--gold);background-color:rgba(201,169,97,.08)}
+body.ui-b :is(.opt.on .t b,.tile.on,.seg button.on){color:var(--gold)}
+body.ui-b .rail .b{border:1px solid rgba(201,169,97,.55);color:var(--cream);background-color:rgba(21,20,21,.6)}
+body.ui-b .frame{box-shadow:0 0 0 1px rgba(201,169,97,.35),0 22px 60px rgba(0,0,0,.8)}
+body.ui-b .opt .sbars i{background:rgba(201,169,97,.35)}
+body.ui-b .opt .sbars.lit i{background:var(--gold)}
+body.ui-b .live b{background:var(--gold)}
+
+/* ---------- C · 다듬기 ---------- */
+body.ui-c{--line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.22)}
+/* mint is the one action colour: the main key keeps it, choices are marked in cream instead */
+body.ui-c .pill:not(.ghost){box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -2px 0 rgba(0,40,15,.12),0 var(--lip) 0 var(--lip-c)}
+body.ui-c :is(.opt.on,.tile.on,.seg button.on,label.opt[for="audio"]){border-color:var(--cream);background-color:rgba(255,255,255,.07)}
+body.ui-c :is(.opt.on .t b,.tile.on,.seg button.on){color:var(--cream)}
+body.ui-c .frame{box-shadow:0 0 0 5px rgba(0,0,0,.55),0 22px 60px rgba(0,0,0,.75)}
+body.ui-c .panel h2{font-size:22px;margin-bottom:16px}
+body.ui-c .opt{margin-bottom:8px}
+body.ui-c .two{gap:8px}
+body.ui-c .rail button.mine .b{border-color:var(--cream);color:var(--cream)}
+body.ui-c .rail button.mine .l{color:var(--cream)}
+
+/* ---------- the chooser (only after opening with ?ui=) ---------- */
+.uipick{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22)}
+.uipick button{min-height:36px;padding:0 12px;border-radius:999px;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;box-shadow:none;background-image:none}
+.uipick button.on{background:#fff;color:#000}
+body.uipick-on .top .lnks{visibility:hidden}
+body.panel-open .uipick{opacity:.6}

@@ -3,7 +3,7 @@
 importScripts('./version.js');
 const VERSION = self.HH_VERSION;
 const CACHE = 'hh-shorts-' + VERSION;
-const SHELL = ['./', './index.html', './about.html', './i18n.js', './version.js', './ui.css', './ui.js', './core.js', './looks.js', './beats.js', './media.js', './store.js',
+const SHELL = ['./', './index.html', './about.html', './i18n.js', './version.js', './ui.css', './ui-dirs.css', './ui.js', './core.js', './looks.js', './beats.js', './media.js', './store.js',
   './manifest.webmanifest', './assets/icons/icon-192.png'];
 
 // 10-19 영샘 S20+: the installed app kept opening the old release - GitHub Pages lets browsers keep files 10 minutes
