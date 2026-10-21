@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#EADFCD">
 <meta name="robots" content="noindex,nofollow">
 <title>Her Room · 메인 시안</title>
+<link rel="stylesheet" href="kit.css">
 <style>
 /* 10-22 영샘 "배경이 세계이고 기능이 그 세계 안에" — 메인 화면 시안: 그녀의 방 (밝게 · 세련 · 여백, 영샘 레퍼런스 5장 결).
    The room is the page. The arch is the window the short plays in. Each tool is a thing in the room:
@@ -48,8 +49,8 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:poin
   @keyframes breathe{50%{transform:scale(1.2)}}}
 .spot.press::before{transform:scale(.8);animation:none}
 .tag{position:absolute;top:50%;white-space:nowrap;display:flex;flex-direction:column;line-height:1.15;pointer-events:none;
-  padding:5px 10px 6px;border-radius:12px;background:rgba(255,251,244,.86);backdrop-filter:blur(6px);
-  box-shadow:0 4px 14px rgba(90,60,20,.18)}
+  padding:6px 12px 7px;border-radius:14px;background:var(--k-glass-bg);   /* the kit's milk glass (kit.css) */
+  -webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%);box-shadow:var(--k-glass)}
 .r .tag{left:calc(100% - 8px);translate:0 -50%}.l .tag{right:calc(100% - 8px);translate:0 -50%;align-items:flex-end}
 .u .tag{left:50%;top:auto;bottom:calc(100% - 6px);translate:-50% 0;align-items:center}.d .tag{left:50%;top:calc(100% - 6px);translate:-50% 0;align-items:center}
 .tag small{font-family:HHSans,sans-serif;font-size:10.5px;letter-spacing:.26em;color:var(--gold)}
@@ -85,26 +86,22 @@ body.orbit .cap{opacity:1}
 .ops{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:8;display:flex;gap:10px;
   opacity:0;translate:0 20px;pointer-events:none;transition:opacity 300ms,translate 420ms cubic-bezier(.22,1,.36,1)}
 body.orbit .ops{opacity:1;translate:0 0;pointer-events:auto}
-.ops button{flex:1;min-height:54px;border-radius:999px;font-size:17px;font-weight:800;transition:transform 380ms cubic-bezier(.22,1,.36,1)}
-.ops .go{background:linear-gradient(180deg,#FFF3D6,#E9C98B 55%,#C99E58);color:#3B2610;box-shadow:inset 0 1px 0 #fff,0 4px 0 #8A6428,0 10px 24px rgba(120,80,30,.35)}
-.ops .no{background:rgba(255,251,244,.9);box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(90,60,20,.35)}
-.ops button:active,.ops button.press{transform:translateY(3px) scale(.97)}
+.ops .k-btn{flex:1;min-height:56px}
 
 /* the arch, tapped: walk up to it and watch */
 body.watch .world{transform:scale(2.15)}
 body.watch .spot{opacity:0;pointer-events:none}
-.back{position:fixed;left:16px;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:9;min-height:44px;padding:0 16px;border-radius:999px;
-  background:rgba(255,251,244,.9);font-size:16px;font-weight:700;box-shadow:0 3px 0 rgba(90,60,20,.3);opacity:0;pointer-events:none;transition:opacity 300ms}
+.back{position:fixed;left:16px;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:9;min-height:46px;padding:0 18px;font-size:16px;opacity:0;pointer-events:none}
 body.watch .back{opacity:1;pointer-events:auto}
 
 /* what a touch would open (mock) */
 .sheet{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:9;padding:18px 18px 16px;border-radius:26px;
-  background:rgba(255,251,244,.95);backdrop-filter:blur(14px);box-shadow:0 18px 50px rgba(90,60,20,.3);
+  background:rgba(255,252,246,.78);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:var(--k-glass),0 18px 50px rgba(90,60,20,.22);
   translate:0 130%;transition:translate 460ms cubic-bezier(.22,1,.36,1)}
 .sheet.on{translate:0 0}
 .sheet h3{font-family:HHTitle,cursive;font-weight:400;font-size:40px;color:var(--gold);line-height:1}
 .sheet p{margin-top:8px;font-size:16px;line-height:1.55}
-.sheet button{margin-top:14px;width:100%;min-height:52px;border-radius:999px;background:#fff;font-size:16px;font-weight:700;box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(90,60,20,.3)}
+.sheet .k-btn{margin-top:14px;width:100%}
 @media (prefers-reduced-motion:reduce){.world,.sheet,.ops{transition:none}}
 </style>
 </head>
@@ -123,9 +120,9 @@ body.watch .back{opacity:1;pointer-events:auto}
   <div class="orbit" id="orbit"></div>
 </div>
 <div class="cap" id="cap"><b id="capT">Halloween</b><small id="capS">밀어서 돌리고, 앞에 온 걸 골라요</small></div>
-<div class="ops"><button class="no" id="cancel">그대로 두기</button><button class="go" id="pick">이 스타일로</button></div>
-<button class="back" id="back">← 방으로</button>
-<div class="sheet" id="sheet"><h3 id="sh"></h3><p id="sp"></p><button id="sx">닫기</button></div>
+<div class="ops"><button class="k-btn k-glass" id="cancel">그대로 두기</button><button class="k-btn k-primary" id="pick">이 스타일로</button></div>
+<button class="back k-btn k-glass" id="back">← 방으로</button>
+<div class="sheet" id="sheet"><h3 id="sh"></h3><p id="sp"></p><button class="k-btn k-quiet" id="sx">닫기</button></div>
 
 <script>
 const LOOKS = [
@@ -244,7 +241,7 @@ const SHEETS = {
   words: ['Words', '노트에 이름과 제목을 적어요. 영상 위에 그대로 써져요.'],
   make: ['Light it', '촛불을 켜면 쇼츠가 만들어져요. 촛불이 다 타오르면 완성 — 아치 속 영상이 완성본으로 바뀌어요.'],
 };
-document.addEventListener('pointerdown', (e) => { const b = e.target.closest('.spot,.ops button'); if (b) { b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 160); } }, { passive: true });
+document.addEventListener('pointerdown', (e) => { const b = e.target.closest('.spot,.k-btn'); if (b) { b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 160); } }, { passive: true });
 document.querySelectorAll('.spot').forEach((b) => b.onclick = () => {
   const k = b.dataset.k;
   if (k === 'style') return openOrbit();

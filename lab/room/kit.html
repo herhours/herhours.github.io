@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F4EDE2">
+<title>Her Room · 버튼 한 벌</title>
+<link rel="stylesheet" href="kit.css">
+<style>
+/* the kit on its own sheet (영샘 ref 1: a styleguide board) and the same pieces over the room (ref 2: glass on a scene) */
+@font-face{font-family:HHTitle;src:url(fonts/PinyonScript-Regular.ttf)}
+@font-face{font-family:HHSans;src:url(fonts/JosefinSans-SemiBold.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#F4EDE2;color:var(--k-ink);font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  padding:calc(env(safe-area-inset-top,0px) + 22px) 18px 40px;-webkit-tap-highlight-color:transparent}
+h1{font-family:HHTitle,cursive;font-weight:400;font-size:46px;color:var(--k-gold);line-height:1}
+.sub{font-family:HHSans,sans-serif;font-size:11px;letter-spacing:.36em;margin-top:6px;color:var(--k-ink-2)}
+section{margin-top:26px}
+h2{font-family:HHSans,sans-serif;font-size:12px;letter-spacing:.3em;color:var(--k-ink-2);margin-bottom:12px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.col{display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:13px;color:var(--k-ink-2);margin-top:6px}
+.sw{width:64px;height:64px;border-radius:20px;box-shadow:var(--k-clay)}
+.scene{position:relative;margin-top:12px;border-radius:26px;overflow:hidden;aspect-ratio:3/4;background:url(room.jpg) center 62%/cover}
+.scene .over{position:absolute;inset:auto 14px 14px;display:flex;flex-direction:column;gap:10px}
+.k-btn{flex:1 1 140px}
+</style>
+</head>
+<body>
+<h1>Her Room</h1><p class="sub">BUTTON KIT · 버튼 한 벌</p>
+
+<section><h2>COLOUR · 색</h2>
+  <div class="row">
+    <div><div class="sw" style="background:linear-gradient(180deg,#D8EEDC,#BFE0C7)"></div><p class="lbl">민트 · 행동</p></div>
+    <div><div class="sw" style="background:linear-gradient(180deg,#fff,#FBF7F0)"></div><p class="lbl">밀크 · 바탕</p></div>
+    <div><div class="sw" style="background:#3B2F22"></div><p class="lbl">잉크 · 글자</p></div>
+    <div><div class="sw" style="background:linear-gradient(180deg,#E5C589,#B8893E)"></div><p class="lbl">금 · 이름만</p></div>
+    <div><div class="sw" style="background:rgba(255,253,248,.5);box-shadow:var(--k-glass),0 0 0 3px var(--k-glow),0 0 18px var(--k-glow)"></div><p class="lbl">고른 것 · 빛 테</p></div>
+  </div>
+</section>
+
+<section><h2>BUTTONS · 버튼</h2>
+  <div class="col">
+    <div class="row"><button class="k-btn k-primary">이 스타일로</button><button class="k-btn k-quiet">그대로 두기</button></div>
+    <div class="row"><button class="k-btn k-primary k-on">고른 상태</button><button class="k-btn k-primary" disabled>쓸 수 없음</button></div>
+    <div class="row"><button class="k-btn k-glass">← 방으로</button><button class="k-btn k-glass k-on">유리 · 고름</button></div>
+  </div>
+  <p class="lbl">눌러 보세요 — 누르는 순간 쏙 들어가요</p>
+</section>
+
+<section><h2>CHIPS · 작은 선택</h2>
+  <div class="row" id="chips"><button class="k-chip k-on">✓ 15초</button><button class="k-chip">32초</button><button class="k-chip">60초</button></div>
+</section>
+
+<section><h2>TABS · 탭</h2>
+  <div class="k-seg" id="seg"><span class="k-pebble"></span><button class="k-on">우리 노래</button><button>내 노래</button></div>
+</section>
+
+<section><h2>TOGGLE · 켜고 끄기</h2>
+  <div class="row"><button class="k-toggle k-on" id="tg" aria-label="가사 자막"></button><span>가사 자막</span></div>
+</section>
+
+<section><h2>NAME TAG · 물건 이름표</h2>
+  <div class="row"><span class="k-tag"><small style="font-family:HHSans;font-size:10.5px;letter-spacing:.26em;color:var(--k-gold)">STYLE</small><b style="font-size:15px">스타일</b></span></div>
+</section>
+
+<section><h2>ALERTS · 알림</h2>
+  <div class="col"><div class="k-alert ok">✓ 다 만들었어요</div><div class="k-alert warn">! 사진이 한 장 더 있으면 좋아요</div><div class="k-alert err">× 노래를 못 읽었어요</div></div>
+</section>
+
+<section><h2>IN THE ROOM · 방 위에서</h2>
+  <div class="scene"><div class="over">
+    <div class="k-seg" id="seg2"><span class="k-pebble"></span><button class="k-on">15초</button><button>32초</button><button>60초</button></div>
+    <div class="row"><button class="k-btn k-glass">그대로 두기</button><button class="k-btn k-primary">이 스타일로</button></div>
+  </div></div>
+</section>
+
+<script>
+// press shows at finger-down and stays 140ms (as in the app)
+document.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest('.k-btn,.k-chip'); if (!b || b.disabled) return;
+  b.classList.add('press'); const t0 = performance.now();
+  const up = () => { setTimeout(() => b.classList.remove('press'), Math.max(0, 140 - (performance.now() - t0))); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); };
+  addEventListener('pointerup', up); addEventListener('pointercancel', up);
+}, { passive: true });
+document.querySelectorAll('#chips .k-chip').forEach((c) => c.onclick = () => { document.querySelectorAll('#chips .k-chip').forEach((x) => { x.classList.toggle('k-on', x === c); x.textContent = x.textContent.replace('✓ ', ''); }); c.textContent = '✓ ' + c.textContent; });
+for (const seg of document.querySelectorAll('.k-seg')) {
+  const peb = seg.querySelector('.k-pebble'), bs = [...seg.querySelectorAll('button')];
+  const put = (b) => { peb.style.left = b.offsetLeft + 'px'; peb.style.width = b.offsetWidth + 'px'; bs.forEach((x) => x.classList.toggle('k-on', x === b)); };
+  bs.forEach((b) => b.onclick = () => put(b)); requestAnimationFrame(() => put(seg.querySelector('.k-on')));
+}
+document.getElementById('tg').onclick = (e) => e.currentTarget.classList.toggle('k-on');
+</script>
+</body>
+</html>
