@@ -1181,8 +1181,9 @@ document.addEventListener('pointerdown', (e) => {
     return bar;
   };
   if (read('hh-ui-cmp') === '1') { document.body.classList.add('uipick-on'); document.body.append(picker('uipick')); }
-  // 10-22 영샘 설치앱: the installed app always opens at ./ (no ?ui=), so on the test page the choice also lives in 도움말
-  if (/\/test\//.test(location.pathname) || /^(localhost|127\.)/.test(location.hostname)) {
+  // 10-22 영샘 설치앱: the installed app always opens at ./ (no ?ui=), so the choice also lives in 도움말 - but only for
+  // whoever has already opened a draft (영샘 "테스터들 앱은 그대로" - testers never see it; someone on a draft can get back)
+  if (read('hh-ui-cmp') === '1' || read('hh-ui') || /^(localhost|127\.)/.test(location.hostname)) {
     const box = document.createElement('div'); box.className = 'uipick-help';
     const h = document.createElement('b'); h.textContent = T('디자인 시안 (시험 중)', 'Design drafts (testing)');
     box.append(h, picker('uipick in-help'));
