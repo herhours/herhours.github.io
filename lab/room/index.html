@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EADFCD">
+<meta name="robots" content="noindex,nofollow">
+<title>Her Room · 메인 시안</title>
+<style>
+/* 10-22 영샘 "배경이 세계이고 기능이 그 세계 안에" — 메인 화면 시안: 그녀의 방 (밝게 · 세련 · 여백, 영샘 레퍼런스 5장 결).
+   The room is the page. The arch is the window the short plays in. Each tool is a thing in the room:
+   mirror = style (tap: the style frames rise and orbit the arch), photos = 사진, turntable = 노래, notebook = 글자,
+   candle = 만들기. Positions are % of the 1024x1536 picture, so they stay on their things at any phone size. */
+@font-face{font-family:HHTitle;src:url(fonts/PinyonScript-Regular.ttf)}
+@font-face{font-family:HHSans;src:url(fonts/JosefinSans-SemiBold.ttf)}
+:root{--gold:#B8893E;--gold-2:#E9C98B;--ink:#3B2F22;--cream:#FBF5EC;--sage:#7C8C68}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+body{position:fixed;inset:0}
+body{background:linear-gradient(#F4ECDF 0%,#E8DAC4 60%,#D3BC9C 100%);color:var(--ink);
+  font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+
+/* the picture sits on the floor of the screen; a phone's extra height becomes quiet wall above it (여백) */
+/* fixed, not absolute: a focused button or a frame flying wide must never scroll the room away */
+/* a short screen keeps at least ~100px of wall on top for the name: the room shrinks a little and its sides melt
+   into the wall colour instead of meeting it with an edge */
+.world{position:fixed;left:50%;bottom:0;width:min(106vw,calc((100dvh - 100px) * 2 / 3));
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent);aspect-ratio:2/3;transform-origin:50% 26%;
+  translate:-50% 0;transition:transform 700ms cubic-bezier(.22,1,.36,1),filter 500ms}
+.world > img.bg{position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-user-drag:none;user-select:none}
+.world::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:60vh;pointer-events:none;
+  background:linear-gradient(to top,#CDB596 0%,rgba(232,218,196,0) 100%)}
+
+/* the short plays inside the arch, in its own small arch */
+.screen{position:absolute;left:32.9%;top:5.1%;width:34.9%;height:41.3%;overflow:hidden;cursor:pointer;
+  border-radius:50% 50% 6px 6px / 27% 27% 6px 6px;
+  box-shadow:0 0 0 2px rgba(233,201,139,.9),0 0 0 7px rgba(255,248,236,.55),0 18px 50px rgba(120,80,30,.35),0 0 60px rgba(255,236,200,.8)}
+.screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 260ms}
+.screen video.out{opacity:0}
+
+/* things you can touch: a breathing light and a small two-language name */
+.spot{position:absolute;left:var(--x);top:var(--y);translate:-50% -50%;width:var(--s,60px);height:var(--s,60px);border-radius:50%;display:grid;place-items:center;z-index:3;transition:opacity 300ms}
+.spot::before{content:"";position:absolute;inset:22%;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,252,240,.95),rgba(255,226,170,.55) 50%,rgba(255,220,160,0) 74%);
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.95),0 0 16px rgba(255,214,140,.9);transition:transform 380ms cubic-bezier(.22,1,.36,1)}
+@media (prefers-reduced-motion:no-preference){.spot::before{animation:breathe 3.2s ease-in-out infinite}
+  @keyframes breathe{50%{transform:scale(1.2)}}}
+.spot.press::before{transform:scale(.8);animation:none}
+.tag{position:absolute;top:50%;white-space:nowrap;display:flex;flex-direction:column;line-height:1.15;pointer-events:none;
+  padding:5px 10px 6px;border-radius:12px;background:rgba(255,251,244,.86);backdrop-filter:blur(6px);
+  box-shadow:0 4px 14px rgba(90,60,20,.18)}
+.r .tag{left:calc(100% - 8px);translate:0 -50%}.l .tag{right:calc(100% - 8px);translate:0 -50%;align-items:flex-end}
+.u .tag{left:50%;top:auto;bottom:calc(100% - 6px);translate:-50% 0;align-items:center}.d .tag{left:50%;top:calc(100% - 6px);translate:-50% 0;align-items:center}
+.tag small{font-family:HHSans,sans-serif;font-size:10.5px;letter-spacing:.26em;color:var(--gold)}
+.tag b{font-size:15px;font-weight:700;color:var(--ink)}
+
+/* the brand lives in the wall space above the room */
+.brand{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 18px);z-index:5;text-align:center;pointer-events:none}
+.brand b{display:block;font-family:HHTitle,cursive;font-weight:400;font-size:46px;line-height:1;color:var(--gold)}
+.brand small{display:block;margin-top:6px;font-family:HHSans,sans-serif;font-size:11px;letter-spacing:.38em;color:var(--ink);opacity:.7}
+.brand p{margin-top:10px;font-size:15px;color:var(--ink);opacity:.78}
+@media (max-height:760px){.brand{top:calc(env(safe-area-inset-top,0px) + 10px)}.brand b{font-size:38px}.brand p{display:none}
+  .cap{top:calc(env(safe-area-inset-top,0px) + 10px)}.cap b{font-size:36px}.cap small{margin-top:4px}}
+
+/* ---------- the style orbit: the frames rise and circle the arch; the front one plays in the arch ---------- */
+.dim{position:absolute;inset:0;z-index:4;background:radial-gradient(70% 50% at 50% 30%,rgba(40,28,12,.10),rgba(40,28,12,.45));opacity:0;pointer-events:none;transition:opacity 500ms}
+body.orbit .dim{opacity:1;pointer-events:auto}
+body.orbit .spot{opacity:0;pointer-events:none}
+/* no z-index here on purpose: the cards then stack with the arch itself, so the back of the ring passes behind it */
+.orbit{position:absolute;left:50.3%;top:26%;width:0;height:0;pointer-events:none}
+body.orbit .brand,body.watch .brand{opacity:0}
+.brand{transition:opacity 300ms}
+.card{position:absolute;left:0;top:0;width:calc(var(--W) * .2);aspect-ratio:9/16;margin:calc(var(--W) * -.178) 0 0 calc(var(--W) * -.1);
+  border-radius:14px;overflow:hidden;pointer-events:none;opacity:0;will-change:transform,opacity;
+  background:#2a2016 center/cover;box-shadow:0 0 0 2px #F6DFA9,0 0 0 4px rgba(184,137,62,.85),0 16px 34px rgba(60,35,10,.45)}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.35),transparent 35%)}
+body.orbit .card{pointer-events:auto}   /* closed, the invisible frames must not catch taps meant for the room */
+.screen{z-index:2}
+body.orbit .screen{z-index:6;pointer-events:none}
+.cap{position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top,0px) + 22px);z-index:7;text-align:center;pointer-events:none;opacity:0;transition:opacity 300ms}
+body.orbit .cap{opacity:1}
+.cap b{display:block;font-family:HHTitle,cursive;font-weight:400;font-size:44px;line-height:1;color:var(--gold)}
+.cap small{display:block;margin-top:8px;font-size:15px;color:var(--ink);opacity:.8}
+.ops{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:8;display:flex;gap:10px;
+  opacity:0;translate:0 20px;pointer-events:none;transition:opacity 300ms,translate 420ms cubic-bezier(.22,1,.36,1)}
+body.orbit .ops{opacity:1;translate:0 0;pointer-events:auto}
+.ops button{flex:1;min-height:54px;border-radius:999px;font-size:17px;font-weight:800;transition:transform 380ms cubic-bezier(.22,1,.36,1)}
+.ops .go{background:linear-gradient(180deg,#FFF3D6,#E9C98B 55%,#C99E58);color:#3B2610;box-shadow:inset 0 1px 0 #fff,0 4px 0 #8A6428,0 10px 24px rgba(120,80,30,.35)}
+.ops .no{background:rgba(255,251,244,.9);box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(90,60,20,.35)}
+.ops button:active,.ops button.press{transform:translateY(3px) scale(.97)}
+
+/* the arch, tapped: walk up to it and watch */
+body.watch .world{transform:scale(2.15)}
+body.watch .spot{opacity:0;pointer-events:none}
+.back{position:fixed;left:16px;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:9;min-height:44px;padding:0 16px;border-radius:999px;
+  background:rgba(255,251,244,.9);font-size:16px;font-weight:700;box-shadow:0 3px 0 rgba(90,60,20,.3);opacity:0;pointer-events:none;transition:opacity 300ms}
+body.watch .back{opacity:1;pointer-events:auto}
+
+/* what a touch would open (mock) */
+.sheet{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:9;padding:18px 18px 16px;border-radius:26px;
+  background:rgba(255,251,244,.95);backdrop-filter:blur(14px);box-shadow:0 18px 50px rgba(90,60,20,.3);
+  translate:0 130%;transition:translate 460ms cubic-bezier(.22,1,.36,1)}
+.sheet.on{translate:0 0}
+.sheet h3{font-family:HHTitle,cursive;font-weight:400;font-size:40px;color:var(--gold);line-height:1}
+.sheet p{margin-top:8px;font-size:16px;line-height:1.55}
+.sheet button{margin-top:14px;width:100%;min-height:52px;border-radius:999px;background:#fff;font-size:16px;font-weight:700;box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(90,60,20,.3)}
+@media (prefers-reduced-motion:reduce){.world,.sheet,.ops{transition:none}}
+</style>
+</head>
+<body>
+<header class="brand"><b>Her Hours</b><small>SHORTS</small><p>그녀의 방에서, 사진과 노래 하나로</p></header>
+
+<div class="world" id="world">
+  <img class="bg" src="room.jpg" alt="">
+  <div class="screen" id="screen"><video id="v1" src="looks/look_halloween.mp4" autoplay muted loop playsinline></video><video id="v2" class="out" muted loop playsinline></video></div>
+  <button class="spot l" data-k="style" style="--x:90.5%;--y:37%"><span class="tag"><small>STYLE</small><b>스타일</b></span></button>
+  <button class="spot l" data-k="photo" style="--x:93%;--y:50%"><span class="tag"><small>PHOTOS</small><b>사진</b></span></button>
+  <button class="spot r" data-k="song" style="--x:8.5%;--y:56%"><span class="tag"><small>SONG</small><b>노래</b></span></button>
+  <button class="spot d" data-k="words" style="--x:77%;--y:57%"><span class="tag"><small>WORDS</small><b>글자</b></span></button>
+  <button class="spot d" data-k="make" style="--x:44%;--y:75.5%;--s:72px"><span class="tag"><small>LIGHT IT</small><b>쇼츠 만들기</b></span></button>
+  <div class="dim" id="dim"></div>
+  <div class="orbit" id="orbit"></div>
+</div>
+<div class="cap" id="cap"><b id="capT">Halloween</b><small id="capS">밀어서 돌리고, 앞에 온 걸 골라요</small></div>
+<div class="ops"><button class="no" id="cancel">그대로 두기</button><button class="go" id="pick">이 스타일로</button></div>
+<button class="back" id="back">← 방으로</button>
+<div class="sheet" id="sheet"><h3 id="sh"></h3><p id="sp"></p><button id="sx">닫기</button></div>
+
+<script>
+const LOOKS = [
+  ['halloween', 'Halloween', '아치 창문 · 박쥐와 불티'], ['windowband', 'Window Band', '창문 띠 · 가사가 박자에 켜짐'],
+  ['triptych', 'Triptych', '3단 컷 · 박자마다 끊김'], ['pulse', 'Pulse', '음악에 반응하는 링'],
+  ['lyricbloom', 'Lyric Bloom', '가사가 화면을 채움'], ['blackcut-room', 'Black Cut · 실내', '검은 컷 · 화면 전체가 움직임'],
+  ['blackcut-road', 'Black Cut · 길 위', '낱말이 하나씩'], ['clockface-day', 'Clockface · 하루', '영상 한 편에 하루'],
+  ['clockface-night', 'Clockface · 밤', '가사가 시계 자리에'],
+];
+const N = LOOKS.length, STEP = Math.PI * 2 / N;
+const $ = (id) => document.getElementById(id);
+const world = $('world'), orbit = $('orbit'), body = document.body;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current = 0, angle = 0;       // angle: the orbit's turn; the card at the front is the one nearest angle
+const cards = LOOKS.map(([id]) => { const c = document.createElement('button'); c.className = 'card'; c.style.backgroundImage = `url(looks/look_${id}.jpg)`; orbit.append(c); return c; });
+
+// ---- the arch plays a look; two videos cross-fade so a change never flashes white
+let live = $('v1'), spare = $('v2');
+function playLook(i) {
+  const src = `looks/look_${LOOKS[i][0]}.mp4`;
+  if (live.getAttribute('src') === src) return;
+  spare.src = src; spare.currentTime = 0;
+  spare.play().catch(() => {});
+  spare.onplaying = () => { spare.classList.remove('out'); live.classList.add('out'); [live, spare] = [spare, live]; spare.onplaying = null; };
+}
+
+// ---- orbit layout: a tilted ring around the arch's middle; the back half passes behind the arch
+function layout(a, appear = 1) {
+  const W = world.getBoundingClientRect().width;
+  orbit.style.setProperty('--W', W + 'px');
+  const R = W * .43, tilt = .2;
+  cards.forEach((c, i) => {
+    const t = i * STEP - a;                       // 0 = front
+    const x = Math.sin(t) * R, z = Math.cos(t);    // z 1 front .. -1 back
+    // seen from a little above: the front frame passes under the arch (over the daybed), the back ones behind its top
+    const y = W * (.06 + .42 * z) * tilt / .2;
+    const s = (.62 + .38 * (z + 1) / 2) * (.6 + .4 * appear);
+    c.style.transform = `translate(${x * appear}px, ${y * appear}px) scale(${s}) rotateY(${(-t * 40 / Math.PI).toFixed(1)}deg)`;
+    c.style.opacity = (appear * (z > -.2 ? 1 : .55 + .45 * (z + 1) / .8)).toFixed(3);
+    c.style.zIndex = z > 0 ? 7 + Math.round(z * 10) : 1;          // front ones over the arch, back ones behind it
+    c.style.filter = z < 0 ? `blur(${(-z * 2).toFixed(1)}px) brightness(${(1 + z * .25).toFixed(2)})` : 'none';
+  });
+  const front = ((Math.round(a / STEP) % N) + N) % N;
+  return front;
+}
+let shown = -1;
+function frontChanged(f) {
+  if (f === shown) return; shown = f;
+  $('capT').textContent = LOOKS[f][1]; $('capS').textContent = LOOKS[f][2];
+  clearTimeout(frontChanged.t); frontChanged.t = setTimeout(() => playLook(f), 140);
+}
+function placeCap() {
+  // the name of the front frame takes the brand's place in the wall space at the top (CSS places it)
+}
+
+// ---- motion: a critically damped spring toward a target angle (apple-design: no bounce unless thrown)
+let raf = 0, vel = 0, target = 0, appear = 0, appearTo = 0, idle = 0;
+function tick() {
+  const dt = 1 / 60;
+  if (!dragging) {
+    const k = 120, c = 2 * Math.sqrt(k);              // response ~0.35s, damping 1
+    vel += (-(angle - target) * k - vel * c) * dt; angle += vel * dt;
+    if (appearTo && Math.abs(angle - target) < .0005 && Math.abs(vel) < .001 && !reduce) {
+      if (++idle > 160) { target += STEP; idle = 0; }      // left alone, it turns one frame every ~2.7s
+    }
+  }
+  appear += (appearTo - appear) * (reduce ? 1 : .12);
+  frontChanged(layout(angle, appear));
+  if (appearTo === 0 && appear < .01) { cards.forEach((c) => { c.style.opacity = 0; }); raf = 0; return; }
+  raf = requestAnimationFrame(tick);
+}
+function openOrbit() {
+  body.classList.add('orbit'); placeCap();
+  angle = target = current * STEP; vel = 0; idle = 0; appearTo = 1; shown = -1;
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+function closeOrbit(keep) {
+  if (keep) current = ((Math.round(target / STEP) % N) + N) % N;
+  else playLook(current);
+  body.classList.remove('orbit'); appearTo = 0;
+}
+
+// ---- drag: 1:1 with the finger, then the release speed is projected (decay .998) and it settles on the nearest frame
+let dragging = false, lastX = 0, lastT = 0, v = 0, moved = 0;
+const toAngle = (px) => px / (world.getBoundingClientRect().width * .43);
+$('dim').addEventListener('pointerdown', down); orbit.addEventListener('pointerdown', down);
+function down(e) {
+  if (!body.classList.contains('orbit')) return;
+  dragging = true; moved = 0; lastX = e.clientX; lastT = performance.now(); v = 0; idle = 0;
+  e.target.setPointerCapture?.(e.pointerId);
+}
+addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  const now = performance.now(), dx = e.clientX - lastX; moved += Math.abs(dx);
+  angle -= toAngle(dx); v = -toAngle(dx) / Math.max(1, now - lastT) * 1000; lastX = e.clientX; lastT = now;
+});
+addEventListener('pointerup', (e) => {
+  if (!dragging) return; dragging = false;
+  if (moved < 10) {                                    // a tap: on a card brings it to the front, on the room closes
+    const c = e.target.closest?.('.card');
+    if (c) { const i = cards.indexOf(c); const d = ((i * STEP - angle) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI; target = angle + d; }
+    else if (e.target === $('dim')) closeOrbit(false);
+    vel = 0; return;
+  }
+  const proj = angle + (v / 1000) * .998 / (1 - .998);
+  target = Math.round(proj / STEP) * STEP; vel = v;
+});
+addEventListener('pointercancel', () => { dragging = false; target = Math.round(angle / STEP) * STEP; });
+$('pick').onclick = () => closeOrbit(true);
+$('cancel').onclick = () => closeOrbit(false);
+
+// ---- the room's other things
+const SHEETS = {
+  photo: ['Photographs', '벽의 사진 액자에서 내 사진·영상을 골라요. 고른 사진은 액자 속 영상에 바로 들어가요.'],
+  song: ['Song', '턴테이블에 노래를 걸어요. 고르면 바로 흘러나오고, 아치 화면이 박자에 맞춰 움직여요.'],
+  words: ['Words', '노트에 이름과 제목을 적어요. 영상 위에 그대로 써져요.'],
+  make: ['Light it', '촛불을 켜면 쇼츠가 만들어져요. 촛불이 다 타오르면 완성 — 아치 속 영상이 완성본으로 바뀌어요.'],
+};
+document.addEventListener('pointerdown', (e) => { const b = e.target.closest('.spot,.ops button'); if (b) { b.classList.add('press'); setTimeout(() => b.classList.remove('press'), 160); } }, { passive: true });
+document.querySelectorAll('.spot').forEach((b) => b.onclick = () => {
+  const k = b.dataset.k;
+  if (k === 'style') return openOrbit();
+  const [h, p] = SHEETS[k]; $('sh').textContent = h; $('sp').textContent = p; $('sheet').classList.add('on');
+});
+$('sx').onclick = () => $('sheet').classList.remove('on');
+$('screen').onclick = () => { if (!body.classList.contains('orbit')) body.classList.add('watch'); };
+$('back').onclick = () => body.classList.remove('watch');
+addEventListener('resize', () => { if (body.classList.contains('orbit')) placeCap(); });
+</script>
+</body>
+</html>
