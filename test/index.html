@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#06070B">
 <title>Her Hours Shorts</title>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -67,6 +67,9 @@ body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none
 /* 10-20 PT 리뷰 4: 「쇼츠 만들기」 위 한 줄 요약 - the dock grows by one line, so the time bar rides on its measured height */
 .makesum{margin:0;font-size:15px;line-height:1.35;color:#fff;text-align:center;text-wrap:balance;text-shadow:0 1px 5px rgba(0,0,0,.95)}
 .makesum button{all:unset;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
+/* 10-21 PT 리뷰: the four summary words were 20px tall to a finger - the padding widens the touch, the equal negative
+   margin keeps the line where it was */
+.makesum button{display:inline-block;padding:11px 4px;margin:-11px -4px;touch-action:manipulation}
 .makesum button.demo{color:var(--accent)}
 /* 10-20 PT 리뷰 5: 도움말 */
 .helps{list-style:none;margin:14px 0 4px;padding:0;display:flex;flex-direction:column;gap:12px}
@@ -385,14 +388,15 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <button class="pill ghost" data-open="welcome">사용법</button>
       <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
     </div>
+    <!-- 10-21 PT 리뷰: at the bottom it sat 21px under the sticky 「닫기」 - up here it is seen before anything scrolls -->
+    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
+    <p class="hint" id="installHint" hidden></p>
     <ul class="helps">
       <li><b>저장은 어디로?</b><span>완성 화면 「저장」 → 이름 정하기. 안드로이드는 다운로드 폴더, 아이폰은 「파일」 앱에 들어가요.</span></li>
       <li><b>아이폰 사진첩에 넣으려면</b><span>완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.</span></li>
       <li id="helpInApp" hidden><b>카톡에서 열었나요?</b><span>앱 안 브라우저에서는 인스타로 바로 보내기가 안 될 수 있어요. 크롬·사파리로 열면 돼요.</span></li>
       <li><b>멈춘 것 같을 때</b><span>처음 열 때 노래·글꼴을 받느라 몇 초 걸려요. 「다시 불러오기」가 보이면 눌러 주세요.</span></li>
     </ul>
-    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
-    <p class="hint" id="installHint" hidden></p>
     <details class="diag"><summary>기기 진단 펼치기</summary><div id="caps"></div></details>
     <p class="hint" id="ver"></p>
     <button class="pill ghost done" data-close>닫기</button>

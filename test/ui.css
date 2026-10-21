@@ -92,7 +92,10 @@ body.is-making .transport,body.is-done .transport{visibility:hidden}
   min-height:58px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
   font-size:var(--t-l);font-weight:800;letter-spacing:-.2px;text-decoration:none;
   box-shadow:0 8px 26px rgba(140,255,176,.22)}
-.pill:active{transform:translateY(1px)}
+.pill{transition:transform 100ms ease-out}
+.pill:active{transform:scale(.97)}
+/* 10-22 mobile-native: a held finger must not select a button's words or pop the copy callout - controls only, never text */
+button,.pill,.again,.tapbtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .pill[disabled]{opacity:.4}
 .pill.ghost{background:transparent;color:var(--cream);border:2px solid var(--line-2);box-shadow:none;font-size:var(--t-m)}
 
@@ -304,6 +307,9 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
   padding:14px 18px calc(20px + var(--safe-b));background:linear-gradient(to top,rgb(19,22,32) 78%,rgba(19,22,32,0))}
 .stepnav .pill{margin-top:0}.stepnav .done{position:static}
 .panel .pane-look > .done{bottom:calc(-20px - var(--safe-b));box-shadow:0 -14px 18px 6px rgb(19,22,32)}
+/* 10-22: the see-through sticky 「닫기」 sat on top of the help text as it scrolled - it gets the sheet's own colour and the
+   same soft edge, so the words slide under it instead of through it */
+.panel .pane-info > .pill.ghost.done,.panel .pane-made > .pill.ghost.done{bottom:calc(-20px - var(--safe-b));background:rgb(19,22,32);box-shadow:0 -14px 18px 6px rgb(19,22,32)}
 .fname{display:flex;align-items:center;gap:8px;margin:6px 0 4px;font-size:var(--t-m)}.fname label,.fname span{color:var(--cream);flex:0 0 auto;text-shadow:0 1px 3px #000}
 .fname input{flex:1;min-width:0;font-size:18px;padding:14px 14px;border-radius:10px;border:1px solid var(--line-2);background:rgba(0,0,0,.6);color:var(--cream)}
 /* 21st 28201 (10-21 영샘 "막대 좋아"): 지금 고른 노래 줄 오른쪽 소리 막대 */
