@@ -480,30 +480,35 @@ function renderSongs() {
         ? `<img class="cov" src="assets/covers/${s.id}.jpg" alt="" loading="lazy" decoding="async">`
         : `<span class="cov gr-${KIDS ? 'bright' : s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
       <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span></button>`).join('')).join('');
-  $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song)); });
+  $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song), true); });
 }
-async function pickSong(song) {
+// 10-20 tester (halloween, Android): "노래를 바꾸면 멈춰서 재생을 다시 눌러야 새 노래가 나와요" - a tapped song plays at once.
+// play() goes in before the first await so it still counts as the tap (Safari drops it after a fetch). Restoring a draft doesn't play.
+async function pickSong(song, play = false) {
   S.useOurs = true; S.song = song; S.audioFile = null; S.fullBuf = null; $('audio').value = '';
   document.body.classList.remove('mine-song');
   renderSongs();
   pv.pause(); pv.src = song.file;
+  if (play) { S.started = true; S.vf = 0; pv.play().catch(() => {}); }
   S.tpl = await loadTemplate(song);
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
   S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || MAX_SEC; applyCut();
   if (!KIDS) { $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2; }
   $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작점은 아래에서.', 'Pick a song file. Length and start point below.');
   rebuild(); chips(); syncPlay();
-  fetch(song.file).then((r) => r.arrayBuffer()).then(listen);
+  // 10-20 log: one "rejection Failed to fetch" right after opening - this read had no catch; now it says what failed
+  fetch(song.file).then((r) => r.arrayBuffer()).then(listen).catch((e) => rlog(`song read fail ${song.id} ${e?.message || e}`));
 }
 
-$('audio').onchange = (e) => { const f = e.target.files[0]; if (f) useAudioFile(f); };
-async function useAudioFile(f) {
+$('audio').onchange = (e) => { const f = e.target.files[0]; if (f) useAudioFile(f, true); };
+async function useAudioFile(f, play = false) {
   S.useOurs = false; S.audioFile = f; S.fullBuf = null; renderSongs();
   document.body.classList.add('mine-song');
   pv.pause();
   pv.src = URL.createObjectURL(f);
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
   S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || S.len; applyCut();
+  if (play) { S.started = true; S.vf = 0; pv.play().catch(() => {}); }   // after the file picker this may be refused; then the play button still works
   const base = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().toUpperCase().split(' ');
   const g1 = base.slice(0, Math.ceil(base.length / 2)).join(' ').slice(0, 14) || 'MY SONG';
   const g2 = base.slice(Math.ceil(base.length / 2)).join(' ').slice(0, 18) || 'ON MY PHONE';
