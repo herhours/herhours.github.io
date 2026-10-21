@@ -1171,14 +1171,23 @@ document.addEventListener('pointerdown', (e) => {
     document.querySelectorAll('.uipick button').forEach((b) => b.classList.toggle('on', b.dataset.ui === v));
     requestAnimationFrame(arcRail);
   };
-  if (read('hh-ui-cmp') === '1') {
-    const bar = document.createElement('div'); bar.className = 'uipick'; document.body.classList.add('uipick-on');
+  const picker = (cls) => {
+    const bar = document.createElement('div'); bar.className = cls;
     for (const [d, name] of DIRS) {
       const b = document.createElement('button'); b.type = 'button'; b.dataset.ui = d; b.textContent = name;
       b.onclick = () => { store('hh-ui', d || null); apply(d); rlog(`ui ${d || 'now'}`); };
       bar.append(b);
     }
-    document.body.append(bar);
+    return bar;
+  };
+  if (read('hh-ui-cmp') === '1') { document.body.classList.add('uipick-on'); document.body.append(picker('uipick')); }
+  // 10-22 영샘 설치앱: the installed app always opens at ./ (no ?ui=), so on the test page the choice also lives in 도움말
+  if (/\/test\//.test(location.pathname) || /^(localhost|127\.)/.test(location.hostname)) {
+    const box = document.createElement('div'); box.className = 'uipick-help';
+    const h = document.createElement('b'); h.textContent = T('디자인 시안 (시험 중)', 'Design drafts (testing)');
+    box.append(h, picker('uipick in-help'));
+    // just above 기기 진단 - not beside installHint, which an iPhone moves inside that folded box
+    document.querySelector('.pane-info .diag').before(box);
   }
   apply(read('hh-ui') || '');
 }
