@@ -92,8 +92,13 @@ body.is-making .transport,body.is-done .transport{visibility:hidden}
   min-height:58px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
   font-size:var(--t-l);font-weight:800;letter-spacing:-.2px;text-decoration:none;
   box-shadow:0 8px 26px rgba(140,255,176,.22)}
-.pill{transition:transform 100ms ease-out}
-.pill:active{transform:scale(.97)}
+/* 10-22 영샘 "누르는 감 살짝 모자람": phone browsers hold :active back while they decide whether a touch is a scroll,
+   so a quick tap barely showed. ui.js puts .press on at pointer-down and keeps it at least 140ms. In fast, out slow. */
+.pill,.again,.rail .b,.tapbtn{transition:transform 170ms ease-out,filter 170ms ease-out,background-color 170ms ease-out}
+.pill:active,.pill.press{transform:scale(.95);filter:brightness(.88);transition-duration:50ms}
+.pill.ghost:active,.pill.ghost.press,.again:active,.again.press{background-color:rgba(255,255,255,.1)}
+.again:active,.again.press,.tapbtn.press{transform:scale(.96);transition-duration:50ms}
+.rail button:active .b,.rail button.press .b{transform:scale(.88);filter:brightness(1.35);transition-duration:50ms}
 /* 10-22 mobile-native: a held finger must not select a button's words or pop the copy callout - controls only, never text */
 button,.pill,.again,.tapbtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .pill[disabled]{opacity:.4}
