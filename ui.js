@@ -1090,7 +1090,8 @@ $('save').addEventListener('click', (e) => {
 });
 $('share').onclick = () => askName('share', $('share').textContent.trim() || T('보내기', 'Send'));
 $('fnameGo').onclick = () => {
-  setFname(); rlog(`file name ${S.fname}`);
+  // the log says only whether a name was typed - the name itself can be a person's name and never leaves the phone
+  setFname(); rlog(`file name ${$('fname').value.trim() ? 'set' : 'default'}`);
   const next = nameNext; window.hhClose();
   if (next === 'save') { nameOk = true; $('save').click(); nameOk = false; }
   else if (next === 'share') doShare();
@@ -1145,7 +1146,13 @@ async function boot(label, fn) {
       document.fonts.load('80px "Black Han Sans"', '민정샘 반 참 잘했어요 HALLOWEEN NIGHT PARTY').catch(() => {});
       for (const set of ['halloween', 'everyday']) loadDemoKids(set).then((ims) => { S.demoKids[set] = ims; if (!S.images.length) { rebuild(); renderLooks(); } }).catch(() => {});
     }
-    await boot('fonts', () => loadFonts());
+    // 10-21 설치앱 `boot retry fonts` NetworkError: a font that won't arrive is not worth a dead screen - open on the
+    // system font and keep trying behind it (the canvas redraws every frame, so the look picks the font up when it lands)
+    try { await boot('fonts', () => loadFonts()); }
+    catch (e) {
+      rlog(`fonts fail ${e?.name} ${e?.message} - system font for now`);
+      setTimeout(() => loadFonts().then(() => rlog('fonts ok later')).catch(() => {}), 4000);
+    }
     S.demo = await boot('demo', () => loadDemo());
     loadDemoHw().then((ims) => { S.demoHw = ims; if (!S.images.length) rebuild(); }).catch(() => {});
     pv.src = S.song.file;
@@ -1158,7 +1165,7 @@ async function boot(label, fn) {
     requestAnimationFrame(loop);
     caps();
     setMake(); warnInApp();
-    S.ready = true;
+    S.ready = true; rlog('boot ok');
     if (!document.body.classList.contains('panel-open')) await offerResume();
   } catch (e) {
     rlog(`boot fail at ${bootStep} ${e?.name} ${e?.message}`);
