@@ -479,9 +479,45 @@ function renderSongs() {
       ${hasCover(s)
         ? `<img class="cov" src="assets/covers/${s.id}.jpg" alt="" loading="lazy" decoding="async">`
         : `<span class="cov gr-${KIDS ? 'bright' : s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
-      <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span></button>`).join('')).join('');
+      <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span>${S.useOurs && s.id === S.song.id ? EQ_HTML : ''}</button>`).join('')).join('');
   $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song), true); });
 }
+// 21st 28201 (10-21 영샘 "막대 좋아"): 지금 고른 노래 줄에 소리 막대. 원본은 가짜 막대라, 이미 받아 둔 노래(S.fullBuf)를 재생 위치에서
+// 주파수 7칸으로 읽는다(Goertzel). 소리 길(pv)은 건드리지 않는다 — 아이폰에서 소리가 끊길 위험이 없다.
+const EQ_N = 7, EQ_HTML = `<span class="sbars" aria-hidden="true">${'<i></i>'.repeat(EQ_N)}</span>`;
+const EQ_HZ = Array.from({ length: EQ_N }, (_, i) => 90 * Math.pow(6000 / 90, i / (EQ_N - 1)));
+const eqLvl = new Float32Array(EQ_N), EQ_WIN = 1024;
+// 노래마다·구간마다 크기가 달라서 칸마다 최근 위·아래를 따라가며 맞춘다(조용한 인트로에서도 막대가 산다)
+const eqLo = new Float32Array(EQ_N).fill(-70), eqHi = new Float32Array(EQ_N).fill(-25);
+function eqDb(d, i0, f, sr) {
+  const c = 2 * Math.cos((2 * Math.PI * f) / sr);
+  let s1 = 0, s2 = 0;
+  for (let n = 0; n < EQ_WIN; n++) { const s0 = (d[i0 + n] || 0) * eqHann[n] + c * s1 - s2; s2 = s1; s1 = s0; }
+  return 20 * Math.log10(Math.sqrt(Math.max(0, s1 * s1 + s2 * s2 - c * s1 * s2)) / (EQ_WIN / 4) + 1e-6);
+}
+const eqHann = Float32Array.from({ length: EQ_WIN }, (_, n) => 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / (EQ_WIN - 1)));
+function eqTick() {
+  requestAnimationFrame(eqTick);
+  const box = document.querySelector('#ourSongs .opt.on .sbars');
+  if (!box || !box.offsetParent) return;
+  const bars = box.children, buf = S.fullBuf;
+  const on = !pv.paused && buf && !calm.matches;
+  for (let k = 0; k < EQ_N; k++) {
+    let target = [0.35, 0.55, 0.75, 0.5, 0.65, 0.4, 0.25][k];   // 멈춰 있을 땐 흐린 막대 모양으로 서 있다(10-21 영샘 "뭔지 모르겠다")
+    if (on) {
+      const d = buf.getChannelData(0), sr = buf.sampleRate, i0 = Math.max(0, Math.floor(pv.currentTime * sr) - EQ_WIN);
+      // 한 칸 = 주파수 셋(칸 폭 안에서 아래·가운데·위)의 평균
+      const db = (eqDb(d, i0, EQ_HZ[k] * 0.8, sr) + eqDb(d, i0, EQ_HZ[k], sr) + eqDb(d, i0, EQ_HZ[k] * 1.25, sr)) / 3;
+      eqHi[k] = Math.max(db, eqHi[k] - 0.04); eqLo[k] = Math.min(db, eqLo[k] + 0.04);
+      target = 0.12 + 0.88 * Math.min(1, Math.max(0, (db - eqLo[k]) / Math.max(14, eqHi[k] - eqLo[k])));
+    }
+    // 올라갈 땐 빨리, 내려갈 땐 천천히 — 원본의 0.15초 따라가기 느낌
+    eqLvl[k] += (target - eqLvl[k]) * (target > eqLvl[k] ? 0.55 : 0.18);
+    bars[k].style.height = `${Math.round(eqLvl[k] * 100)}%`;
+  }
+  box.classList.toggle('lit', on);
+}
+requestAnimationFrame(eqTick);
 // 10-20 tester (halloween, Android): "노래를 바꾸면 멈춰서 재생을 다시 눌러야 새 노래가 나와요" - a tapped song plays at once.
 // play() goes in before the first await so it still counts as the tap (Safari drops it after a fetch). Restoring a draft doesn't play.
 async function pickSong(song, play = false) {
