@@ -1113,6 +1113,30 @@ document.addEventListener('pointerdown', (e) => {
   addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true);
 }, { capture: true, passive: true });
 
+// 10-22 영샘 "우리만의 느낌" — design directions to judge on the phone. ?ui=a|b|c turns one on and shows the chooser
+// (kept in this browser so a reload stays put); ?ui=0 goes back to today's look and hides the chooser. ui-dirs.css.
+{
+  const DIRS = [['a', T('A 골드', 'A Gold')], ['b', T('B 영화관', 'B Cinema')], ['c', T('C 다듬기', 'C Tidy')], ['', T('지금', 'Now')]];
+  const q = new URLSearchParams(location.search).get('ui');
+  const store = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+  const read = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  if (q !== null) { const v = /^[abc]$/.test(q) ? q : ''; store('hh-ui', v || null); store('hh-ui-cmp', v ? '1' : null); }
+  const apply = (v) => {
+    for (const [d] of DIRS) if (d) document.body.classList.toggle(`ui-${d}`, d === v);
+    document.querySelectorAll('.uipick button').forEach((b) => b.classList.toggle('on', b.dataset.ui === v));
+  };
+  if (read('hh-ui-cmp') === '1') {
+    const bar = document.createElement('div'); bar.className = 'uipick'; document.body.classList.add('uipick-on');
+    for (const [d, name] of DIRS) {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.ui = d; b.textContent = name;
+      b.onclick = () => { store('hh-ui', d || null); apply(d); rlog(`ui ${d || 'now'}`); };
+      bar.append(b);
+    }
+    document.body.append(bar);
+  }
+  apply(read('hh-ui') || '');
+}
+
 // ---------- boot ----------
 async function caps() {
   const l = [];
