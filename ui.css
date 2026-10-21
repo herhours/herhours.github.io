@@ -306,3 +306,7 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
 .panel .pane-look > .done{bottom:calc(-20px - var(--safe-b));box-shadow:0 -14px 18px 6px rgb(19,22,32)}
 .fname{display:flex;align-items:center;gap:8px;margin:6px 0 4px;font-size:var(--t-m)}.fname label,.fname span{color:var(--cream);flex:0 0 auto;text-shadow:0 1px 3px #000}
 .fname input{flex:1;min-width:0;font-size:18px;padding:14px 14px;border-radius:10px;border:1px solid var(--line-2);background:rgba(0,0,0,.6);color:var(--cream)}
+/* 21st 28201 (10-21 영샘 "막대 좋아"): 지금 고른 노래 줄 오른쪽 소리 막대 */
+.opt .sbars{display:flex;align-items:flex-end;gap:5px;height:46px;width:78px;flex:none}
+.opt .sbars i{flex:1;height:12%;border-radius:999px;background:rgba(140,255,176,.35);transition:background .3s}
+.opt .sbars.lit i{background:var(--accent)}
