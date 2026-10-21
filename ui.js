@@ -954,7 +954,11 @@ addEventListener('error', (e) => { rlog(`error ${e.message} @${e.filename}:${e.l
 addEventListener('unhandledrejection', (e) => { rlog(`rejection ${e.reason?.message || e.reason}`); showErr(`rejection ${e.reason?.message || e.reason}`); });
 const status = (m, err = false) => { const e = $('status'); e.textContent = m; e.classList.toggle('err', err); if (m && !/· \d/.test(m)) rlog(`status ${m}`); };
 const within = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
-const fill = (p) => { $('fill').style.width = `${Math.round(p * 100)}%`; $('pct').textContent = `${Math.round(p * 100)}%`; };
+const fill = (p) => {
+  $('fill').style.width = `${Math.round(p * 100)}%`; $('pct').textContent = `${Math.round(p * 100)}%`;
+  // the B design draws this progress as a gold ring around 「쇼츠 만들기」 itself (ui-dirs.css)
+  $('make').style.setProperty('--mk', p.toFixed(3)); $('make').dataset.pct = `${Math.round(p * 100)}%`;
+};
 
 async function make() {
   if (S.busy) return; S.busy = true;
@@ -1121,9 +1125,51 @@ document.addEventListener('pointerdown', (e) => {
   const store = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
   const read = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
   if (q !== null) { const v = /^[abc]$/.test(q) ? q : ''; store('hh-ui', v || null); store('hh-ui-cmp', v ? '1' : null); }
+  // B · 아치 레일 (영샘 10-22, ref: a city app's menu riding the rim of its hero circle): the rail's keys sit on one arc
+  // that bends around the video like the rim of its arch, strung on a fine gold line. The middle key is outermost.
+  const rail = document.querySelector('.rail');
+  const NS = 'http://www.w3.org/2000/svg';
+  const arcRail = () => {
+    const on = document.body.classList.contains('ui-b');
+    const keys = [...rail.querySelectorAll(':scope > button')].filter((b) => !b.hidden && b.offsetParent);
+    let svg = rail.querySelector('.arcline');
+    if (!on || keys.length < 2) { keys.forEach((b) => { b.style.translate = ''; }); svg?.remove(); return; }
+    // only heights are measured - the keys' sideways shift is mid-transition while this runs, so x comes from the column
+    const rr = rail.getBoundingClientRect();
+    const ys = keys.map((b) => { const r = b.querySelector('.b').getBoundingClientRect(); return r.top + r.height / 2 - rr.top; });
+    const cx = rr.width / 2;
+    const yc = (ys[0] + ys[ys.length - 1]) / 2, half = (ys[ys.length - 1] - ys[0]) / 2;
+    // a gentle arc: the end keys come E px in from the middle one (a circle through both ends and the bulge)
+    // (34px put the end keys on the photo - 10-22 first look; 20 keeps them off it and the bend still reads)
+    const E = Math.max(12, Math.min(20, half * 0.12)), R = (half * half + E * E) / (2 * E);
+    const dxs = ys.map((y) => R - Math.sqrt(Math.max(0, R * R - (y - yc) ** 2)));
+    keys.forEach((b, i) => { b.style.translate = `${-dxs[i].toFixed(1)}px 0`; });
+    if (!svg) { svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'arcline'); svg.setAttribute('aria-hidden', 'true'); svg.append(document.createElementNS(NS, 'path')); rail.prepend(svg); }
+    svg.setAttribute('width', rr.width + 40); svg.setAttribute('height', rr.height + 40);
+    // the line runs a little past the first and last key, so the arc reads as part of a bigger circle
+    const ext = 26, yA = Math.max(-18, ys[0] - ext), yB = Math.min(rr.height + 18, ys[ys.length - 1] + ext);
+    const xOf = (y) => cx - (R - Math.sqrt(Math.max(0, R * R - (y - yc) ** 2))) + 20;
+    svg.firstChild.setAttribute('d', `M ${xOf(yA).toFixed(1)} ${(yA + 20).toFixed(1)} A ${R.toFixed(1)} ${R.toFixed(1)} 0 0 1 ${xOf(yB).toFixed(1)} ${(yB + 20).toFixed(1)}`);
+  };
+  new ResizeObserver(() => requestAnimationFrame(arcRail)).observe(rail);
+  new MutationObserver(() => requestAnimationFrame(arcRail)).observe(rail, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
+  // B · 완성: the moment the video is ready, its first key arrives with a gold breath (once)
+  let wasMaking = false;
+  new MutationObserver(() => {
+    const c = document.body.classList;
+    // the rail hides while making / done; WebKit does not always report its return as a resize, so re-bend it here too
+    requestAnimationFrame(arcRail);
+    if (c.contains('is-making')) wasMaking = true;
+    else if (wasMaking && c.contains('is-done')) {
+      wasMaking = false;
+      const s = $('share'); s.classList.remove('arrive'); void s.offsetWidth; s.classList.add('arrive');
+      setTimeout(() => s.classList.remove('arrive'), 2200);
+    } else if (!c.contains('is-done')) wasMaking = false;
+  }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
   const apply = (v) => {
     for (const [d] of DIRS) if (d) document.body.classList.toggle(`ui-${d}`, d === v);
     document.querySelectorAll('.uipick button').forEach((b) => b.classList.toggle('on', b.dataset.ui === v));
+    requestAnimationFrame(arcRail);
   };
   if (read('hh-ui-cmp') === '1') {
     const bar = document.createElement('div'); bar.className = 'uipick'; document.body.classList.add('uipick-on');
