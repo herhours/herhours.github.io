@@ -112,4 +112,10 @@ body.ui-c .rail button.mine .l{color:var(--cream)}
 .uipick button{min-height:36px;padding:0 12px;border-radius:999px;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;box-shadow:none;background-image:none}
 .uipick button.on{background:#fff;color:#000}
 body.uipick-on .top .lnks{visibility:hidden}
+/* the same choice inside 도움말, for the installed app (it cannot take ?ui=) */
+.uipick-help{margin:16px 0 4px;display:flex;flex-direction:column;gap:8px}
+.uipick-help b{font-size:var(--t-s)}
+.uipick.in-help{position:static;transform:none;left:auto;top:auto;flex-wrap:wrap;width:100%;justify-content:space-between;background:rgba(255,255,255,.06)}
+.uipick.in-help button{flex:1 1 auto;min-height:44px;font-size:16px}
+body.panel-open .uipick.in-help{opacity:1}
 body.panel-open .uipick{opacity:.6}
