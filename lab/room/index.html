@@ -56,7 +56,11 @@ img{-webkit-user-drag:none}
 .t-body{font-family:var(--f-ui);font-size:13px;line-height:1.6;color:var(--ink-2);text-shadow:var(--k-text-depth)}
 
 /* ================= page: one long sheet on the browser's own scroll ================= */
-.page{position:relative}
+/* the room (106vw) and the section flares (130%) reach past the sides; clip them, or Android Chrome widens the whole page
+   to fit and every fixed layer - the lifted frame, its buttons - slides right (10-22 밤 영샘 갤럭시 사진). clip, not hidden:
+   hidden would make the page its own scroller and take the scroll off the browser's */
+html,body{overflow-x:clip}
+.page{position:relative;overflow-x:clip}
 section{position:relative}
 
 /* ---------- top: a glass rail of links, like a site (ref: Work // Profile // Journal) ---------- */
