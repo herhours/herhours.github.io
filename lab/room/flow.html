@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E9DCC6">
+<title>단계별 흐름 시안 — 그녀의 방</title>
+<!-- 10-22 밤 영샘 "첫 화면은 시작·내 영상·정보만, 시작 누르면 스타일 전체 화면, 다음 누르면 사진…" 첫 시안(클로, 영샘 의견 전).
+     조사(RESEARCH_step_flow_20261022.md) 결론대로: 실시간 3D 말고 방 그림 위 2.5D 줌 — 단계마다 카메라가 방 안 그 물건으로 걸어 들어가고
+     (아치 = 스타일 · 벽 액자 = 사진 · 턴테이블 = 노래 · 노트 = 글자 · 촛불 = 만들기), 방은 흐려져 뒤에 남는다. 금빛 실이 단계 표시.
+     「다음」은 아래 전폭 유리 하나, 「뒤로」는 왼쪽 위 작게. 모션은 최고 성능 폰 기준(영샘 10-22). -->
+<style>
+:root{--ink:#3B2F22;--ink-2:#6E5F4B;--gold:#B8893E;--gold-hi:#E2B867;--mint:150 214 176;--io:cubic-bezier(.65,0,.35,1);--out:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#E9DCC6;color:var(--ink);font:16px/1.45 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+/* the room: one layer the camera moves over */
+.cam{position:fixed;inset:0;overflow:hidden}
+.room{position:absolute;left:50%;top:50%;width:max(100vw,calc(100dvh * 2 / 3));aspect-ratio:2/3;translate:-50% -50%;
+  background:url(room.jpg) center/cover;transform-origin:0 0;will-change:transform,filter;
+  transition:transform 1150ms var(--io),filter 900ms var(--io)}
+body.step .room{filter:blur(7px) saturate(1.1) brightness(1.04)}
+.breath{position:absolute;inset:0;animation:breath 9s ease-in-out infinite alternate}
+@keyframes breath{from{transform:scale(1)}to{transform:scale(1.025)}}
+/* the gold thread across the room (home) */
+.thread{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:1;transition:opacity 600ms}
+.thread path{fill:none;stroke:rgba(255,236,190,.95);stroke-width:1.4;stroke-dasharray:1 7;stroke-linecap:round;vector-effect:non-scaling-stroke;animation:flow 6s linear infinite}
+.thread path.glow{stroke:rgba(255,200,120,.4);stroke-width:5}
+@keyframes flow{to{stroke-dashoffset:-64}}
+.thread circle{fill:#FFF6DC;filter:drop-shadow(0 0 4px rgba(255,210,140,.95))}
+body.step .thread{opacity:0}
+/* glass */
+.glass{background:linear-gradient(180deg,rgb(255 255 255 / .30),rgb(255 255 255 / .12) 55%,rgb(255 255 255 / .06));
+  box-shadow:inset 0 1.5px 0 rgb(255 255 255 / .95),inset 0 0 0 1px rgb(255 255 255 / .6),inset 0 -10px 16px -8px rgb(255 255 255 / .45),0 10px 26px -8px rgb(60 40 15 / .28);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
+.mint{background:linear-gradient(180deg,rgb(var(--mint) / .55),rgb(var(--mint) / .28));color:#1F4630;box-shadow:inset 0 1.5px 0 #fff,inset 0 0 0 1px rgb(220 255 235 / .9),0 10px 26px -8px rgb(40 70 50 / .3),0 0 24px rgb(var(--mint) / .35)}
+.press{transition:transform 380ms var(--out)}
+.press:active,.press.down{transform:scale(.96);transition-duration:110ms}
+.depth{text-shadow:0 -1px 0 rgb(255 255 255 / .55),0 1px 0 rgb(60 40 15 / .22),0 2px 2px rgb(60 40 15 / .16)}
+/* home */
+.home{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 18px calc(env(safe-area-inset-bottom) + 22px);
+  transition:opacity 500ms var(--io),translate 700ms var(--io)}
+body.step .home{opacity:0;translate:0 30px;pointer-events:none}
+.brand{font:400 30px/1 "Snell Roundhand","Apple Chancery",cursive,serif;color:var(--gold-hi);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 #9A6F2E,0 3px 6px rgb(90 60 20 / .35)}
+.head{margin-top:14px;font:italic 300 40px/1 Georgia,serif}
+.head small{display:block;margin-top:10px;font:14px/1.4 -apple-system,"Apple SD Gothic Neo",sans-serif;font-style:normal;color:var(--ink-2)}
+.start{width:100%;min-height:68px;border-radius:999px;font-size:20px;font-weight:800;letter-spacing:.04em}
+.links{display:flex;justify-content:center;gap:12px;margin-top:12px}
+.links button{border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700}
+/* steps */
+.stage{position:fixed;inset:0;pointer-events:none}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;align-items:center;gap:10px;z-index:5;
+  opacity:0;translate:0 -12px;transition:opacity 500ms var(--io) 300ms,translate 600ms var(--io) 300ms;pointer-events:none}
+body.step .top{opacity:1;translate:0 0;pointer-events:auto}
+.back{width:44px;height:44px;border-radius:50%;font-size:20px;flex:none}
+.prog{flex:1;height:44px}
+.prog path{fill:none;stroke:rgba(184,137,62,.35);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.prog path.lit{stroke:var(--gold-hi);stroke-dasharray:none;transition:stroke-dashoffset 900ms var(--io)}
+.prog circle{fill:#F4E7CC;stroke:rgba(184,137,62,.6);stroke-width:1.5;transition:fill 500ms,r 500ms}
+.prog circle.on{fill:#FFF3D6;stroke:var(--gold-hi);filter:drop-shadow(0 0 6px rgba(255,200,110,.95))}
+.prog text{font:600 9px -apple-system,sans-serif;fill:var(--ink-2);letter-spacing:.06em}
+.panel{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 70px);bottom:calc(env(safe-area-inset-bottom) + 100px);padding:0 18px;
+  display:flex;flex-direction:column;opacity:0;translate:0 24px;scale:.98;pointer-events:none;transition:opacity 420ms var(--io),translate 600ms var(--out),scale 600ms var(--out)}
+.panel.on{opacity:1;translate:0 0;scale:1;pointer-events:auto;transition-delay:520ms}
+/* the room behind is bright (window light) - dark ink with a raised light lip, like kit.css type */
+.panel h2{font:italic 300 40px/1 Georgia,serif;color:var(--ink);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 rgb(90 60 20 / .25),0 3px 8px rgb(255 245 225 / .9)}
+.panel p.k{margin:8px 0 14px;font-size:14px;font-weight:600;color:var(--ink-2);text-shadow:0 0 8px rgb(255 248 236 / .95),0 1px 0 rgb(255 255 255 / .8)}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px;scrollbar-width:none;flex:1;align-items:center}
+.rail::-webkit-scrollbar{display:none}
+.look{flex:0 0 58%;scroll-snap-align:center;border-radius:22px;padding:8px;text-align:left}
+.look img{display:block;width:100%;aspect-ratio:9/14;object-fit:cover;border-radius:16px}
+.look b{display:block;margin:8px 4px 2px;font-size:15px}
+.look.sel{box-shadow:0 0 0 3px var(--gold-hi),0 0 22px rgba(255,200,110,.6)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{aspect-ratio:3/4;border-radius:16px;display:grid;place-items:center;font-size:28px;color:#fff}
+.songs{display:flex;flex-direction:column;gap:10px;overflow:auto}
+.song{display:flex;align-items:center;gap:12px;border-radius:18px;padding:8px;text-align:left}
+.song img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.song.sel{box-shadow:0 0 0 3px var(--gold-hi)}
+.field{border-radius:18px;padding:14px 16px;margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.field input{width:100%;border:0;background:none;font:600 18px -apple-system,sans-serif;color:var(--ink);outline:none}
+.candle{margin:auto;width:150px;height:150px;border-radius:50%;font-size:56px}
+.next{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 22px);min-height:64px;border-radius:999px;font-size:18px;font-weight:800;z-index:5;
+  opacity:0;translate:0 20px;pointer-events:none;transition:opacity 500ms var(--io) 400ms,translate 600ms var(--io) 400ms}
+body.step .next{opacity:1;translate:0 0;pointer-events:auto}
+.skip{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 4px);text-align:center;font-size:12px;font-weight:600;color:var(--ink-2);text-shadow:0 0 6px rgb(255 248 236 / .95);z-index:5;opacity:0;transition:opacity 400ms}
+body.step .skip{opacity:.9}
+.tag{position:fixed;right:10px;top:calc(env(safe-area-inset-top) + 6px);font-size:10px;color:var(--ink-2);opacity:.7;z-index:9}
+@media (prefers-reduced-motion:reduce){.room,.panel,.home,.top,.next{transition-duration:1ms}.breath,.thread path{animation:none}}
+</style>
+</head>
+<body>
+<div class="cam"><div class="room" id="room"><div class="breath"></div>
+  <svg class="thread" viewBox="0 0 100 150" preserveAspectRatio="none"><path class="glow" id="tg" d=""/><path id="tp" d=""/></svg></div></div>
+<span class="tag">흐름 시안 v1 · 10-22</span>
+
+<section class="home" id="home">
+  <div><div class="brand">Her Hours.</div><div class="head depth">A short,<br>&nbsp;&nbsp;made softly.<small>사진과 노래 하나로, 그녀의 방에서</small></div></div>
+  <div><button class="start glass mint press depth" id="start">시작</button>
+    <div class="links"><button class="glass press depth">내 영상</button><button class="glass press depth">정보</button></div></div>
+</section>
+
+<div class="top"><button class="back glass press" id="back" aria-label="뒤로">←</button><svg class="prog" id="prog" viewBox="0 0 300 44" preserveAspectRatio="none"></svg></div>
+
+<section class="panel" data-step="0"><h2>Style</h2><p class="k">아치 창에 걸 옷을 골라요 · 옆으로 넘겨 보기</p><div class="rail" id="looks"></div></section>
+<section class="panel" data-step="1"><h2>Photos</h2><p class="k">벽 액자에 걸 사진 · 3장에서 10장</p><div class="grid">
+  <button class="tile glass press">＋</button><button class="tile glass press">＋</button><button class="tile glass press">＋</button>
+  <button class="tile glass press">＋</button><button class="tile glass press">＋</button><button class="tile glass press">＋</button></div></section>
+<section class="panel" data-step="2"><h2>Song</h2><p class="k">턴테이블에 걸 노래</p><div class="songs" id="songs"></div></section>
+<section class="panel" data-step="3"><h2>Words</h2><p class="k">노트에 적으면 영상 위에 그대로</p>
+  <div class="field glass"><label>이름</label><input placeholder="예: 유나" value=""></div><div class="field glass"><label>제목</label><input placeholder="예: 우리의 겨울" value=""></div></section>
+<section class="panel" data-step="4"><h2>Light it</h2><p class="k">촛불을 켜면 영상이 만들어져요</p><button class="candle glass mint press">🕯</button></section>
+
+<button class="next glass mint press depth" id="next">다음</button>
+<div class="skip" id="skip">지난 설정으로 바로 만들기 (시안)</div>
+
+<script>
+// the objects the camera walks into, in room-image % (room.jpg 1024x1536) — same places as v3's spots
+const STOPS = [
+  { name: 'STYLE', x: 50.3, y: 25, s: 2.3 },   // the arch window
+  { name: 'PHOTOS', x: 88, y: 44, s: 2.6 },    // frames on the right wall
+  { name: 'SONG', x: 11, y: 56, s: 2.6 },      // the turntable
+  { name: 'WORDS', x: 76, y: 59, s: 2.8 },     // the notebook on the sofa
+  { name: 'LIGHT', x: 44, y: 75, s: 2.6 },     // the candle on the ottoman
+];
+const room = document.getElementById('room'), body = document.body, panels = [...document.querySelectorAll('.panel')];
+let step = -1;
+function aim(i) {
+  if (i < 0) { room.style.transform = ''; return; }
+  const W = room.offsetWidth, H = room.offsetHeight, p = STOPS[i];
+  // room is centred by translate(-50%,-50%); move the stop to the screen centre, then scale about it
+  const px = p.x / 100 * W, py = p.y / 100 * H;
+  room.style.transform = `translate(${W / 2 - px * p.s}px, ${H / 2 - py * p.s}px) scale(${p.s})`;
+}
+function go(i) {
+  step = Math.max(-1, Math.min(STOPS.length - 1, i));
+  body.classList.toggle('step', step >= 0);
+  aim(step);
+  panels.forEach((p) => p.classList.toggle('on', +p.dataset.step === step));
+  document.getElementById('next').textContent = step === STOPS.length - 1 ? '만들기' : '다음';
+  drawProg();
+}
+// the gold thread on the home room, through the five stops
+const d = 'M' + STOPS.map((p) => `${p.x} ${p.y * 1.5 / 1.5 * 1}`).join(' L ');
+const curve = STOPS.reduce((acc, p, k) => acc + (k ? ` Q ${(STOPS[k - 1].x + p.x) / 2 + (k % 2 ? 14 : -14)} ${(STOPS[k - 1].y + p.y) / 2 * 1.5}, ${p.x} ${p.y * 1.5}` : `M ${p.x} ${p.y * 1.5}`), '');
+document.getElementById('tg').setAttribute('d', curve); document.getElementById('tp').setAttribute('d', curve);
+const thread = document.querySelector('.thread');
+STOPS.forEach((p) => { const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', p.x); c.setAttribute('cy', p.y * 1.5); c.setAttribute('r', 1.1); thread.append(c); });
+// the progress: the same thread, straightened along the top, five beads
+function drawProg() {
+  const svg = document.getElementById('prog'), xs = STOPS.map((_, k) => 14 + k * (272 / 4));
+  let path = `M ${xs[0]} 16`; for (let k = 1; k < xs.length; k++) path += ` Q ${(xs[k - 1] + xs[k]) / 2} ${k % 2 ? 6 : 26}, ${xs[k]} 16`;
+  const lit = step >= 0 ? xs[step] : xs[0];
+  svg.innerHTML = `<path d="${path}"/><clipPath id="cl"><rect x="0" y="0" width="${lit + 1}" height="44"/></clipPath><path class="lit" d="${path}" clip-path="url(#cl)"/>` +
+    xs.map((x, k) => `<circle cx="${x}" cy="16" r="${k === step ? 6 : 4.5}" class="${k <= step ? 'on' : ''}"/><text x="${x}" y="40" text-anchor="middle">${STOPS[k].name}</text>`).join('');
+}
+// content
+const LOOKS = [['halloween', 'Halloween'], ['windowband', 'Window Band'], ['triptych', 'Triptych'], ['pulse', 'Pulse'], ['lyricbloom', 'Lyric Bloom'],
+  ['blackcut-room', 'Black Cut'], ['clockface-day', 'Clockface, a day'], ['clockface-night', 'Clockface, a night']];
+document.getElementById('looks').innerHTML = LOOKS.map(([id, n], k) => `<button class="look glass press${k ? '' : ' sel'}"><img src="looks/look_${id}.jpg" alt=""><b>${n}</b></button>`).join('');
+const SONGS = [['hw_eira_wind_me_up', 'Wind Me Up Till Midnight', 'Eira'], ['hw_violet_one_candle_left', 'One Candle Left', 'Violet'], ['hh_seren_three_words', 'Three Words', 'Seren'],
+  ['hw_veronica_velvet_fangs', 'Velvet Fangs', 'Veronica'], ['green', 'Green Light on the Window', 'Violet']];
+document.getElementById('songs').innerHTML = SONGS.map(([id, n, w], k) => `<button class="song glass press${k ? '' : ' sel'}"><img src="covers/${id}.jpg" alt=""><span><b>${n}</b><br><small>${w}</small></span></button>`).join('');
+document.querySelectorAll('.look,.song').forEach((b) => b.addEventListener('click', () => { b.parentElement.querySelectorAll('.sel').forEach((x) => x.classList.remove('sel')); b.classList.add('sel'); }));
+// controls
+document.getElementById('start').onclick = () => go(0);
+document.getElementById('next').onclick = () => (step < STOPS.length - 1 ? go(step + 1) : go(-1));
+document.getElementById('back').onclick = () => go(step - 1);
+document.getElementById('skip').onclick = () => go(1);
+// pull down on a step to step back out to the object before it (research: swipe down returns to the object)
+let y0 = null; addEventListener('pointerdown', (e) => { y0 = step >= 0 && !e.target.closest('.rail,.songs,input') ? e.clientY : null; }, { passive: true });
+addEventListener('pointerup', (e) => { if (y0 != null && e.clientY - y0 > 90) go(step - 1); y0 = null; });
+// the press shows the instant a finger lands (same as the app, 10-22)
+addEventListener('pointerdown', (e) => { const b = e.target.closest('.press'); if (!b) return; b.classList.add('down'); const t0 = performance.now();
+  const up = () => { setTimeout(() => b.classList.remove('down'), Math.max(0, 140 - (performance.now() - t0))); removeEventListener('pointerup', up, true); removeEventListener('pointercancel', up, true); };
+  addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true); }, { capture: true, passive: true });
+addEventListener('resize', () => aim(step));
+drawProg();
+</script>
+</body>
+</html>
