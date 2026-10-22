@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#EADFCD">
+<title>Her Room · 만들기 샘플</title>
+<!-- 10-23 새벽 샘플 (클로 — 영샘 판정 전, 한 화면씩 원칙이라 '샘플'로만): RESEARCH_step_screens_20261023.md 6절 클로 추천.
+     촛불을 켜면 아치가 젖빛으로 덮이고, 고른 사진들이 리본처럼 한 줄씩 풀려 금빛 실이 되어 아치로 날아가 엮인다(Codrops Unwoven 의 은유를 2D 캔버스로).
+     진행률 = 젖빛이 아래부터 맑아진 높이(막대 없음). 끝나는 순간 아치 테두리가 촛불 쪽에서부터 타오르며 영상이 드러난다.
+     규칙은 guide.html — 빛은 오른쪽 위 창, 글자 5역할, 버튼 강 하나, 모션 세 빠르기. 만들기 시간은 시안이라 16초로 돌린다. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+@font-face{font-family:HHSans;src:url(fonts/JosefinSans-SemiBold.ttf)}
+@font-face{font-family:MaruBuri;font-weight:300;src:url(https://cdn.jsdelivr.net/npm/@kfonts/maruburi@0.1.0/MaruBuri-Light.woff2) format("woff2")}
+:root{--ink:#3B2F22;--ink-2:#6B5A45;--gold:#B8893E;--gold-hi:#D9AE62;--io:cubic-bezier(.65,0,.35,1);--out:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#E9DCC6;color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+.room{position:fixed;inset:-6%;background:url(room.jpg) 44% 72%/cover;filter:blur(8px) saturate(1.08) brightness(1.03);animation:breath 9s ease-in-out infinite alternate}
+@keyframes breath{from{transform:scale(1)}to{transform:scale(1.03)}}
+.win{position:fixed;inset:0;pointer-events:none;background:radial-gradient(70% 42% at 90% 2%,rgb(255 250 236 / .8),transparent 70%),linear-gradient(180deg,rgb(251 244 232 / .35),transparent 40%)}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;align-items:center;gap:10px;z-index:6}
+.back{width:44px;height:44px;border-radius:50%;padding:0;font-size:18px}
+.lbl{font-family:HHSans,sans-serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);text-shadow:var(--k-text-depth)}
+.head{position:fixed;left:22px;top:calc(env(safe-area-inset-top) + 70px);z-index:5}
+.head h1{font:italic 300 40px/1 "Cormorant Garamond",Georgia,serif;color:var(--ink);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 rgb(90 60 20 / .25),0 3px 8px rgb(255 245 225 / .9);transition:opacity .6s}
+.head p{margin-top:8px;font:300 13px/1.5 MaruBuri,serif;color:var(--ink-2);text-shadow:0 0 8px rgb(255 248 236 / .95);transition:opacity .6s}
+/* the arch - the video plays behind a milky frost that clears from the bottom: how far it has cleared is how far along we are */
+.arch{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 150px);width:min(60vw,300px);aspect-ratio:9/14;translate:-50% 0;z-index:3;
+  border-radius:999px 999px 28px 28px;overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgb(255 255 255 / .8),0 0 0 6px rgb(255 255 255 / .16),0 0 0 7px rgb(255 255 255 / .5),-14px 22px 40px -10px rgb(60 40 15 / .35)}
+.arch video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9);transition:filter 1.2s}
+.frost{position:absolute;left:0;right:0;top:0;height:calc((1 - var(--p,0)) * 100%);
+  background:linear-gradient(180deg,rgb(255 252 244 / .62),rgb(255 246 230 / .5));-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2)}
+.frost::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#FFE7A8 20%,#fff 50%,#FFE7A8 80%,transparent);
+  box-shadow:0 0 12px 3px rgb(255 214 140 / .85),0 0 30px 8px rgb(255 200 120 / .35);opacity:var(--seam,1)}
+/* the rim light that walks round the arch while it works - it starts from the candle side (bottom) */
+.rim{position:fixed;z-index:4;pointer-events:none;border-radius:999px 999px 30px 30px;padding:2px;
+  background:conic-gradient(from calc(var(--a,0) * 1turn + .5turn),transparent 0 70%,rgb(255 226 160 / .0) 72%,rgb(255 226 160 / .95) 86%,#fff 88%,rgb(255 226 160 / .0) 92%,transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  filter:drop-shadow(0 0 6px rgb(255 210 130 / .9));transition:opacity .8s}
+/* the photos, hung around the arch like polaroids; each unravels from the top, one ribbon at a time */
+.pol{position:fixed;z-index:4;width:68px;padding:5px 5px 16px;border-radius:4px;background:rgb(255 252 246 / .92);
+  box-shadow:0 1px 0 #fff inset,-6px 10px 18px -6px rgb(60 40 15 / .35);rotate:var(--r);animation:hang 6s ease-in-out infinite alternate;animation-delay:var(--dl)}
+.pol img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
+@keyframes hang{from{translate:0 0}to{translate:0 -5px}}
+canvas{position:fixed;inset:0;z-index:5;pointer-events:none}
+.pct{position:fixed;left:0;right:0;z-index:5;text-align:center;transition:opacity .6s}
+.pct b{font:italic 300 34px/1 "Cormorant Garamond",serif;color:var(--ink);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 2px 6px rgb(90 60 20 / .18)}
+.pct small{display:block;margin-top:6px;font-size:11px;font-weight:600;color:var(--ink-2);text-shadow:0 0 6px rgb(255 248 236 / .95)}
+.done{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 22px);z-index:6;display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;translate:0 18px;pointer-events:none;transition:opacity .7s var(--out),translate .9s var(--out)}
+body.finished .done{opacity:1;translate:0 0;pointer-events:auto}
+body.finished .pct,body.finished .head p{opacity:0}
+.done .k-btn{width:100%;min-height:60px;font-size:17px;font-weight:800}
+.quiet{padding:12px;font-size:12.5px;font-weight:700;color:var(--ink);text-shadow:var(--k-text-depth);text-decoration:underline;text-decoration-color:rgb(184 137 62 / .45);text-underline-offset:5px}
+.tag{position:fixed;right:10px;bottom:4px;font-size:9px;color:var(--ink-2);opacity:.6;z-index:9}
+@media (prefers-reduced-motion:reduce){.room,.pol{animation:none}}
+</style>
+</head>
+<body>
+<div class="room"></div><div class="win"></div>
+<div class="top"><button class="back k-btn" aria-label="뒤로">←</button><span class="lbl">v · Light it</span></div>
+<div class="head"><h1 id="h1">Lighting it…</h1><p>고른 사진이 실이 되어 창에 엮이는 중</p></div>
+<div class="arch" id="arch"><video src="looks/look_windowband.mp4" muted loop playsinline autoplay preload="auto"></video><div class="frost" id="frost"></div></div>
+<div class="rim" id="rim"></div>
+<div id="pols"></div>
+<canvas id="cv"></canvas>
+<div class="pct" id="pct"><b id="pn">0%</b><small id="left">잠시만요 · 약 16초</small></div>
+<div class="done"><button class="k-btn k-primary">열어 보기</button><button class="quiet" id="again">다시 보기</button></div>
+<span class="tag">만들기 샘플 · 10-23</span>
+<script>
+const $ = (id) => document.getElementById(id);
+const DUR = 16000, K = 12;   // demo length, ribbons per photo
+// [cover, rotate, side (-1 left of the arch / 1 right), height along the arch 0..1] - pinned over the window frame's edge, never in a row
+const PHOTOS = [['hw_eira_wind_me_up', -8, -1, .1], ['hw_violet_one_candle_left', 6, 1, .27], ['hh_seren_three_words', -4, -1, .52],
+  ['hw_veronica_velvet_fangs', 7, 1, .7], ['hh_violet_before_it_disappears', -3, -1, .9]];
+const arch = $('arch'), frost = $('frost'), rim = $('rim'), cv = $('cv'), ctx = cv.getContext('2d');
+let dpr = 1, W = 0, H = 0, A = null, pols = [], threads = [], sparks = [], t0 = 0, finished = false;
+
+// polaroids; each strip's average colour is read once so its thread carries the photo's colour
+$('pols').innerHTML = PHOTOS.map(([c, r], i) => `<figure class="pol" style="--r:${r}deg;--dl:${-i * 1.3}s"><img src="covers/${c}.jpg" alt=""></figure>`).join('');
+pols = [...document.querySelectorAll('.pol')].map((el, i) => ({ el, img: el.querySelector('img'), side: PHOTOS[i][2], at: PHOTOS[i][3], cols: null, peeled: 0 }));
+function sample(p) {
+  const c = document.createElement('canvas'); c.width = 24; c.height = K; const x = c.getContext('2d');
+  try { x.drawImage(p.img, 0, 0, 24, K); const d = x.getImageData(0, 0, 24, K).data; p.cols = [];
+    for (let j = 0; j < K; j++) { let r = 0, g = 0, b = 0; for (let i = 0; i < 24; i++) { const o = (j * 24 + i) * 4; r += d[o]; g += d[o + 1]; b += d[o + 2]; } p.cols.push([r / 24, g / 24, b / 24]); }
+  } catch (e) { p.cols = Array(K).fill([220, 180, 120]); }
+}
+pols.forEach((p) => (p.img.complete ? sample(p) : p.img.addEventListener('load', () => sample(p), { once: true })));
+
+function layout() {
+  dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); A = arch.getBoundingClientRect();
+  Object.assign(rim.style, { left: A.left - 2 + 'px', top: A.top - 2 + 'px', width: A.width + 4 + 'px', height: A.height + 4 + 'px' });
+  $('pct').style.top = A.bottom + 18 + 'px';
+  // hang each photo half over the frame's edge on its side, kept inside the screen
+  pols.forEach((p) => { const w = 68, x = p.side < 0 ? Math.max(6, A.left - w * .62) : Math.min(W - w - 6, A.right - w * .38);
+    p.el.style.left = x + 'px'; p.el.style.top = A.top + A.height * p.at - 40 + 'px'; });
+}
+addEventListener('resize', layout);
+
+const ease = (x) => 1 - Math.pow(1 - x, 3);
+const mix = (c, k) => `rgba(${Math.round(c[0] + (255 - c[0]) * .25 + (232 - c[0]) * k)},${Math.round(c[1] + (214 - c[1]) * k)},${Math.round(c[2] + (150 - c[2]) * k)},`;
+function launch(p, j) {
+  const r = p.el.getBoundingClientRect(), img = p.img.getBoundingClientRect();
+  const sx = img.left + img.width * (0.15 + Math.random() * .7), sy = img.top + img.height * (j + .5) / K;
+  threads.push({ sx, sy, tx: A.left + A.width * (.18 + Math.random() * .64), born: performance.now(), col: p.cols ? p.cols[j] : [220, 180, 120], lift: 40 + Math.random() * 90, side: Math.random() < .5 ? -1 : 1 });
+}
+function seamY(p) { return A.top + A.height * (1 - p); }
+
+function frame(now) {
+  const p = Math.min(1, (now - t0) / DUR);
+  frost.style.setProperty('--p', p); rim.style.setProperty('--a', p * 2.2);
+  $('pn').textContent = Math.round(p * 100) + '%'; $('left').textContent = p < 1 ? `잠시만요 · 약 ${Math.ceil((1 - p) * DUR / 1000)}초` : '';
+  // each photo has its own window of the progress; inside it, its ribbons peel off top to bottom
+  pols.forEach((ph, i) => {
+    const a = i / pols.length * .72, b = a + .26, k = Math.max(0, Math.min(1, (p - a) / (b - a))), want = Math.floor(k * K);
+    while (ph.peeled < want) { launch(ph, ph.peeled); ph.peeled++; }
+    ph.img.style.clipPath = `inset(${ph.peeled / K * 100}% 0 0 0)`; ph.el.style.opacity = 1 - Math.max(0, k - .75) * 4;
+  });
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter';
+  const sy = seamY(p);
+  threads = threads.filter((t) => {
+    const age = (now - t.born) / 1500; if (age > 1.35) return false;
+    const h = ease(Math.min(1, age)), tail = Math.max(0, h - .42), fade = age > 1 ? 1 - (age - 1) / .35 : 1;
+    const cx = (t.sx + t.tx) / 2 + t.side * 50, cy = Math.min(t.sy, sy) - t.lift;
+    const pt = (u) => [(1 - u) * (1 - u) * t.sx + 2 * (1 - u) * u * cx + u * u * t.tx, (1 - u) * (1 - u) * t.sy + 2 * (1 - u) * u * cy + u * u * sy];
+    ctx.lineCap = 'round';
+    for (let s = 0; s < 14; s++) {   // the thread, brighter toward its head
+      const u0 = tail + (h - tail) * s / 14, u1 = tail + (h - tail) * (s + 1) / 14, [x0, y0] = pt(u0), [x1, y1] = pt(u1), w = s / 14;
+      ctx.strokeStyle = mix(t.col, .55 + w * .45) + (0.15 + w * .55) * fade + ')'; ctx.lineWidth = 0.6 + w * 1.1;
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    }
+    const [hx, hy] = pt(h); const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 9);
+    g.addColorStop(0, `rgba(255,248,225,${.95 * fade})`); g.addColorStop(1, 'rgba(255,210,140,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, 7); ctx.fill();
+    if (age >= 1 && !t.hit) { t.hit = true; for (let n = 0; n < 3; n++) sparks.push({ x: hx, y: hy, vx: (Math.random() - .5) * .8, vy: -Math.random() * .9, b: now }); }
+    return true;
+  });
+  sparks = sparks.filter((s) => { const a = (now - s.b) / 900; if (a > 1) return false; s.x += s.vx; s.y += s.vy; s.vy += .02;
+    ctx.fillStyle = `rgba(255,236,190,${1 - a})`; ctx.beginPath(); ctx.arc(s.x, s.y, 1.4, 0, 7); ctx.fill(); return true; });
+  ctx.globalCompositeOperation = 'source-over';
+  if (p >= 1 && !finished) finish(now);
+  requestAnimationFrame(frame);
+}
+// the last beat: the rim burns all the way round from the candle side, sparks lift off the arch, the picture comes clear
+function finish(now) {
+  finished = true; document.body.classList.add('finished'); $('h1').textContent = 'There she is.';
+  arch.querySelector('video').style.filter = 'saturate(1.08) brightness(1.04)';
+  rim.animate([{ opacity: 1, filter: 'drop-shadow(0 0 6px rgb(255 210 130 / .9))' }, { opacity: 1, filter: 'drop-shadow(0 0 22px rgb(255 220 150 / 1))' }, { opacity: .0 }], { duration: 1800, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
+  for (let n = 0; n < 70; n++) { const u = n / 70, ang = Math.PI * (1 + u);   // along the curved top and down the sides
+    const x = A.left + A.width / 2 + Math.cos(ang) * A.width / 2, y = u < .5 ? A.top + A.width / 2 + Math.sin(ang) * A.width / 2 : A.top + A.width / 2 + Math.sin(ang) * A.width / 2;
+    sparks.push({ x, y, vx: Math.cos(ang) * .6, vy: -.3 - Math.random() * .8, b: now + Math.random() * 400 }); }
+}
+function start() {
+  finished = false; document.body.classList.remove('finished'); $('h1').textContent = 'Lighting it…';
+  arch.querySelector('video').style.filter = ''; rim.getAnimations().forEach((a) => a.cancel());
+  threads = []; sparks = []; pols.forEach((p) => { p.peeled = 0; p.img.style.clipPath = ''; p.el.style.opacity = 1; });
+  layout(); t0 = performance.now();
+}
+$('again').onclick = start;
+const q = new URLSearchParams(location.search);
+addEventListener('load', () => { start(); if (q.has('at')) t0 -= DUR * +q.get('at'); requestAnimationFrame(frame); });
+</script>
+</body>
+</html>
