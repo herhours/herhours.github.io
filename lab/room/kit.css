@@ -81,4 +81,8 @@
 .k-alert.warn{background:linear-gradient(180deg,rgb(242 214 120 / calc(var(--k-fill) + .30)),rgb(242 214 120 / calc(var(--k-fill) + .10)))}
 .k-alert.err{background:linear-gradient(180deg,rgb(232 140 132 / calc(var(--k-fill) + .28)),rgb(232 140 132 / calc(var(--k-fill) + .08)))}
 .k-card{border-radius:var(--k-r-card);padding:16px;background:var(--k-face);box-shadow:var(--k-light);-webkit-backdrop-filter:blur(var(--k-blur));backdrop-filter:blur(var(--k-blur))}
+/* 10-23 영샘 "누르는 자리 투명 패딩 44px로": the drawn size stays as designed, the finger gets at least 44x44 (Apple HIG 44pt).
+   :where() keeps it at zero weight so any page that places a button (fixed, absolute) still wins. */
+:where(.k-btn,.k-chip,.k-toggle){position:relative}
+:where(.k-btn,.k-chip)::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);translate:-50% -50%;border-radius:inherit}
 @media (prefers-reduced-motion:reduce){.k-btn,.k-chip,.k-seg .k-pebble,.k-toggle::after{transition:none}}
