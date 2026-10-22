@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E9DCC6">
+<title>유리 샘플 — 그녀의 방</title>
+<!-- 10-22 밤 영샘 "둘 다 샘플로 만들어 보여줄래": 21st 12460(애플 액체 유리 버튼)·3206(액체 유리 카드)을 우리 방 위에.
+     원본 React 엔진을 옮기지 않고 기법만 새로 짰다(라이선스 미확인) — 버튼은 가장자리 굴절 지도(캔버스로 그 버튼 크기에 맞춰 만듦)를
+     backdrop-filter:url() 로, 카드는 노이즈 물결 굴절. 굴절은 크롬 계열만 되고 사파리(아이폰)는 젖빛으로 내려앉는다 — 화면 위 배지가 이 기기 쪽을 말해 준다.
+     「지금 v3」 를 누르면 같은 자리에 지금 유리(흐림만, kit.css)로 바뀌어 한 폰에서 비교된다. -->
+<style>
+@font-face{font-family:"Josefin";src:url(fonts/JosefinSans-SemiBold.ttf) format("truetype");font-display:swap}
+:root{
+  --ink:#3B2F22; --ink-2:#6E5F4B; --mint:150 214 176; --mint-ink:#1F4630;
+  --refract:18; --blur:1; --fill:.06; --ease:cubic-bezier(.22,1,.36,1);
+  --text-depth:0 -1px 0 rgb(255 255 255 / .55),0 1px 0 rgb(60 40 15 / .22),0 2px 2px rgb(60 40 15 / .16);
+  --title-depth:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 #9A6F2E,0 2px 0 #87602A,0 3px 1px rgb(90 60 20 / .35),0 8px 14px rgb(90 60 20 / .28);
+  /* light makes the glass, not fill: hot top line, bright rim, thickness at the bottom edge, a dark hairline inside, shadow on the room */
+  --rim:inset 0 1.5px 0 rgb(255 255 255 / .95),inset 0 0 0 1px rgb(255 255 255 / .55),inset 1px 1px 1px -.5px rgb(255 255 255 / .7),
+        inset -1px -1px 1px -.5px rgb(255 255 255 / .45),inset 0 -8px 14px -8px rgb(255 255 255 / .55),inset 0 0 8px 2px rgb(255 255 255 / .10),
+        0 1px 2px rgb(60 40 15 / .10),0 8px 22px -6px rgb(60 40 15 / .22);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#E9DCC6;color:var(--ink);font:16px/1.45 "Josefin",system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;overscroll-behavior:none}
+/* the room breathes slowly behind everything, so the bend in the glass is visibly alive */
+.room{position:fixed;inset:-6%;background:url(room.jpg) center/cover;animation:drift 18s ease-in-out infinite alternate;will-change:transform}
+@keyframes drift{from{transform:scale(1.02) translate3d(-1.5%,-1%,0)}to{transform:scale(1.10) translate3d(1.5%,1.2%,0)}}
+html.still .room{animation:none}
+@media (prefers-reduced-motion:reduce){.room{animation:none}}
+main{position:relative;padding:calc(18px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto}
+h1{font-size:30px;margin:6px 0 2px;color:#B8893E;text-shadow:var(--title-depth);letter-spacing:.01em}
+h2{font-size:19px;margin:30px 0 4px;text-shadow:var(--text-depth)}
+p.sub{margin:0 0 12px;color:var(--ink-2);font-size:14px;text-shadow:var(--text-depth)}
+
+/* ---- the glass ---- */
+.lg{position:relative;isolation:isolate;border:0;color:var(--ink);font:inherit;text-shadow:var(--text-depth);
+  background:linear-gradient(180deg,rgb(255 255 255 / calc(var(--fill) + .10)),rgb(255 255 255 / var(--fill)) 55%,rgb(255 255 255 / calc(var(--fill) * .5)));
+  box-shadow:var(--rim);-webkit-user-select:none;user-select:none;touch-action:manipulation;cursor:pointer;
+  transform:scale(var(--s,1));will-change:transform}
+html.frost .lg,html.v3 .lg{-webkit-backdrop-filter:blur(calc(var(--blur) * 1px + 7px)) saturate(160%);backdrop-filter:blur(calc(var(--blur) * 1px + 7px)) saturate(160%)}
+/* the glow that follows the finger */
+.lg::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:var(--go,0);
+  background:radial-gradient(90px circle at var(--gx,50%) var(--gy,50%),rgb(255 255 255 / .45),rgb(255 255 255 / 0) 70%);mix-blend-mode:soft-light}
+.mint{background:linear-gradient(180deg,rgb(var(--mint) / calc(var(--fill) + .30)),rgb(var(--mint) / calc(var(--fill) + .10)));color:var(--mint-ink);
+  box-shadow:var(--rim),0 0 22px rgb(var(--mint) / .35)}
+/* 지금 v3 = kit.css: milky face, no bend */
+html.v3 .lg{background:linear-gradient(180deg,rgb(255 255 255 / .26),rgb(255 255 255 / .10) 45%,rgb(255 255 255 / .04));
+  box-shadow:inset 0 0 0 1px rgb(255 255 255 / .78),inset 0 1.5px 0 rgb(255 255 255 / .98),inset 0 -10px 14px -6px rgb(255 255 255 / .35),0 6px 16px rgb(60 40 15 / .12)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;font-weight:700;letter-spacing:.02em}
+.big{width:100%;min-height:64px;font-size:19px}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.mid{flex:1;min-height:52px;font-size:16px}
+.chip{min-height:38px;padding:0 16px;font-size:14px}
+.chip.on{color:var(--mint-ink)}
+.icon{width:54px;height:54px;font-size:20px}
+
+/* the badge + switch strip */
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{border-radius:999px;padding:7px 14px;font-size:13px;cursor:default}
+.seg{display:inline-flex;border-radius:999px;padding:4px;gap:4px}
+.seg button{border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--ink-2);padding:8px 14px;border-radius:999px;text-shadow:var(--text-depth)}
+.seg button.on{background:rgb(255 255 255 / .55);color:var(--ink);box-shadow:0 1px 3px rgb(60 40 15 / .18)}
+
+/* knobs */
+.knobs{border-radius:22px;padding:12px 16px;margin-top:14px;cursor:default}
+.knobs label{display:flex;align-items:center;gap:10px;font-size:14px;margin:6px 0}
+.knobs label span{width:62px}
+.knobs input{flex:1;accent-color:rgb(var(--mint))}
+.knobs b{width:34px;text-align:right;font-size:13px;color:var(--ink-2)}
+
+/* cards (3206 way) */
+.cards{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 18px;margin:0 -4px;scrollbar-width:none}
+.cards::-webkit-scrollbar{display:none}
+.card{flex:0 0 72%;scroll-snap-align:center;border-radius:26px;padding:10px;text-align:left}
+/* the ripple makes busy room behind small words unreadable - the card gets milkier toward the caption */
+.card.lg{background:linear-gradient(180deg,rgb(255 255 255 / calc(var(--fill) + .06)) 0%,rgb(255 255 255 / calc(var(--fill) + .06)) 55%,rgb(255 255 255 / calc(var(--fill) + .42)) 100%)}
+.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:18px;box-shadow:0 2px 8px rgb(60 40 15 / .25)}
+.card b{display:block;font-size:17px;margin:10px 6px 0}
+.card small{display:block;margin:2px 6px 4px;color:var(--ink-2);font-size:13px}
+.note{font-size:14px;color:var(--ink);margin:22px 0 32vh;padding:12px 16px;border-radius:18px;cursor:default;background:rgb(255 255 255 / .5)}
+</style>
+</head>
+<body>
+<div class="room" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs id="defs">
+    <!-- 3206 way: soft noise ripples the room behind the card -->
+    <filter id="ripple" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="2" seed="7" result="n"/>
+      <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
+      <feDisplacementMap id="rippleD" in="SourceGraphic" in2="nb" scale="60" xChannelSelector="R" yChannelSelector="B" result="d"/>
+      <feGaussianBlur id="rippleB" in="d" stdDeviation="2.5"/>
+    </filter>
+  </defs>
+</svg>
+
+<main>
+  <div class="top">
+    <span class="lg badge" id="badge">…</span>
+    <div class="lg seg" role="group" aria-label="비교">
+      <button class="on" data-mode="new">새 유리</button><button data-mode="v3">지금 v3</button>
+    </div>
+  </div>
+  <h1>Glass, in her room</h1>
+  <p class="sub">21st 12460 · 3206 — 우리 방 위에 올린 샘플</p>
+
+  <h2>버튼 · 가장자리가 휘는 유리 (12460)</h2>
+  <p class="sub">눌러 보고, 누른 채로 손가락을 움직여 봐요. 스크롤하면 유리 밑으로 방이 지나가요.</p>
+  <button class="lg btn big mint press">만들기</button>
+  <div class="row">
+    <button class="lg btn mid press">다시 듣기</button>
+    <button class="lg btn mid press">공유</button>
+  </div>
+  <div class="row">
+    <button class="lg btn chip press on" data-thin>따뜻한</button>
+    <button class="lg btn chip press" data-thin>밤</button>
+    <button class="lg btn chip press" data-thin>핼러윈</button>
+    <button class="lg btn chip press" data-thin>크리스마스</button>
+  </div>
+  <div class="row">
+    <button class="lg btn icon press" aria-label="재생">▶</button>
+    <button class="lg btn icon press" aria-label="좋아요">♥</button>
+    <button class="lg btn icon press" aria-label="더보기">⋯</button>
+  </div>
+
+  <div class="lg knobs">
+    <label><span>휨</span><input type="range" id="kR" min="0" max="40" value="18"><b id="vR">18</b></label>
+    <label><span>흐림</span><input type="range" id="kB" min="0" max="8" step=".5" value="1"><b id="vB">1</b></label>
+    <label><span>우윳빛</span><input type="range" id="kF" min="0" max="40" value="6"><b id="vF">6</b></label>
+    <label><span>방 움직임</span><input type="checkbox" id="kM" checked></label>
+  </div>
+
+  <h2>카드 · 물결 유리 (3206)</h2>
+  <p class="sub">옆으로 넘기고, 카드를 눌러 봐요.</p>
+  <div class="cards">
+    <button class="lg card ripple press"><img src="looks/look_clockface-night.jpg" alt=""><b>Clockface · Night</b><small>밤의 시계탑 — 조용한 보컬</small></button>
+    <button class="lg card ripple press"><img src="looks/look_lyricbloom.jpg" alt=""><b>Lyric Bloom</b><small>가사가 꽃처럼 피어나요</small></button>
+    <button class="lg card ripple press"><img src="looks/look_halloween.jpg" alt=""><b>Halloween</b><small>호박빛 파티의 밤</small></button>
+    <button class="lg card ripple press"><img src="looks/look_blackcut-room.jpg" alt=""><b>Blackcut · Room</b><small>검은 실루엣 컷</small></button>
+  </div>
+
+  <p class="lg note" id="note"></p>
+</main>
+
+<script>
+// Which glass this device can make. Chromium draws SVG filters inside backdrop-filter; Safari (every iPhone browser) and Firefox can't,
+// so they get the frosted fallback. Chrome's UA also says "Safari", so look for a Chromium token rather than for Safari.
+const ua = navigator.userAgent;
+const chromium = !/Firefox\//.test(ua) && (
+  (navigator.userAgentData?.brands || []).some(b => /Chromium|Google Chrome|Microsoft Edge/i.test(b.brand)) ||
+  /(Chrome|Chromium|Edg|SamsungBrowser)\/\d+/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua));
+const root = document.documentElement;
+root.classList.add(chromium ? 'refract' : 'frost');
+document.getElementById('badge').textContent = chromium ? '이 기기: 휘는 유리 (크롬 계열)' : '이 기기: 젖빛 유리 (사파리 — 휨 대신 흐림)';
+document.getElementById('note').textContent = chromium
+  ? '이 화면은 크롬 계열이라 가장자리 휨이 보여요. 아이폰(사파리)에선 같은 자리가 젖빛 흐림으로 바뀌어요.'
+  : '이 기기는 사파리 엔진이라 유리가 휘지 않고 흐림만 보여요. 갤럭시 크롬·삼성 인터넷에서 열면 휨이 보여요.';
+
+// ---- 12460 way: a lens map per button. Near the rim each pixel samples the room a little further in,
+// so the edge reads like thick curved glass. Red/green = how far to look sideways/up-down (128 = stay).
+const defs = document.getElementById('defs');
+let seq = 0;
+function lensMap(w, h, r, bezel) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'), im = g.createImageData(w, h), d = im.data;
+  const hw = w / 2, hh = h / 2; r = Math.min(r, hw, hh);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const px = i + .5 - hw, py = j + .5 - hh, qx = Math.abs(px) - (hw - r), qy = Math.abs(py) - (hh - r);
+    let depth, nx = 0, ny = 0;
+    if (qx > 0 && qy > 0) { const L = Math.hypot(qx, qy) || 1; depth = r - L; nx = qx / L * Math.sign(px); ny = qy / L * Math.sign(py); }
+    else if (qx > qy) { depth = r - qx; nx = Math.sign(px); }
+    else { depth = r - qy; ny = Math.sign(py); }
+    const t = depth < bezel ? 1 - Math.max(depth, 0) / bezel : 0, m = t * t;   // strongest at the very rim, gone by the bezel's inner edge
+    const k = (j * w + i) * 4;
+    d[k] = 128 - nx * m * 127; d[k + 1] = 128 - ny * m * 127; d[k + 2] = 128; d[k + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  return c.toDataURL();
+}
+const lenses = [];
+function buildLens(el) {
+  const w = el.offsetWidth, h = el.offsetHeight;
+  if (!w || !h) return;
+  const r = Math.min(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0, h / 2, w / 2);
+  const bezel = Math.min(h / 2, el.hasAttribute('data-thin') ? 12 : 24);
+  let L = el._lens;
+  if (!L) {
+    const id = 'lens' + (++seq);
+    const f = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+    f.setAttribute('id', id); f.setAttribute('x', '0'); f.setAttribute('y', '0'); f.setAttribute('width', '100%'); f.setAttribute('height', '100%');
+    f.setAttribute('color-interpolation-filters', 'sRGB');
+    f.innerHTML = `<feImage result="map" preserveAspectRatio="none"/><feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" result="d"/>` +
+      `<feGaussianBlur in="d" result="b"/><feColorMatrix in="b" type="saturate" values="1.25"/>`;
+    defs.appendChild(f);
+    L = el._lens = { id, f, img: f.children[0], disp: f.children[1], blur: f.children[2], thin: el.hasAttribute('data-thin') };
+    lenses.push(L);
+  }
+  L.img.setAttribute('href', lensMap(w, h, r, bezel));
+  L.img.setAttribute('width', w); L.img.setAttribute('height', h);
+  tuneLens(L);
+  el.style.backdropFilter = `url(#${L.id})`;
+}
+function tuneLens(L) {
+  const R = +getComputedStyle(root).getPropertyValue('--refract');
+  L.disp.setAttribute('scale', (L.thin ? Math.min(R, 8) : R) * 2);
+  L.blur.setAttribute('stdDeviation', +getComputedStyle(root).getPropertyValue('--blur') * .6);
+}
+function buildAll() {
+  if (!root.classList.contains('refract') || root.classList.contains('v3')) {
+    document.querySelectorAll('.lg').forEach(el => el.style.backdropFilter = '');
+    return;
+  }
+  document.querySelectorAll('.lg:not(.ripple)').forEach(buildLens);
+  document.querySelectorAll('.ripple').forEach(el => el.style.backdropFilter = 'url(#ripple)');
+}
+
+// ---- springs: pressing makes the glass swell a little (Apple grows on press), letting go settles back with one soft bounce
+function spring(el) {
+  let x = 1, v = 0, target = 1, k = 520, c = 26, raf = 0, last = 0;
+  const tick = (t) => {
+    const dt = Math.min(.032, (t - last) / 1000 || .016); last = t;
+    for (let s = 0; s < 4; s++) { const a = -k * (x - target) - c * v; v += a * dt / 4; x += v * dt / 4; }
+    el.style.setProperty('--s', x.toFixed(4));
+    if (Math.abs(x - target) > 1e-4 || Math.abs(v) > 1e-3) raf = requestAnimationFrame(tick); else { x = target; el.style.setProperty('--s', x); raf = 0; }
+  };
+  return (to, stiff, damp) => { target = to; k = stiff; c = damp; if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+}
+document.querySelectorAll('.press').forEach(el => {
+  const go = spring(el), big = el.classList.contains('card') ? 1.03 : el.classList.contains('icon') ? 1.12 : 1.06;
+  const glow = (e) => { const r = el.getBoundingClientRect(); el.style.setProperty('--gx', (e.clientX - r.left) / r.width * 100 + '%'); el.style.setProperty('--gy', (e.clientY - r.top) / r.height * 100 + '%'); };
+  el.addEventListener('pointerdown', e => { glow(e); el.style.setProperty('--go', 1); go(big, 520, 26); }, { passive: true });
+  el.addEventListener('pointermove', e => { if (el.style.getPropertyValue('--go') === '1') glow(e); }, { passive: true });
+  const up = () => { el.style.setProperty('--go', 0); go(1, 260, 11); };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('pointerleave', up);
+  if (el.classList.contains('chip')) el.addEventListener('click', () => { el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === el)); });
+});
+
+// ---- knobs
+const knob = (id, out, apply) => { const i = document.getElementById(id), o = document.getElementById(out); const f = () => { o.textContent = i.value; apply(+i.value); }; i.addEventListener('input', f); f(); };
+knob('kR', 'vR', v => { root.style.setProperty('--refract', v); lenses.forEach(tuneLens); document.getElementById('rippleD').setAttribute('scale', v * 3.3); });
+knob('kB', 'vB', v => { root.style.setProperty('--blur', v); lenses.forEach(tuneLens); document.getElementById('rippleB').setAttribute('stdDeviation', 1 + v * .8); });
+knob('kF', 'vF', v => root.style.setProperty('--fill', v / 100));
+document.getElementById('kM').addEventListener('change', e => root.classList.toggle('still', !e.target.checked));
+
+// ---- new glass / today's v3 glass, side by side on one phone
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b));
+  root.classList.toggle('v3', b.dataset.mode === 'v3');
+  buildAll();
+}));
+
+(document.fonts?.ready || Promise.resolve()).then(buildAll);
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(buildAll, 150); });
+</script>
+</body>
+</html>
