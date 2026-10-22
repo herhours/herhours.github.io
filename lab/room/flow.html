@@ -21,6 +21,11 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
   background:url(room.jpg) center/cover;transform-origin:0 0;will-change:transform,filter;
   transition:transform 1150ms var(--io),filter 900ms var(--io)}
 body.step .room{filter:blur(7px) saturate(1.1) brightness(1.04)}
+/* B (10-23 board): each stop blurs to a different colour (white arch, orange frames, olive candle) so the steps don't read as
+   one house - a cream wash lit from the window evens them out while the room still shows through */
+.wash{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 900ms var(--io);
+  background:radial-gradient(70% 45% at 88% 0%,rgb(255 251 240 / .75),transparent 70%),linear-gradient(180deg,rgb(251 244 232 / .78),rgb(246 236 220 / .62) 55%,rgb(236 222 200 / .55))}
+html.veil body.step .wash{opacity:1}
 .breath{position:absolute;inset:0;animation:breath 9s ease-in-out infinite alternate}
 @keyframes breath{from{transform:scale(1)}to{transform:scale(1.025)}}
 /* the gold thread across the room (home) */
@@ -94,6 +99,7 @@ body.step .skip{opacity:.9}
 <body>
 <div class="cam"><div class="room" id="room"><div class="breath"></div>
   <svg class="thread" viewBox="0 0 100 150" preserveAspectRatio="none"><path class="glow" id="tg" d=""/><path id="tp" d=""/></svg></div></div>
+<div class="wash"></div>
 <span class="tag">흐름 시안 v1 · 10-22</span>
 
 <section class="home" id="home">
@@ -178,6 +184,12 @@ addEventListener('pointerdown', (e) => { const b = e.target.closest('.press'); i
   addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true); }, { capture: true, passive: true });
 addEventListener('resize', () => aim(step));
 drawProg();
+// board.html shows every step at once: ?s=N opens straight on that step, with no walk-in
+const q = new URLSearchParams(location.search), s0 = q.get('s');
+if (q.has('veil')) document.documentElement.classList.add('veil');
+if (s0 != null) { document.querySelector('.tag').hidden = true; document.documentElement.style.setProperty('--still', '1');
+  const st = document.createElement('style'); st.textContent = '*{transition:none!important;transition-delay:0s!important}'; document.head.append(st);
+  go(+s0); requestAnimationFrame(() => requestAnimationFrame(() => st.remove())); }
 </script>
 </body>
 </html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Her Room · 뼈대</title>
+<!-- 10-23 새벽 회색 박스 뼈대 (영샘 "나머지는 클로 추천대로" — MaDia: 스타일은 여러 화면에 한꺼번에 대 봐야 안 무너진다).
+     아직 시안이 없는 화면(만드는 중 · 내 영상 · 정보)을 상자로만 깔고, 방·유리·빛·실·버튼 세 단계(guide.html)가 거기서도 먹는지 본다.
+     다듬기는 원칙 1대로 한 화면씩 — 이 파일은 자리만 잡는다. ?k=making|mine|about -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+@font-face{font-family:HHSans;src:url(fonts/JosefinSans-SemiBold.ttf)}
+@font-face{font-family:HHTitle;src:url(fonts/PinyonScript-Regular.ttf)}
+:root{--ink:#3B2F22;--ink-2:#6B5A45;--gold:#B8893E;--gold-hi:#D9AE62}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:#E9DCC6;color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif}
+.room{position:fixed;inset:-6%;background:url(room.jpg) center/cover;filter:blur(7px) saturate(1.1) brightness(1.04);animation:breath 9s ease-in-out infinite alternate}
+@keyframes breath{from{transform:scale(1)}to{transform:scale(1.025)}}
+.win{position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 40% at 88% 4%,rgb(255 250 235 / .7),transparent 70%)}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;align-items:center;gap:10px;z-index:3}
+.back{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:18px}
+.lbl{font-family:HHSans,sans-serif;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);text-shadow:var(--k-text-depth)}
+.disp{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:300;color:var(--ink);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 rgb(90 60 20 / .25),0 3px 8px rgb(255 245 225 / .9)}
+/* a grey box: where a thing will go. glass so the room rule is tested, dashed so it reads as a placeholder */
+.box{position:absolute;border-radius:20px;background:var(--k-face);box-shadow:var(--k-light);-webkit-backdrop-filter:blur(var(--k-blur)) saturate(150%);backdrop-filter:blur(var(--k-blur)) saturate(150%);
+  outline:1.5px dashed rgb(110 95 75 / .35);outline-offset:-6px;display:grid;place-items:center;text-align:center;padding:8px}
+.box span{font-family:HHSans,sans-serif;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2)}
+.box i{display:block;font-style:normal;font-size:11px;letter-spacing:0;text-transform:none;margin-top:3px;color:var(--ink-2)}
+.next{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 22px);min-height:60px;font-size:17px;font-weight:800}
+.quiet{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 92px);text-align:center;font-size:12.5px;font-weight:700;color:var(--ink);text-shadow:var(--k-text-depth);
+  text-decoration:underline;text-decoration-color:rgb(184 137 62 / .45);text-underline-offset:5px}
+.screen{position:fixed;inset:0;display:none}
+.screen.on{display:block}
+.ttl{position:absolute;left:20px;top:calc(env(safe-area-inset-top) + 74px)}
+.ttl .disp{font-size:40px;line-height:1}
+.ttl p{margin-top:8px;font-size:13px;font-weight:600;color:var(--ink-2);text-shadow:0 0 8px rgb(255 248 236 / .95)}
+/* making: the arch fills like a glass of light */
+.arch{position:absolute;left:50%;top:21%;width:62%;aspect-ratio:9/14;translate:-50% 0;border-radius:999px 999px 26px 26px;overflow:hidden}
+.arch .fill{position:absolute;left:0;right:0;bottom:0;height:var(--p,38%);background:linear-gradient(180deg,rgb(255 236 190 / .55),rgb(var(--k-mint) / .45));transition:height 1s cubic-bezier(.22,1,.36,1)}
+.pct{position:absolute;left:0;right:0;top:calc(21% + 62vw * 14 / 9 + 18px);text-align:center}
+.pct b{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:300;font-size:30px;color:var(--ink)}
+/* mine: an irregular shelf of shorts */
+.shelf .box{aspect-ratio:9/16}
+</style>
+</head>
+<body>
+<div class="room"></div><div class="win"></div>
+<div class="top"><span class="back k-btn">←</span><span class="lbl" id="crumb"></span></div>
+
+<section class="screen" data-k="making">
+  <div class="ttl"><span class="disp">Lighting it…</span><p>촛불이 다 타면 영상이 나와요 · 20~60초</p></div>
+  <div class="arch box" id="arch"><div class="fill"></div><span>Arch · 만들어지는 영상이 아래부터 차오름<i>진행 = 그림의 일부</i></span></div>
+  <div class="pct"><b id="pct">38%</b><div class="lbl" style="margin-top:4px">Photos · Song · Words · Light</div></div>
+  <span class="quiet">그동안 방 둘러보기</span>
+  <button class="next k-btn k-primary" disabled style="opacity:.55">완성되면 열려요</button>
+</section>
+
+<section class="screen shelf" data-k="mine">
+  <div class="ttl"><span class="disp">Kept in her room</span><p>내가 만든 쇼츠 · 오래된 것부터 선반에</p></div>
+  <div class="box" style="left:6%;top:26%;width:27%;rotate:-3deg"><span>Short 1<i>탭 = 크게</i></span></div>
+  <div class="box" style="left:37%;top:24%;width:27%;rotate:1.5deg"><span>Short 2</span></div>
+  <div class="box" style="left:68%;top:27%;width:26%;rotate:-1deg"><span>Short 3</span></div>
+  <div class="box" style="left:10%;top:52%;width:25%;rotate:2deg"><span>Short 4</span></div>
+  <div class="box" style="left:40%;top:53%;width:26%;rotate:-2deg"><span>Short 5</span></div>
+  <div class="box" style="left:70%;top:51%;width:24%;rotate:1deg;outline-style:dotted"><span>빈 자리<i>다음 영상</i></span></div>
+  <span class="quiet">저장한 곳 열기</span>
+  <button class="next k-btn k-primary">새로 만들기</button>
+</section>
+
+<section class="screen" data-k="about">
+  <div class="ttl"><span class="disp">About her room</span><p>정보 · 짧게, 편지처럼</p></div>
+  <div class="box" style="left:20px;right:20px;top:26%;height:22%"><span>Letter · 이 앱은 무엇인지<i>마루부리 두세 줄</i></span></div>
+  <div class="box" style="left:20px;width:46%;top:51%;height:14%;rotate:-1.5deg"><span>Songs<i>노래는 Her Hours</i></span></div>
+  <div class="box" style="right:20px;width:40%;top:53%;height:12%;rotate:1.5deg"><span>Privacy<i>사진은 폰 밖으로 안 나감</i></span></div>
+  <div class="box" style="left:24%;right:24%;top:69%;height:7%"><span>Version · 만든 사람</span></div>
+  <span class="quiet">문의하기</span>
+  <button class="next k-btn">돌아가기</button>
+</section>
+
+<script>
+const k = new URLSearchParams(location.search).get('k') || 'making';
+document.querySelector(`.screen[data-k="${k}"]`).classList.add('on');
+document.getElementById('crumb').textContent = { making: 'v · Light it', mine: 'My shorts', about: 'About' }[k];
+if (k === 'making') { let p = 38; setInterval(() => { p = p >= 96 ? 12 : p + 7; document.querySelector('.fill').style.setProperty('--p', p + '%'); document.getElementById('pct').textContent = p + '%'; }, 1400); }
+</script>
+</body>
+</html>
