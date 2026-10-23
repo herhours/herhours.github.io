@@ -366,6 +366,7 @@ async function usePhotos(files) {
   const r = await pool(files, files.some(isVideoFile) ? 1 : 2, async (f, i) => {
     const t = performance.now();
     const v = await readOne(f, i);
+    v.hhFile = f;                       // so ✕ on the strip can take the same file out of the count
     n++; say();
     if (slots[i]?.tagName === 'VIDEO') { const el = slots[i]; el.onclick = () => openFocus(v, el); v.hhThumb = el; }   // clips too: their canvas holds the current frame
     else if (slots[i]) { const th = thumbOf(v); th.onclick = () => openFocus(v, th); slots[i].replaceWith(th); v.hhThumb = th; }
@@ -406,8 +407,29 @@ function renderOrder() {
       b.disabled = to < 0 || to >= n; b.onclick = () => movePhoto(i, to); return b;
     };
     mv.append(btn('◀', T('앞으로', 'Earlier'), i - 1), btn('▶', T('뒤로', 'Later'), i + 1));
-    w.append(v.hhThumb, no, mv); th.appendChild(w);
+    // 10-21 테스터 의견: "사진 고른 뒤 하나씩 빼기" - before, the only way out was picking the whole set again
+    const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'rm'; rm.textContent = '✕';
+    rm.setAttribute('aria-label', T(`${i + 1}번 사진 빼기`, `Remove photo ${i + 1}`)); rm.onclick = () => removePhoto(i);
+    w.append(v.hhThumb, no, rm, mv); th.appendChild(w);
   });
+}
+async function removePhoto(i) {
+  if (S.busy || !S.images[i]) return;
+  const [v] = S.images.splice(i, 1);
+  if (v.live) v.clip.video.pause();
+  if (v.hhFile) S.photoFiles = S.photoFiles.filter((f) => f !== v.hhFile);
+  rlog(`photo remove ${i + 1} → ${S.images.length} left`);
+  if (!S.images.length) {               // the last one out: back to the demo pictures, the photo step asks again
+    S.photoFiles = []; S.photoBlobs = []; $('thumbs').innerHTML = ''; $('photos').value = '';
+    $('focusTip').hidden = true; $('clipGainRow').hidden = true;
+    $('phint').textContent = T('사진을 모두 뺐어요. 다시 골라 주세요.', 'All photos removed. Pick again.');
+    setMake(); rebuild(); chips(); renderLooks(); saveSoon(); return;
+  }
+  $('clipGainRow').hidden = !S.images.some((x) => x.live);
+  $('phint').textContent = T(`${S.images.length}개 남았어요.`, `${S.images.length} left.`);
+  renderOrder(); setMake(); rebuild(); chips();
+  S.photoBlobs = await shrinkAll(S.images.filter((x) => !x.live));
+  saveSoon();
 }
 async function movePhoto(from, to) {
   if (to < 0 || to >= S.images.length || S.busy) return;
@@ -1249,6 +1271,7 @@ async function boot(label, fn) {
       setTimeout(() => loadFonts().then(() => rlog('fonts ok later')).catch(() => {}), 4000);
     }
     S.demo = await boot('demo', () => loadDemo());
+    if (S.demo.failed?.length) rlog(`demo partial ${S.demo.length}/${S.demo.length + S.demo.failed.length} missing ${S.demo.failed.join(' ')}`);
     loadDemoHw().then((ims) => { S.demoHw = ims; if (!S.images.length) rebuild(); }).catch(() => {});
     pv.src = S.song.file;
     renderSongs();
