@@ -437,7 +437,22 @@ export function buildData({ tpl, images, useOurs, brand, title1, title2, phrases
 }
 
 export const DEMO = ['L11', 'L03', 'L02', 'L07', 'L06', 'L13'];
-export const loadDemo = () => Promise.all(DEMO.map((id) => loadImage(`assets/demo/${id}.jpg`)));
+// 10-22 시험 기록 'boot fail at demo undefined' (iPhone): one demo picture that didn't arrive stopped the whole app -
+// an <img> error is an Event with no name or message, so boot() never retried it. Each picture now gets two more
+// tries, a missing one is left out (the look repeats the others), and the names that failed ride along for the log.
+const loadImageRetry = async (src) => {
+  for (let k = 0; ; k++) {
+    try { return await loadImage(k ? `${src}?r=${k}` : src); }
+    catch { if (k >= 2) throw new Error(src); await new Promise((r) => setTimeout(r, 600 * (k + 1))); }
+  }
+};
+export const loadDemo = async () => {
+  const got = await Promise.allSettled(DEMO.map((id) => loadImageRetry(`assets/demo/${id}.jpg`)));
+  const ims = got.filter((g) => g.status === 'fulfilled').map((g) => g.value);
+  ims.failed = got.filter((g) => g.status === 'rejected').map((g) => g.reason.message.split('/').pop());
+  if (!ims.length) throw new Error(`demo pictures none (${ims.failed.join(' ')})`);
+  return ims;
+};
 // the Halloween look shows the Halloween shorts' own pictures until the user brings photos (10-14)
 export const loadDemoHw = () => Promise.all([1, 2, 3, 4, 5, 6].map((i) => loadImage(`assets/demo_hw/H${i}.jpg`)));
 // Our own songs, each with its lyric timing. Green Light is the original EP01 short; the other two were
