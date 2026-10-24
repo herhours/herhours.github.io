@@ -34,9 +34,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 /* the room: one layer the camera moves over */
 .cam{position:fixed;inset:0;overflow:hidden}
 .room{position:absolute;left:50%;top:50%;width:max(100vw,calc(100dvh * 2 / 3));aspect-ratio:2/3;translate:-50% -50%;
-  background:url(room.jpg) center/cover;transform-origin:0 0;will-change:transform,filter;
-  transition:transform 1150ms var(--io),filter 900ms var(--io)}
-body.step .room{filter:blur(7px) saturate(1.1) brightness(1.04)}
+  background:url(room.jpg) center/cover;transform-origin:0 0;will-change:transform;
+  transition:transform 1150ms var(--io)}
+/* phones (10-24 '폰은 아직도 끊기는구나'): a live blur(7px) on the 2.6x-zoomed room was re-run over that huge layer on every frame
+   anything else moved. The steps now fade in a picture blurred once (room_blur.jpg, make_room_blur.py) - same look, no filter. */
+.roomblur{position:absolute;inset:0;background:url(room_blur.jpg) center/cover;opacity:0;transition:opacity 900ms var(--io)}
+body.step .roomblur{opacity:1}
+body.s0 .roomblur{opacity:0}
 /* B (10-23 board): each stop blurs to a different colour (white arch, orange frames, olive candle) so the steps don't read as
    one house - a cream wash lit from the window evens them out while the room still shows through */
 .wash{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 900ms var(--io);
@@ -241,7 +245,7 @@ body.s2 .next:not(.sready){opacity:.5}
 </style>
 </head>
 <body class="dark">
-<div class="cam"><div class="room" id="room"><div class="breath"></div>
+<div class="cam"><div class="room" id="room"><div class="roomblur"></div><div class="breath"></div>
   <div class="tint2" id="tint2"></div><div class="tint" id="tint"></div><div class="glowvid"><img id="glowimg" alt=""></div>
   <div class="screen" id="screen"><video id="vA" muted playsinline loop preload="auto"></video><video id="vB" class="top" muted playsinline loop preload="auto"></video><i class="seam" id="seam"></i></div>
   <svg class="thread" viewBox="0 0 100 150" preserveAspectRatio="none"><path class="glow" id="tg" d=""/><path id="tp" d=""/></svg></div></div>
