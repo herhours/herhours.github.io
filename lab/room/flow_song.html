@@ -300,7 +300,11 @@ function aim(i) {
   const px = p.x / 100 * W, py = p.y / 100 * H;
   // the arch screen is 34.9% x 41.3% of the room: scale so it takes ~80% of the width but never more than 60% of the height
   const s = p.fit ? Math.min(innerWidth * .78 / (W * .349), innerHeight * .54 / (H * .413)) : p.s, dy = ((p.at || .5) - .5) * innerHeight;
-  room.style.transform = `translate(${W / 2 - px * s}px, ${H / 2 - py * s + dy}px) scale(${s})`;
+  // never let the room's edge come into view (10-24 phone: the turntable stop pulled the room's left edge in - a bare cream strip).
+  // The room's untransformed corner sits at (vw-W)/2, (vh-H)/2; keep its scaled box covering the screen.
+  const vw = innerWidth, vh = innerHeight, L0 = (vw - W) / 2, T0 = (vh - H) / 2, cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const tx = cl(W / 2 - px * s, vw - L0 - W * s, -L0), ty = cl(H / 2 - py * s + dy, vh - T0 - H * s, -T0);
+  room.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
 }
 function go(i) {
   step = Math.max(-1, Math.min(STOPS.length - 1, i));
