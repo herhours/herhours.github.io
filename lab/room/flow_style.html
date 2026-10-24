@@ -294,7 +294,7 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   function lightUp() {
     if (phase !== 'dark') return;
     phase = 'bloom'; onAt = performance.now(); cx = x > -1e3 ? x : W / 2; cy = x > -1e3 ? y : H * .45;
-    navigator.vibrate && navigator.vibrate(10);
+    navigator.vibrate && navigator.vibrate(20);
     setTimeout(() => { body.classList.remove('dark'); showName(); }, 900);
   }
   function reset() {
@@ -393,8 +393,9 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   function commit(dir) {   // the wiped-in video becomes the one underneath - no reload, no flash
     const k = (cur + dir + N) % N;
     back.classList.remove('top'); back.style.clipPath = ''; front.classList.add('top'); front.style.clipPath = 'inset(0 0 0 100%)';
-    [front, back] = [back, front]; back.pause(); show(k); navigator.vibrate && navigator.vibrate(6);
+    [front, back] = [back, front]; back.pause(); show(k); tick();
   }
+  function tick() { navigator.vibrate && navigator.vibrate(16); }   // 6 ms was barely felt on the Galaxy (영샘 10-24 '조금 더 강하게')
   function step(dir) { if (busy || !active) return; load(back, (cur + dir + N) % N); finish(dir, 0, 1, () => commit(dir)); }
   // drag
   let x0 = null, y0 = 0, t0 = 0, dir = 0, p = 0;
@@ -412,7 +413,7 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   addEventListener('pointerup', up, { passive: true }); addEventListener('pointercancel', up, { passive: true });
   addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
   dots.addEventListener('click', (e) => { const i = [...dots.children].indexOf(e.target); if (i < 0 || i === cur || busy) return;
-    const d = i > cur ? 1 : -1; load(back, i); finish(d, 0, 1, () => { const k = i; back.classList.remove('top'); back.style.clipPath = ''; front.classList.add('top'); front.style.clipPath = 'inset(0 0 0 100%)'; [front, back] = [back, front]; back.pause(); show(k); }); });
+    const d = i > cur ? 1 : -1; load(back, i); finish(d, 0, 1, () => { const k = i; back.classList.remove('top'); back.style.clipPath = ''; front.classList.add('top'); front.style.clipPath = 'inset(0 0 0 100%)'; [front, back] = [back, front]; back.pause(); show(k); tick(); }); });
   window.styleStep = (on) => { active = on; if (on) load(front, cur); else { front.pause(); back.pause(); } };
   show(0, true); front.dataset.k = 0; front.src = url(0);
   if (body.classList.contains('s0')) window.styleStep(true);   // ?s=0 opened the step before this script ran
