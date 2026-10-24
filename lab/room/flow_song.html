@@ -186,7 +186,7 @@ body.s1 .next:not(.ready){opacity:.5}
    only 「다음」/「뒤로」 stay glass (research: controls are glass, content is the room's objects). */
 .songlight{position:fixed;inset:0;pointer-events:none;opacity:0;mix-blend-mode:soft-light;background:radial-gradient(85% 55% at 50% 32%,var(--sl,rgb(255 220 170)),transparent 75%);transition:opacity 1200ms var(--io)}
 body.s2.playing .songlight{opacity:.95}
-.deck{position:relative;width:min(76vw,310px);aspect-ratio:1;margin:16px auto 0;flex:none}
+.deck{position:relative;width:min(72vw,300px);aspect-ratio:1;margin:16px auto 0;flex:none}
 .mat{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,#3a332d 0 18%,#2b2520 19% 64%,#221d19 65% 100%);
   box-shadow:0 0 0 7px rgb(214 196 168 / .55),0 0 0 8px rgb(255 255 255 / .55),0 22px 44px -14px rgb(40 25 10 / .6)}
 .vinyl{position:absolute;inset:3%;border-radius:50%;opacity:0;transform:scale(.9);transition:opacity 300ms,transform 300ms var(--out);
@@ -218,6 +218,13 @@ body.s2.playing .songlight{opacity:.95}
 .flydisc{position:fixed;left:0;top:0;z-index:30;border-radius:50%;pointer-events:none;background:repeating-radial-gradient(circle,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:0 10px 24px rgb(0 0 0 / .4)}
 .flydisc i{position:absolute;inset:34%;border-radius:50%;background:center/cover}
 body.s2 .next:not(.sready){opacity:.5}
+/* the chosen record's kind, in the gap between the crate and 「다음」 (영샘 10-24) */
+.genre{flex:none;margin:10px 0 0;text-align:center;font:600 12px/1.3 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-2);
+  text-shadow:0 0 10px rgb(255 248 236),0 0 18px rgb(255 248 236 / .9);transition:opacity 500ms}
+/* first try was gold on the cream wall with a cream halo - it vanished; dark ink now, the kind in deep gold */
+.genre.on{font:600 11px/1.3 Josefin,-apple-system,sans-serif;letter-spacing:.28em;color:var(--ink);text-shadow:0 1px 0 rgb(255 250 240 / .8);animation:gin 700ms cubic-bezier(.22,1,.36,1)}
+.genre.on b{font-weight:600;color:#8A5F22}
+@keyframes gin{from{opacity:0;transform:translateY(6px);filter:blur(4px)}}
 .dots i{position:relative;width:5px;height:5px;border-radius:3px;background:rgba(184,137,62,.38);transition:width 500ms var(--out),background 500ms,box-shadow 500ms}
 .dots i::before{content:"";position:absolute;inset:-14px -4px}
 .dots i.on{width:18px;background:var(--gold-hi);box-shadow:0 0 6px rgba(255,200,110,.9)}
@@ -252,7 +259,8 @@ body.s2 .next:not(.sready){opacity:.5}
 <section class="panel" data-step="2">
   <div class="lookname"><small id="songno">SONG · 8 RECORDS</small><b id="songname">Pick a record</b></div>
   <div class="deck" id="deck"><div class="mat"></div><div class="vinyl" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div><div class="arm" id="arm"><i></i></div></div>
-  <div class="crate"><div class="sleeves" id="sleeves"></div><div class="front"></div></div></section>
+  <div class="crate"><div class="sleeves" id="sleeves"></div><div class="front"></div></div>
+  <p class="genre" id="genre">상자를 넘겨 한 장 골라 보세요</p></section>
 <section class="panel" data-step="3"><h2>Words</h2><p class="k">노트에 적으면 영상 위에 그대로</p>
   <div class="field glass"><label>이름</label><input placeholder="예: 유나" value=""></div><div class="field glass"><label>제목</label><input placeholder="예: 우리의 겨울" value=""></div></section>
 <section class="panel" data-step="4"><h2>Light it</h2><p class="k">촛불을 켜면 영상이 만들어져요</p><button class="candle glass mint press">🕯</button></section>
@@ -549,6 +557,8 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   const $ = (id) => document.getElementById(id), box = $('sleeves'), vinyl = $('vinyl'), label = $('label'), arm = $('arm'), deck = $('deck');
   const nameEl = $('songname'), noEl = $('songno'), next = $('next'), light = $('songlight');
   const src = (id) => (id === 'green' ? '../../test/assets/green_light.mp3' : `../../test/assets/songs/${id}.mp3`);
+  // the line under the crate: only what the app's song list already says (core.js group) + who sings - no invented genres
+  const GENRE = (i) => { const [id, , who] = SONGS[i]; const g = id.startsWith('hw_') ? 'HALLOWEEN' : id === 'green' ? 'HER HOURS · LYRICS' : 'HER HOURS · VOCAL'; return `<b>${g}</b>  ·  SUNG BY ${who.toUpperCase()}`; };
   const sleeves = SONGS.map(([id, n, who], i) => { const s = document.createElement('div'); s.className = 'sleeve'; s.style.backgroundImage = `url(covers/${id}.jpg)`; s.dataset.i = i; s.setAttribute('aria-label', n); box.append(s); return s; });
   // standing in the crate: the one in the middle stands up, the rest lean back and turn a little away (principle 6: follows the finger 1:1)
   function lean() {
@@ -586,11 +596,21 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
     document.body.append(f);
     const x0 = sb.left + (sb.width - sw) / 2, y0 = sb.top, x2 = db.left + db.width * .03, y2 = db.top + db.height * .03, cx = (x0 + x2) / 2 + 70, cy = Math.min(y0, y2) - 30;
     vinyl.classList.remove('on');
-    const frames = [{ transform: `translate(${x0}px,${y0}px) scale(1)`, offset: 0 }, { transform: `translate(${x0}px,${y0 - sw * .55}px) scale(1)`, offset: .3 }];
-    for (let k = 1; k <= 10; k++) { const t = k / 10, u = 1 - t, ys = y0 - sw * .55; frames.push({ offset: .3 + .7 * t,
-      transform: `translate(${u * u * x0 + 2 * u * t * cx + t * t * x2}px,${u * u * ys + 2 * u * t * cy + t * t * y2}px) scale(${1 + (D / sw - 1) * t}) rotate(${t * 200}deg)` }); }
-    f.animate(frames, { duration: 1300, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' }).onfinish = () => {
-      label.style.backgroundImage = `url(covers/${SONGS[i][0]}.jpg)`; vinyl.classList.add('on', 'spin'); f.remove();
+    // out of the sleeve (to .22) → a curve to a spot just above the platter, a touch large, shadow wide (to .72) →
+    // then it settles down onto the platter, slowing all the way (영샘 10-24 '올라갔다가 감속으로 천천히 살짝 정착')
+    const S = D / sw, hover = D * .07, ys = y0 - sw * .55, sh = (b, o) => `0 ${b}px ${b * 2.2}px rgb(0 0 0 / ${o})`;
+    const io = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const frames = [{ transform: `translate(${x0}px,${y0}px) scale(1) rotate(0deg)`, boxShadow: sh(6, .35), offset: 0 },
+      { transform: `translate(${x0}px,${ys}px) scale(1) rotate(0deg)`, boxShadow: sh(8, .35), offset: .22, easing: 'linear' }];
+    for (let k = 1; k <= 12; k++) { const t = io(k / 12), u = 1 - t, yh = y2 - hover;
+      frames.push({ offset: .22 + .5 * k / 12, easing: 'linear', boxShadow: sh(8 + 14 * t, .35 - .1 * t),
+        transform: `translate(${u * u * x0 + 2 * u * t * cx + t * t * x2}px,${u * u * ys + 2 * u * t * cy + t * t * yh}px) scale(${1 + (S * 1.05 - 1) * t}) rotate(${300 * t}deg)` }); }
+    frames[frames.length - 1].easing = 'cubic-bezier(.16,1,.3,1)';
+    frames.push({ offset: 1, transform: `translate(${x2}px,${y2}px) scale(${S}) rotate(360deg)`, boxShadow: sh(3, .3) });
+    f.animate(frames, { duration: 2100, fill: 'forwards' }).onfinish = () => {
+      // hand over to the platter's record without its own fade/scale-in (that read as a second pop)
+      label.style.backgroundImage = `url(covers/${SONGS[i][0]}.jpg)`; vinyl.style.transition = 'none'; vinyl.classList.add('on', 'spin'); vinyl.offsetWidth; vinyl.style.transition = ''; f.remove();
+      const ge = $('genre'); ge.classList.remove('on'); ge.innerHTML = GENRE(i); ge.offsetWidth; ge.classList.add('on');
       sleeves.forEach((s, k) => s.classList.toggle('empty', k === i));
       nameEl.textContent = SONGS[i][1]; noEl.textContent = `SONG · ${SONGS[i][2].toUpperCase()}`;
       nameEl.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 700, easing: 'cubic-bezier(.22,1,.36,1)' });
