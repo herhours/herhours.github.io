@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E9DCC6">
+<title>만들기 화면 시안 — 그녀의 방</title>
+<!-- 10-24 클로: 잠근 다섯 화면(flow_words.html) 다음 = 만들기. 10-23 making.html 컨셉(영샘 '컨셉 좋다') 을 흐름에 붙임 —
+     오토만 위 촛불을 누르면 불이 붙고, 카메라가 아치로 돌아가 고른 룩이 젖빛 뒤에서 재생된다. 사진 단계에서 고른 사진들이
+     아치 옆에 걸려 리본처럼 한 줄씩 풀려 금실로 날아가 엮이고, 젖빛이 아래부터 맑아지는 높이 = 진행률(막대 없음).
+     끝에 아치 테두리가 타오르며 'There she is.'. 오늘 배운 부드러움 규칙대로 다시 짬: 젖빛은 미리 흐린 작은 그림(실시간 blur 없음),
+     맑아짐은 transform 두 겹(높이 바꾸기 없음), 테두리 빛은 캔버스(움직이는 conic+drop-shadow 없음). 비교용 flow_words.html 그대로. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<!-- 10-24 클로: 잠근 첫 화면·스타일·사진·노래(flow_song.html) 다음 = 글자. 조사 RESEARCH_step_screens §5 클로 추천 —
+     소파 위 노트로 걸어 들어가면 크림색 종이에 질문 한 줄씩(라벨·네모 칸·글자 수 없음), 쓰는 글자가 한 자씩 금박으로 피어난다.
+     실제 입력칸은 16px 투명(iOS 확대 방지)이고 보이는 글자는 위에 따로 그린다. 「다른 질문」으로 물음이 바뀐다.
+     「다음」을 누르면 쓴 글자가 한 자씩 물결처럼 빛난 뒤 넘어간다. 오늘 배운 대로 blend·실시간 큰 흐림 없이. 비교용 flow_song.html 그대로. -->
+<!-- 10-24 클로: 잠근 첫 화면·스타일·사진(flow_photos.html) 다음 = 노래. 조사 RESEARCH_step_screens §4 클로 추천 그대로 —
+     위 턴테이블, 아래 원목 상자에 소매가 비스듬히 서 있다. 옆으로 넘기면 가운데 장만 똑바로 서고 나머지는 뒤로 기운다.
+     소매를 누르면 판이 빠져나와 곡선을 그리며 턴테이블에 올라가고, 바늘이 내려가며 15초를 들려준다(앱 test/ 의 진짜 mp3).
+     곡의 표지 색이 방 빛으로 번진다. 곡 표·파형·진행 막대·재생 버튼 줄 없음. 비교용 flow_photos.html 그대로. -->
+<!-- 10-24 클로: 잠근 첫 화면·스타일(flow_style.html) 다음 = 사진. 조사 RESEARCH_step_screens §3 클로 추천 그대로 —
+     흐린 벽에 살짝 기운 빈 폴라로이드 10장을 불규칙하게(꼭 채울 3장은 금테, 7장은 희미한 테 — '3/10 필수' 같은 말 대신 테가 말한다),
+     빈 장을 누르면 폰 사진 선택기(앱 안 사진첩 격자 없음) → 고른 사진이 아래에서 곡선을 그리며 날아가 꽂히고 하얀빛에서 천천히 '현상'된다.
+     꽂힌 장을 누르면 들리며 ✕. 시험용 '예시 사진으로 채워 보기'. 비교용 flow_style.html 그대로. -->
+<!-- 10-24 클로: 잠근 입구 빛 첫 화면(flow_light.html) 다음 단계 = 스타일. 조사 RESEARCH_step_screens §2 클로 추천 그대로 —
+     아치는 무대로 두고(방 안 진짜 아치 자리에 영상, 카메라와 같이 커짐) 옆으로 쓸면 금빛 선이 지나가며 룩만 바뀐다(잠금화면 방식),
+     룩의 색이 니치와 벽으로 번진다. 룩 이름 금박 한 줄 + 작은 점 9개. 카드 줄·격자·슬라이더 없음. 비교용 flow_light.html 그대로. -->
+<!-- 10-24 클로: flow.html 첫 화면 + 입구 빛(21st 2891 Spotlight reveal · 19257 Text Reveal, 영샘 10-24 입구 빛 "오 좋은데?").
+     방은 불 꺼진 밤으로 열린다 → 손가락 닿는 자리만 따뜻하게 보인다 → 손을 떼거나 1초 머물면 그 자리부터 방에 불이 번진다('Light it')
+     → 이름이 글자마다 올라오고 버튼이 차례로 뜬다 → 켜진 뒤엔 은은한 빛이 손을 따라오고, 가만두면 오른쪽 위 창(guide 의 빛 하나)으로 돌아간다.
+     아무도 안 만지면 빛이 혼자 떠돌다 7초 뒤 스스로 켜진다. 비교용 원본 flow.html 그대로. -->
+
+<!-- 10-22 밤 영샘 "첫 화면은 시작·내 영상·정보만, 시작 누르면 스타일 전체 화면, 다음 누르면 사진…" 첫 시안(클로, 영샘 의견 전).
+     조사(RESEARCH_step_flow_20261022.md) 결론대로: 실시간 3D 말고 방 그림 위 2.5D 줌 — 단계마다 카메라가 방 안 그 물건으로 걸어 들어가고
+     (아치 = 스타일 · 벽 액자 = 사진 · 턴테이블 = 노래 · 노트 = 글자 · 촛불 = 만들기), 방은 흐려져 뒤에 남는다. 금빛 실이 단계 표시.
+     「다음」은 아래 전폭 유리 하나, 「뒤로」는 왼쪽 위 작게. 모션은 최고 성능 폰 기준(영샘 10-22). -->
+<style>
+:root{--ink:#3B2F22;--ink-2:#6E5F4B;--gold:#B8893E;--gold-hi:#E2B867;--mint:150 214 176;--io:cubic-bezier(.65,0,.35,1);--out:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#E9DCC6;color:var(--ink);font:16px/1.45 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+/* the room: one layer the camera moves over */
+.cam{position:fixed;inset:0;overflow:hidden}
+.room{position:absolute;left:50%;top:50%;width:max(100vw,calc(100dvh * 2 / 3));aspect-ratio:2/3;translate:-50% -50%;
+  background:url(room.jpg) center/cover;transform-origin:0 0;will-change:transform;
+  transition:transform 1150ms var(--io)}
+/* phones (10-24 '폰은 아직도 끊기는구나'): a live blur(7px) on the 2.6x-zoomed room was re-run over that huge layer on every frame
+   anything else moved. The steps now fade in a picture blurred once (room_blur.jpg, make_room_blur.py) - same look, no filter. */
+.roomblur{position:absolute;inset:0;background:url(room_blur.jpg) center/cover;opacity:0;transition:opacity 900ms var(--io)}
+body.step .roomblur{opacity:1}
+body.s0 .roomblur{opacity:0}
+/* B (10-23 board): each stop blurs to a different colour (white arch, orange frames, olive candle) so the steps don't read as
+   one house - a cream wash lit from the window evens them out while the room still shows through */
+.wash{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 900ms var(--io);
+  background:radial-gradient(70% 45% at 88% 0%,rgb(255 251 240 / .75),transparent 70%),linear-gradient(180deg,rgb(251 244 232 / .78),rgb(246 236 220 / .62) 55%,rgb(236 222 200 / .55))}
+html.veil body.step .wash{opacity:1}
+.breath{position:absolute;inset:0;animation:breath 9s ease-in-out infinite alternate}
+@keyframes breath{from{transform:scale(1)}to{transform:scale(1.025)}}
+/* the gold thread across the room (home) */
+.thread{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:1;transition:opacity 600ms}
+.thread path{fill:none;stroke:rgba(255,236,190,.95);stroke-width:1.4;stroke-dasharray:1 7;stroke-linecap:round;vector-effect:non-scaling-stroke;animation:flow 6s linear infinite}
+.thread path.glow{stroke:rgba(255,200,120,.4);stroke-width:5}
+@keyframes flow{to{stroke-dashoffset:-64}}
+.thread circle{fill:#FFF6DC;filter:drop-shadow(0 0 4px rgba(255,210,140,.95))}
+body.step .thread{opacity:0}
+/* glass */
+.glass{background:linear-gradient(180deg,rgb(255 255 255 / .30),rgb(255 255 255 / .12) 55%,rgb(255 255 255 / .06));
+  box-shadow:inset 0 1.5px 0 rgb(255 255 255 / .95),inset 0 0 0 1px rgb(255 255 255 / .6),inset 0 -10px 16px -8px rgb(255 255 255 / .45),0 10px 26px -8px rgb(60 40 15 / .28);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
+.mint{background:linear-gradient(180deg,rgb(var(--mint) / .55),rgb(var(--mint) / .28));color:#1F4630;box-shadow:inset 0 1.5px 0 #fff,inset 0 0 0 1px rgb(220 255 235 / .9),0 10px 26px -8px rgb(40 70 50 / .3),0 0 24px rgb(var(--mint) / .35)}
+.press{transition:transform 380ms var(--out)}
+.press:active,.press.down{transform:scale(.96);transition-duration:110ms}
+.depth{text-shadow:0 -1px 0 rgb(255 255 255 / .55),0 1px 0 rgb(60 40 15 / .22),0 2px 2px rgb(60 40 15 / .16)}
+/* home */
+.home{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 18px calc(env(safe-area-inset-bottom) + 22px);
+  transition:opacity 500ms var(--io),translate 700ms var(--io)}
+body.step .home{opacity:0;translate:0 30px;pointer-events:none}
+.brand{font:400 30px/1 "Snell Roundhand","Apple Chancery",cursive,serif;color:var(--gold-hi);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 #9A6F2E,0 3px 6px rgb(90 60 20 / .35)}
+.head{margin-top:14px;font:italic 300 40px/1 Georgia,serif}
+.head small{display:block;margin-top:10px;font:14px/1.4 -apple-system,"Apple SD Gothic Neo",sans-serif;font-style:normal;color:var(--ink-2)}
+.start{width:100%;min-height:68px;border-radius:999px;font-size:20px;font-weight:800;letter-spacing:.04em}
+.links{display:flex;justify-content:center;gap:12px;margin-top:12px}
+.links button{border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700}
+/* steps */
+.stage{position:fixed;inset:0;pointer-events:none}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;align-items:center;gap:10px;z-index:5;
+  opacity:0;translate:0 -12px;transition:opacity 500ms var(--io) 300ms,translate 600ms var(--io) 300ms;pointer-events:none}
+body.step .top{opacity:1;translate:0 0;pointer-events:auto}
+.back{width:44px;height:44px;border-radius:50%;font-size:20px;flex:none}
+.prog{flex:1;height:44px}
+.prog path{fill:none;stroke:rgba(184,137,62,.35);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.prog path.lit{stroke:var(--gold-hi);stroke-dasharray:none;transition:stroke-dashoffset 900ms var(--io)}
+.prog circle{fill:#F4E7CC;stroke:rgba(184,137,62,.6);stroke-width:1.5;transition:fill 500ms,r 500ms}
+.prog circle.on{fill:#FFF3D6;stroke:var(--gold-hi);filter:drop-shadow(0 0 6px rgba(255,200,110,.95))}
+.prog text{font:600 9px -apple-system,sans-serif;fill:var(--ink-2);letter-spacing:.06em}
+.panel{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 70px);bottom:calc(env(safe-area-inset-bottom) + 100px);padding:0 18px;
+  display:flex;flex-direction:column;opacity:0;translate:0 24px;scale:.98;pointer-events:none;transition:opacity 420ms var(--io),translate 600ms var(--out),scale 600ms var(--out)}
+.panel.on{opacity:1;translate:0 0;scale:1;pointer-events:auto;transition-delay:520ms}
+/* the room behind is bright (window light) - dark ink with a raised light lip, like kit.css type */
+.panel h2{font:italic 300 40px/1 Georgia,serif;color:var(--ink);text-shadow:0 -1px 0 rgb(255 250 235 / .9),0 1px 0 rgb(90 60 20 / .25),0 3px 8px rgb(255 245 225 / .9)}
+.panel p.k{margin:8px 0 14px;font-size:14px;font-weight:600;color:var(--ink-2);text-shadow:0 0 8px rgb(255 248 236 / .95),0 1px 0 rgb(255 255 255 / .8)}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px;scrollbar-width:none;flex:1;align-items:center}
+.rail::-webkit-scrollbar{display:none}
+.look{flex:0 0 58%;scroll-snap-align:center;border-radius:22px;padding:8px;text-align:left}
+.look img{display:block;width:100%;aspect-ratio:9/14;object-fit:cover;border-radius:16px}
+.look b{display:block;margin:8px 4px 2px;font-size:15px}
+.look.sel{box-shadow:0 0 0 3px var(--gold-hi),0 0 22px rgba(255,200,110,.6)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{aspect-ratio:3/4;border-radius:16px;display:grid;place-items:center;font-size:28px;color:#fff}
+.songs{display:flex;flex-direction:column;gap:10px;overflow:auto}
+.song{display:flex;align-items:center;gap:12px;border-radius:18px;padding:8px;text-align:left}
+.song img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.song.sel{box-shadow:0 0 0 3px var(--gold-hi)}
+.field{border-radius:18px;padding:14px 16px;margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.field input{width:100%;border:0;background:none;font:600 18px -apple-system,sans-serif;color:var(--ink);outline:none}
+.candle{margin:auto;width:150px;height:150px;border-radius:50%;font-size:56px}
+.next{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 22px);min-height:64px;border-radius:999px;font-size:18px;font-weight:800;z-index:5;
+  opacity:0;translate:0 20px;pointer-events:none;transition:opacity 500ms var(--io) 400ms,translate 600ms var(--io) 400ms}
+body.step .next{opacity:1;translate:0 0;pointer-events:auto}
+.skip{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 4px);text-align:center;font-size:12px;font-weight:600;color:var(--ink-2);text-shadow:0 0 6px rgb(255 248 236 / .95);z-index:5;opacity:0;transition:opacity 400ms}
+body.step .skip{opacity:.9}
+.tag{position:fixed;right:10px;top:calc(env(safe-area-inset-top) + 6px);font-size:10px;color:var(--ink-2);opacity:.7;z-index:9}
+@media (prefers-reduced-motion:reduce){.room,.panel,.home,.top,.next{transition-duration:1ms}.breath,.thread path{animation:none}}
+/* entrance light (10-24): the canvas sits over the room, under the home; soft-light once the room is lit so it warms instead of washing */
+#lamp{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity 700ms var(--io)}
+#lamp.lit{mix-blend-mode:soft-light}
+body.step #lamp{opacity:0}
+.hint{position:fixed;left:0;right:0;top:46%;text-align:center;font:italic 400 15px/1 Georgia,serif;letter-spacing:.32em;color:rgb(255 232 190 / .62);
+  text-shadow:0 0 12px rgb(255 190 110 / .35);pointer-events:none;transition:opacity 900ms var(--io);animation:hint 3.2s ease-in-out infinite alternate}
+@keyframes hint{from{opacity:.35}to{opacity:.85}}
+body.lit .hint,body.touched .hint{opacity:0!important;animation:none}
+/* before the light: the home waits; after, each part rises in turn (the name itself is revealed letter by letter in script) */
+body.dark .home .rise{opacity:0;translate:0 18px}
+.home .rise{transition:opacity 900ms var(--out),translate 1100ms var(--out)}
+body.dark .home{pointer-events:none}
+/* style step (10-24): the arch in the room IS the screen - it lives inside .room at v3's .screen place, so it grows with the
+   camera instead of floating over it as a card. Swiping wipes the next look across behind a gold seam (lock-screen style:
+   the stage stays, only the look changes), and the look's own colour bleeds into the niche and the wall. */
+@font-face{font-family:Josefin;src:url(fonts/JosefinSans-SemiBold.ttf);font-display:swap}
+.screen{position:absolute;left:32.9%;top:5.1%;width:34.9%;height:41.3%;overflow:hidden;z-index:2;border-radius:50% 50% 6px 6px / 27% 27% 6px 6px;
+  opacity:0;transition:opacity 700ms var(--io);
+  box-shadow:0 0 0 1px rgba(240,214,160,.85),0 0 0 3px rgba(255,248,236,.35),0 10px 26px rgba(120,80,30,.28),0 0 40px rgba(255,236,200,.6)}
+body.s0 .screen{opacity:1;transition-delay:450ms}
+.screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;z-index:1}
+.screen video.top{z-index:2;clip-path:inset(0 0 0 100%)}
+.screen::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(118deg,rgba(255,255,255,0) 30%,rgba(255,248,230,.20) 46%,rgba(255,255,255,0) 60%),linear-gradient(to bottom,rgba(255,226,170,.10),rgba(120,80,30,.12))}
+.seam{position:absolute;top:-4%;bottom:-4%;left:0;width:1.5px;margin-left:-.75px;z-index:3;opacity:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent,#FFE7B0 18%,#fff 50%,#FFE7B0 82%,transparent);box-shadow:0 0 8px 1px rgba(255,214,140,.95),0 0 22px 5px rgba(255,200,120,.45)}
+.glowvid{position:absolute;left:24%;top:-1%;width:52%;height:54%;z-index:1;pointer-events:none;opacity:0;mix-blend-mode:soft-light;transition:opacity 900ms var(--io)}
+body.s0 .glowvid{opacity:.8}
+.glowvid img{display:block;width:100%;height:100%;object-fit:cover;filter:blur(26px) saturate(1.3);transition:opacity 700ms var(--io)}
+.tint{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background-color:rgb(200 170 130);mix-blend-mode:soft-light;
+  transition:background-color 1400ms var(--io),opacity 900ms var(--io);
+  -webkit-mask-image:radial-gradient(62% 38% at 50% 27%,#000 35%,transparent 100%);mask-image:radial-gradient(62% 38% at 50% 27%,#000 35%,transparent 100%)}
+body.s0 .tint{opacity:1}
+/* soft-light alone barely showed on the cream wall (Window Band's blue read as nothing) - a second, hue-carrying layer underneath */
+.tint2{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background-color:rgb(200 170 130);mix-blend-mode:color;
+  transition:background-color 1400ms var(--io),opacity 900ms var(--io);
+  -webkit-mask-image:radial-gradient(46% 30% at 50% 26%,#000 20%,transparent 100%);mask-image:radial-gradient(46% 30% at 50% 26%,#000 20%,transparent 100%)}
+body.s0 .tint2{opacity:.38}
+body.s0 .room{filter:none}
+.panel.on[data-step="0"]{pointer-events:none}
+/* the look's name takes the title's place (the thread above already says STYLE); first try put it under the arch, on the sofa, where it vanished */
+.lookname{padding-top:2px}
+.lookname small{display:block;font:600 10px/1 Josefin,-apple-system,sans-serif;letter-spacing:.34em;color:var(--ink-2);text-shadow:0 0 8px rgb(255 248 236 / .95)}
+.lookname b{display:block;margin:8px 0 12px;font:italic 400 34px/1.05 Georgia,serif;color:var(--gold);min-height:1.1em;
+  text-shadow:0 -1px 0 rgb(255 250 235 / .95),0 1px 0 #7E5A22,0 3px 8px rgb(255 245 225 / .9)}
+.dots{display:flex;gap:9px;pointer-events:auto;width:max-content}
+.swipe{margin-top:auto;text-align:center;font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em;transition:opacity 700ms var(--io);
+  text-shadow:0 0 10px rgb(255 248 236),0 0 18px rgb(255 248 236 / .9),0 1px 0 rgb(255 255 255 / .8)}
+.swipe.gone{opacity:0}
+/* photos step (10-24): empty polaroids pinned to the blurred wall, irregular (7). Three that must be filled carry a gold rim,
+   the other seven are fainter - the rim says what '3 of 10 required' would have said. A chosen photo flies in on a curve and develops. */
+.wall{position:relative;flex:1;margin-top:12px}
+.pola{position:absolute;aspect-ratio:.84;padding:6% 6% 0;border-radius:3px;background:linear-gradient(180deg,#FFFDF8,#F4ECDD);transform:rotate(var(--r));
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .9),0 10px 22px -8px rgb(60 40 15 / .45),0 2px 4px rgb(60 40 15 / .18);
+  transition:transform 600ms var(--out),box-shadow 600ms var(--out),opacity 600ms;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.pola .ph{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:1px;background:linear-gradient(160deg,#F2EDE4,#E4DBCC);box-shadow:inset 0 0 0 1px rgb(120 90 50 / .12)}
+.pola .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pola .ph img.dev{animation:develop 3800ms cubic-bezier(.3,0,.2,1) forwards}
+@keyframes develop{0%{filter:brightness(2.6) saturate(0) contrast(.55) blur(3px);opacity:.2}30%{opacity:.85}100%{filter:none;opacity:1}}
+.pola .ph img.gone{transition:opacity 500ms,transform 500ms;opacity:0;transform:scale(1.06)}
+.pola .pin{position:absolute;left:50%;top:-5px;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFF1C9,#C9963F 60%,#8A5F22);box-shadow:0 2px 3px rgb(60 40 15 / .45)}
+.pola .no{position:absolute;left:0;right:0;bottom:5%;text-align:center;font:italic 400 13px/1 Georgia,serif;color:rgb(160 120 55 / .75)}
+.pola.req{box-shadow:0 0 0 1.5px var(--gold-hi),0 0 16px rgb(255 200 110 / .55),0 10px 22px -8px rgb(60 40 15 / .45)}
+.pola.req .no{color:var(--gold)}
+.pola:not(.req):not(.full){opacity:.66}
+.pola.lift{transform:rotate(0deg) translateY(-8px) scale(1.14);z-index:3;box-shadow:0 0 0 1.5px rgb(255 255 255 / .9),0 22px 40px -10px rgb(60 40 15 / .5)}
+.pola .x{position:absolute;right:-12px;top:-12px;width:30px;height:30px;border-radius:50%;font-size:12px;display:none;place-items:center;z-index:2}
+.pola.lift .x{display:grid}
+.pola.fly{position:fixed;left:0;top:0;z-index:30;pointer-events:none;opacity:1}
+.demo{margin:4px auto 0;font-size:12px;font-weight:600;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;text-shadow:0 0 8px rgb(255 248 236)}
+body.s1 .next:not(.ready){opacity:.5}
+/* song step (10-24): the turntable above, a wooden crate of sleeves below. Contents are things (vinyl, sleeves, wood),
+   only 「다음」/「뒤로」 stay glass (research: controls are glass, content is the room's objects). */
+/* phone stutter (영샘 10-24 '모션이 엄청 끊기는데'): desktop ran 100 fps, so it was the phone's GPU - every blend mode over the
+   spinning record re-mixed the whole blurred room each frame. The light is now a plain see-through colour, no blending. */
+.songlight{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(85% 55% at 50% 32%,var(--sl,rgb(255 220 170)),transparent 75%);transition:opacity 1200ms var(--io)}
+body.s2.playing .songlight{opacity:.28}
+/* the same reason: nothing may keep moving inside the blurred room (the breathing, the gold thread's dash flow) or the 7px blur is
+   re-run over the whole scaled room every frame; and the style step's blend layers are taken out of the picture when not on that step */
+body.step .breath,body.step .thread path{animation:none}
+body.step .thread{visibility:hidden;transition:opacity 600ms,visibility 0s 600ms}
+body:not(.s0) .screen,body:not(.s0) .glowvid,body:not(.s0) .tint,body:not(.s0) .tint2{visibility:hidden;transition:opacity 700ms,visibility 0s 700ms}
+body.step #lamp{visibility:hidden;transition:opacity 700ms,visibility 0s 700ms}
+.deck{position:relative;width:min(72vw,300px);aspect-ratio:1;margin:16px auto 0;flex:none}
+.mat{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,#3a332d 0 18%,#2b2520 19% 64%,#221d19 65% 100%);
+  box-shadow:0 0 0 7px rgb(214 196 168 / .55),0 0 0 8px rgb(255 255 255 / .55),0 22px 44px -14px rgb(40 25 10 / .6)}
+.vinyl{position:absolute;inset:3%;border-radius:50%;opacity:0;transform:scale(.9);transition:opacity 300ms,transform 300ms var(--out);
+  background:repeating-radial-gradient(circle at 50% 50%,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:inset 0 0 0 2px #0c0b0a}
+.vinyl.on{opacity:1;transform:none}
+.vinyl.spin{animation:spin 1.8s linear infinite;will-change:rotate}
+@keyframes spin{to{rotate:360deg}}
+.vinyl .label{position:absolute;inset:34%;border-radius:50%;background:#C9A36A center/cover;box-shadow:0 0 0 2px rgb(0 0 0 / .35)}
+.vinyl .label::after{content:"";position:absolute;left:50%;top:50%;width:7%;height:7%;margin:-3.5% 0 0 -3.5%;border-radius:50%;background:#E8DFD0;box-shadow:inset 0 1px 2px rgb(0 0 0 / .6)}
+/* the light on a record doesn't turn with it - the sheen sits still above the spinning disc */
+.sheen{position:absolute;inset:3%;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 20deg,transparent 0 8%,rgb(255 245 225 / .13) 13%,transparent 20% 50%,rgb(255 245 225 / .10) 63%,transparent 70%)}
+.arm{position:absolute;right:3%;top:1%;width:12px;height:66%;margin-right:-6px;transform-origin:6px 10px;transform:rotate(3deg);transition:transform 900ms cubic-bezier(.45,0,.2,1);z-index:2;pointer-events:none}
+.arm::before{content:"";position:absolute;left:-5px;top:-1px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfc7bb 45%,#8d857a);box-shadow:0 3px 6px rgb(40 25 10 / .45)}
+.arm i{position:absolute;left:4px;top:10px;bottom:10px;width:4px;border-radius:2px;background:linear-gradient(90deg,#9a9288,#f4efe7 45%,#a9a196);box-shadow:2px 3px 5px rgb(40 25 10 / .35)}
+.arm::after{content:"";position:absolute;left:-1px;bottom:0;width:14px;height:20px;border-radius:2px 2px 3px 3px;background:linear-gradient(180deg,#e9e3da,#a39b90);box-shadow:2px 3px 5px rgb(40 25 10 / .4)}
+.arm.down{transform:rotate(24deg)}
+.crate{position:relative;margin-top:auto;height:178px;flex:none}
+.sleeves{position:absolute;left:-18px;right:-18px;bottom:30px;height:170px;display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  padding:0 calc(50% - 58px);scrollbar-width:none;perspective:700px;-webkit-overflow-scrolling:touch}
+.sleeves::-webkit-scrollbar{display:none}
+.sleeve{flex:0 0 116px;height:116px;margin:0 -16px;scroll-snap-align:center;border-radius:2px;background:#ccc center/cover;transform-origin:50% 100%;
+  box-shadow:inset 0 0 0 1px rgb(255 255 255 / .25),0 -2px 10px rgb(40 25 10 / .25),0 12px 18px -10px rgb(40 25 10 / .5);will-change:transform;cursor:pointer}
+.sleeve.empty{filter:brightness(.82) saturate(.7)}
+.front{position:absolute;left:-6px;right:-6px;bottom:0;height:58px;border-radius:6px 6px 8px 8px;pointer-events:none;
+  background:repeating-linear-gradient(92deg,rgb(255 255 255 / .05) 0 2px,transparent 2px 9px),linear-gradient(180deg,#C99A62,#A87A45 60%,#8E6435);
+  box-shadow:inset 0 2px 0 rgb(255 230 190 / .7),inset 0 -6px 12px rgb(60 35 10 / .35),0 14px 26px -10px rgb(60 35 10 / .55)}
+.front::after{content:"";position:absolute;left:50%;top:18px;width:46px;height:14px;margin-left:-23px;border-radius:7px;background:rgb(60 35 10 / .45);box-shadow:inset 0 2px 3px rgb(0 0 0 / .4)}
+/* drawn once at full size and only moved/scaled (an animated shadow on a growing disc was a repaint every frame) */
+.flydisc{position:fixed;left:0;top:0;z-index:30;border-radius:50%;pointer-events:none;will-change:transform;
+  background:repeating-radial-gradient(circle,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:0 12px 26px rgb(0 0 0 / .38)}
+.flydisc i{position:absolute;inset:34%;border-radius:50%;background:center/cover}
+body.s2 .next:not(.sready){opacity:.5}
+/* the chosen record's kind, in the gap between the crate and 「다음」 (영샘 10-24) */
+.genre{flex:none;margin:10px 0 0;text-align:center;font:600 12px/1.3 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-2);
+  text-shadow:0 0 10px rgb(255 248 236),0 0 18px rgb(255 248 236 / .9);transition:opacity 500ms}
+/* first try was gold on the cream wall with a cream halo - it vanished; dark ink now, the kind in deep gold */
+.genre.on{font:600 11px/1.3 Josefin,-apple-system,sans-serif;letter-spacing:.28em;color:var(--ink);text-shadow:0 1px 0 rgb(255 250 240 / .8);animation:gin 700ms cubic-bezier(.22,1,.36,1)}
+.genre.on b{font-weight:600;color:#8A5F22}
+@keyframes gin{from{opacity:0;transform:translateY(6px);filter:blur(4px)}}
+/* words step (10-24): an open notebook page - cream paper, a ribbon, a question per line; the letters bloom up in gold as typed.
+   The real input is a transparent 16px field over each line (smaller and iOS zooms the page); what shows is drawn above it. */
+.note{position:relative;width:88%;margin:18px auto 0;padding:20px 22px 14px 26px;border-radius:3px 10px 10px 3px;transform:rotate(-1.2deg);flex:none;
+  background:linear-gradient(180deg,#FFFCF5,#F6EEDF);
+  box-shadow:inset 7px 0 10px -6px rgb(120 90 50 / .35),inset 0 1px 0 #fff,0 18px 34px -14px rgb(60 40 15 / .5),0 3px 6px rgb(60 40 15 / .14)}
+.note::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:1px;background:rgb(200 120 110 / .28)}
+.ribbon{position:absolute;right:30px;top:-8px;width:13px;height:66px;background:linear-gradient(90deg,#7FA88E,#9CC2A8 50%,#7FA88E);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 86%,0 100%);box-shadow:0 2px 3px rgb(40 60 45 / .3)}
+.line{display:block;position:relative;padding:4px 0 6px;margin-bottom:12px;cursor:text}
+.line .q{display:block;font:italic 400 13px/1.3 "Gowun Batang",Georgia,serif;color:var(--ink-2);transition:opacity 260ms}
+.line .ink{display:block;height:46px;padding-top:4px;font:700 28px/1.35 "Gowun Batang",Georgia,serif;color:#B8893E;white-space:nowrap;overflow:hidden;
+  text-shadow:0 -1px 0 rgb(255 250 235 / .95),0 1px 0 #7E5A22,0 2px 3px rgb(90 60 20 / .28);border-bottom:1px solid rgb(184 137 62 / .32);transition:border-color 400ms,box-shadow 400ms}
+.line.on .ink{border-bottom-color:var(--gold-hi);box-shadow:0 1px 0 var(--gold-hi),0 8px 10px -9px rgb(255 190 100 / .9)}
+.ink .ghost{font-weight:400;color:rgb(110 95 75 / .26);text-shadow:none}
+.ink .c{display:inline-block;white-space:pre}
+.ink .c.new{animation:bloomin 560ms cubic-bezier(.22,1,.36,1)}
+@keyframes bloomin{from{opacity:0;transform:translateY(9px) scale(.55);color:#FFE7A8}}
+.ink .c.wave{animation:wave 760ms cubic-bezier(.22,1,.36,1) both}
+@keyframes wave{40%{transform:translateY(-7px) scale(1.14);color:#FFE6A6}}
+.ink .caret{display:inline-block;width:1.5px;height:.9em;margin-left:2px;vertical-align:-.08em;background:var(--gold);opacity:0}
+.line.on .caret{opacity:1;animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.line input{position:absolute;inset:0;width:100%;height:100%;font-size:16px;color:transparent;caret-color:transparent;background:none;border:0;outline:0;opacity:.011;
+  -webkit-user-select:text;user-select:text}
+/* make step (10-24): a candle on the ottoman; lighting it walks the camera back to the arch where the short is woven */
+.cwrap{margin:auto;display:flex;flex-direction:column;align-items:center;gap:20px;transition:opacity 500ms var(--io)}
+.cdl{position:relative;width:76px;height:160px}
+.cdl .wax{position:absolute;left:0;right:0;bottom:0;height:118px;border-radius:8px 8px 9px 9px;background:linear-gradient(90deg,#E6D8BF,#FFF9EE 42%,#E0D0B4);
+  box-shadow:inset 0 -8px 12px -8px rgb(150 115 70 / .35),0 18px 28px -12px rgb(60 40 15 / .5)}
+.cdl .wax::before{content:"";position:absolute;left:0;right:0;top:-7px;height:14px;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#FFFDF7 0 55%,#E8D9C0)}
+.cdl .wick{position:absolute;left:50%;bottom:116px;width:2px;height:13px;margin-left:-1px;border-radius:1px;background:linear-gradient(#2c231b,#5b4a3a)}
+.cdl .flame{position:absolute;left:50%;bottom:124px;width:17px;height:32px;margin-left:-8.5px;border-radius:50% 50% 50% 50% / 62% 62% 38% 38%;transform-origin:50% 92%;
+  background:radial-gradient(ellipse at 50% 72%,#fff 0 18%,#FFE7A3 36%,#FFB54D 62%,rgb(255 140 60 / 0) 72%);transform:scale(0);opacity:0;transition:transform 800ms cubic-bezier(.22,1.5,.36,1),opacity 300ms}
+.cdl.lit .flame{transform:scale(1);opacity:1;animation:flick 1.7s ease-in-out .8s infinite alternate}
+@keyframes flick{0%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.06,.95) rotate(1.5deg)}100%{transform:scale(.95,1.06) rotate(-1deg)}}
+.cdl .halo{position:absolute;left:50%;bottom:70px;width:240px;height:240px;margin-left:-120px;border-radius:50%;pointer-events:none;opacity:0;transition:opacity 1000ms;
+  background:radial-gradient(circle,rgb(255 214 140 / .6),rgb(255 200 120 / 0) 64%)}
+.cdl.lit .halo{opacity:1}
+/* at the candle the blurred room behind is mid-dark (ottoman, rug) - gold and brown vanished there, so ivory with a dark under-shadow */
+.lighthint{font-size:13px;font-weight:600;color:#FFF6E6;text-shadow:0 1px 0 rgb(60 40 15 / .55),0 2px 12px rgb(40 25 10 / .5)}
+body.s4:not(.making) .panel[data-step="4"] .lookname b{color:#FFF3DC;text-shadow:0 1px 0 rgb(90 60 20 / .6),0 3px 14px rgb(40 25 10 / .5)}
+body.s4:not(.making) .panel[data-step="4"] .lookname small{color:rgb(255 244 222 / .9);text-shadow:0 1px 0 rgb(60 40 15 / .6),0 0 10px rgb(40 25 10 / .45)}
+body.s4 .next,body.s4 .skip{opacity:0!important;pointer-events:none!important}
+body.making .cwrap{opacity:0;pointer-events:none}
+body.making .roomblur{opacity:0}
+body.making .screen,body.making .glowvid,body.making .tint,body.making .tint2{visibility:visible}
+body.making .screen{opacity:1;transition-delay:300ms}
+body.making .glowvid{opacity:.8}
+body.making .tint{opacity:1}
+body.making .tint2{opacity:.38}
+/* the frost: a picture of the look shrunk to 18x32 and scaled up (soft for free, no live blur). It clears from the bottom by
+   two opposite transforms - the outer box rises, the picture inside sinks back - so nothing is laid out or re-blurred per frame */
+.frost{position:absolute;inset:0;overflow:hidden;z-index:3;visibility:hidden;will-change:transform}
+body.making .frost{visibility:visible}
+.frost .fi{position:absolute;inset:0;will-change:transform}
+.frost .fi img{display:block;width:100%;height:100%;object-fit:cover}
+.frost .fi::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(255 252 244 / .62),rgb(255 246 230 / .5))}
+.frost .seam2{position:absolute;left:-10%;right:-10%;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#FFE7A8 20%,#fff 50%,#FFE7A8 80%,transparent);
+  box-shadow:0 0 8px 2px rgb(255 214 140 / .85),0 0 20px 6px rgb(255 200 120 / .35)}
+#mk{position:fixed;inset:0;pointer-events:none}
+.mkpol{position:fixed;left:0;top:0;margin:0;width:64px;padding:5px 5px 15px;border-radius:3px;background:linear-gradient(180deg,#FFFDF8,#F4ECDD);opacity:0;
+  box-shadow:inset 0 1px 0 #fff,-6px 10px 18px -6px rgb(60 40 15 / .35);rotate:var(--r);transition:opacity 700ms var(--out);will-change:transform}
+.mkpol.in{opacity:1;animation:hang 6s ease-in-out infinite alternate;animation-delay:var(--dl)}
+@keyframes hang{from{translate:0 0}to{translate:0 -5px}}
+.mkpol img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:1px}
+.mkpct{position:fixed;left:0;right:0;top:0;text-align:center;opacity:0;pointer-events:none;transition:opacity 600ms}
+body.making:not(.finished) .mkpct{opacity:1}
+/* it sits over the sage sofa - ivory over a dark under-shadow reads there, dark ink did not */
+.mkpct b{font:italic 400 34px/1 Georgia,serif;color:#FFF6E6;text-shadow:0 1px 0 rgb(60 40 15 / .6),0 3px 12px rgb(40 25 10 / .5)}
+.mkpct small{display:block;margin-top:6px;font-size:11px;font-weight:600;color:#FFF3DE;text-shadow:0 1px 0 rgb(60 40 15 / .6),0 0 10px rgb(40 25 10 / .5)}
+.mkdone{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 18px);display:flex;flex-direction:column;align-items:center;gap:4px;
+  opacity:0;translate:0 18px;pointer-events:none;transition:opacity 700ms var(--out),translate 900ms var(--out)}
+body.finished .mkdone{opacity:1;translate:0 0;pointer-events:auto}
+.mkdone #mkopen{width:100%;min-height:62px;border-radius:999px;font-size:18px;font-weight:800}
+.mkdone .quiet{padding:12px;font-size:12.5px;font-weight:700;color:var(--ink);text-decoration:underline;text-decoration-color:rgb(184 137 62 / .5);text-underline-offset:5px;
+  text-shadow:0 0 8px rgb(255 248 236)}
+.other{display:block;margin:-2px 0 0 auto;padding:6px 2px;font:600 12px/1 -apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.dots i{position:relative;width:5px;height:5px;border-radius:3px;background:rgba(184,137,62,.38);transition:width 500ms var(--out),background 500ms,box-shadow 500ms}
+.dots i::before{content:"";position:absolute;inset:-14px -4px}
+.dots i.on{width:18px;background:var(--gold-hi);box-shadow:0 0 6px rgba(255,200,110,.9)}
+</style>
+</head>
+<body class="dark">
+<div class="cam"><div class="room" id="room"><div class="roomblur"></div><div class="breath"></div>
+  <div class="tint2" id="tint2"></div><div class="tint" id="tint"></div><div class="glowvid"><img id="glowimg" alt=""></div>
+  <div class="screen" id="screen"><video id="vA" muted playsinline loop preload="auto"></video><video id="vB" class="top" muted playsinline loop preload="auto"></video><i class="seam" id="seam"></i>
+    <div class="frost" id="frost"><div class="fi" id="fi"><img id="fimg" alt=""></div><i class="seam2"></i></div></div>
+  <svg class="thread" viewBox="0 0 100 150" preserveAspectRatio="none"><path class="glow" id="tg" d=""/><path id="tp" d=""/></svg></div></div>
+<canvas id="lamp"></canvas>
+<div class="wash"></div><div class="songlight" id="songlight"></div>
+<div id="mkpols"></div><canvas id="mk"></canvas>
+<span class="tag" id="tag">입구 빛 시안 · 10-24 · 다시 ↺</span>
+<p class="hint" id="hint">touch the room</p>
+
+<section class="home" id="home">
+  <div><div class="brand" id="brand">Her Hours.</div><div class="head depth"><span id="l1">A short,</span><br><span id="l2">&nbsp;&nbsp;made softly.</span><small class="rise" style="transition-delay:900ms">사진과 노래 하나로, 그녀의 방에서</small></div></div>
+  <div><button class="start glass mint press depth rise" id="start" style="transition-delay:1250ms">시작</button>
+    <div class="links"><button class="glass press depth rise" style="transition-delay:1450ms">내 영상</button><button class="glass press depth rise" style="transition-delay:1550ms">정보</button></div></div>
+</section>
+
+<div class="top"><button class="back glass press" id="back" aria-label="뒤로">←</button><svg class="prog" id="prog" viewBox="0 0 300 44" preserveAspectRatio="none"></svg></div>
+
+<section class="panel" data-step="0">
+  <div class="lookname"><small id="lookno">STYLE · 01 / 09</small><b id="lookname">Halloween</b><div class="dots" id="dots"></div></div>
+  <p class="swipe" id="swipe">아치를 옆으로 쓸어 보세요</p></section>
+<section class="panel" data-step="1">
+  <div class="lookname"><small id="photono">PHOTOS · 0 / 10</small><b>Pin them up</b></div>
+  <div class="wall" id="wall"></div>
+  <button class="demo" id="demo">예시 사진으로 채워 보기</button>
+  <input type="file" id="pick" accept="image/*" multiple hidden></section>
+<section class="panel" data-step="2">
+  <div class="lookname"><small id="songno">SONG · 8 RECORDS</small><b id="songname">Pick a record</b></div>
+  <div class="deck" id="deck"><div class="mat"></div><div class="vinyl" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div><div class="arm" id="arm"><i></i></div></div>
+  <div class="crate"><div class="sleeves" id="sleeves"></div><div class="front"></div></div>
+  <p class="genre" id="genre">상자를 넘겨 한 장 골라 보세요</p></section>
+<section class="panel" data-step="3">
+  <div class="lookname"><small>WORDS · ON THE NOTEBOOK</small><b>Write it down</b></div>
+  <div class="note" id="note"><i class="ribbon"></i>
+    <label class="line" data-k="name"><span class="q">그녀의 이름은?</span><span class="ink"></span><input maxlength="12" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="이름"></label>
+    <label class="line" data-k="title"><span class="q">이 영상의 제목은?</span><span class="ink"></span><input maxlength="24" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="제목"></label>
+    <button class="other" id="otherq" type="button">다른 질문</button>
+  </div></section>
+<section class="panel" data-step="4">
+  <div class="lookname"><small id="mkno">LIGHT IT · LAST STEP</small><b id="mkh">Light it</b></div>
+  <div class="cwrap" id="cwrap"><button class="cdl" id="candle" type="button" aria-label="촛불 켜기"><i class="halo"></i><i class="wax"></i><i class="wick"></i><i class="flame"></i></button>
+    <p class="lighthint">촛불을 누르면 영상이 만들어져요</p></div></section>
+<div class="mkpct" id="mkpct"><b id="mkn">0%</b><small id="mkleft"></small></div>
+<div class="mkdone"><button class="glass mint press depth" id="mkopen" type="button">열어 보기</button><button class="quiet" id="mkagain" type="button">다시 보기</button></div>
+
+<button class="next glass mint press depth" id="next">다음</button>
+<div class="skip" id="skip">지난 설정으로 바로 만들기 (시안)</div>
+
+<script>
+// the objects the camera walks into, in room-image % (room.jpg 1024x1536) — same places as v3's spots
+const STOPS = [
+  { name: 'STYLE', x: 50.35, y: 25.75, s: 2.3, fit: true, at: .52 },   // the arch window - sized to fit between the name above and 「다음」 below
+  { name: 'PHOTOS', x: 88, y: 44, s: 2.6 },    // frames on the right wall
+  { name: 'SONG', x: 11, y: 56, s: 2.6 },      // the turntable
+  { name: 'WORDS', x: 76, y: 59, s: 2.8 },     // the notebook on the sofa
+  { name: 'LIGHT', x: 44, y: 75, s: 2.6 },     // the candle on the ottoman
+];
+const room = document.getElementById('room'), body = document.body, panels = [...document.querySelectorAll('.panel')];
+let step = -1;
+function aim(i) {
+  if (i < 0) { room.style.transform = ''; return; }
+  const W = room.offsetWidth, H = room.offsetHeight, p = STOPS[i];
+  // room is centred by translate(-50%,-50%); move the stop to the screen centre, then scale about it
+  const px = p.x / 100 * W, py = p.y / 100 * H;
+  // the arch screen is 34.9% x 41.3% of the room: scale so it takes ~80% of the width but never more than 60% of the height
+  const s = p.fit ? Math.min(innerWidth * .78 / (W * .349), innerHeight * .54 / (H * .413)) : p.s, dy = ((p.at || .5) - .5) * innerHeight;
+  // never let the room's edge come into view (10-24 phone: the turntable stop pulled the room's left edge in - a bare cream strip).
+  // The room's untransformed corner sits at (vw-W)/2, (vh-H)/2; keep its scaled box covering the screen.
+  const vw = innerWidth, vh = innerHeight, L0 = (vw - W) / 2, T0 = (vh - H) / 2, cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  // ...except up/down on the arch stop: the arch sits near the picture's top, so clamping there pushed it up under the title
+  // (it changed the locked style screen). Its small gap at the very top is under the progress thread and blends into the wall colour.
+  const tx = cl(W / 2 - px * s, vw - L0 - W * s, -L0), ty0 = H / 2 - py * s + dy, ty = p.fit ? ty0 : cl(ty0, vh - T0 - H * s, -T0);
+  room.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+}
+function go(i) {
+  step = Math.max(-1, Math.min(STOPS.length - 1, i));
+  body.classList.toggle('step', step >= 0);
+  aim(step);
+  panels.forEach((p) => p.classList.toggle('on', +p.dataset.step === step));
+  document.getElementById('next').textContent = step === STOPS.length - 1 ? '만들기' : '다음';
+  drawProg();
+  body.classList.toggle('s0', step === 0);
+  window.styleStep && window.styleStep(step === 0);
+  body.classList.toggle('s1', step === 1);
+  body.classList.toggle('s2', step === 2); window.songStep && window.songStep(step === 2);
+  body.classList.toggle('s3', step === 3); if (step !== 3 && document.activeElement?.tagName === 'INPUT') document.activeElement.blur();
+  body.classList.toggle('s4', step === 4); window.makeStep && window.makeStep(step === 4);
+}
+// the gold thread on the home room, through the five stops
+const d = 'M' + STOPS.map((p) => `${p.x} ${p.y * 1.5 / 1.5 * 1}`).join(' L ');
+const curve = STOPS.reduce((acc, p, k) => acc + (k ? ` Q ${(STOPS[k - 1].x + p.x) / 2 + (k % 2 ? 14 : -14)} ${(STOPS[k - 1].y + p.y) / 2 * 1.5}, ${p.x} ${p.y * 1.5}` : `M ${p.x} ${p.y * 1.5}`), '');
+document.getElementById('tg').setAttribute('d', curve); document.getElementById('tp').setAttribute('d', curve);
+const thread = document.querySelector('.thread');
+STOPS.forEach((p) => { const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', p.x); c.setAttribute('cy', p.y * 1.5); c.setAttribute('r', 1.1); thread.append(c); });
+// the progress: the same thread, straightened along the top, five beads
+function drawProg() {
+  const svg = document.getElementById('prog'), xs = STOPS.map((_, k) => 14 + k * (272 / 4));
+  let path = `M ${xs[0]} 16`; for (let k = 1; k < xs.length; k++) path += ` Q ${(xs[k - 1] + xs[k]) / 2} ${k % 2 ? 6 : 26}, ${xs[k]} 16`;
+  const lit = step >= 0 ? xs[step] : xs[0];
+  svg.innerHTML = `<path d="${path}"/><clipPath id="cl"><rect x="0" y="0" width="${lit + 1}" height="44"/></clipPath><path class="lit" d="${path}" clip-path="url(#cl)"/>` +
+    xs.map((x, k) => `<circle cx="${x}" cy="16" r="${k === step ? 6 : 4.5}" class="${k <= step ? 'on' : ''}"/><text x="${x}" y="40" text-anchor="middle">${STOPS[k].name}</text>`).join('');
+}
+// content
+const LOOKS = [['halloween', 'Halloween'], ['windowband', 'Window Band'], ['triptych', 'Triptych'], ['pulse', 'Pulse'], ['lyricbloom', 'Lyric Bloom'],
+  ['blackcut-room', 'Black Cut'], ['blackcut-road', 'Black Cut, the road'], ['clockface-day', 'Clockface, a day'], ['clockface-night', 'Clockface, a night']];
+// the records in the crate: cover, title, who sings, and the app's own mp3 (test/ build, same site)
+const SONGS = [['hw_eira_wind_me_up', 'Wind Me Up Till Midnight', 'Eira'], ['hw_violet_one_candle_left', 'One Candle Left', 'Violet'], ['hh_seren_three_words', 'Three Words', 'Seren'],
+  ['hw_veronica_velvet_fangs', 'Velvet Fangs', 'Veronica'], ['hh_veronica_world_inside_glass', 'A World Inside the Glass', 'Veronica'], ['hh_violet_before_it_disappears', 'Before It Disappears', 'Violet'],
+  ['hw_seren_porcelain_party', 'Porcelain Party', 'Seren'], ['green', 'Green Light on the Window', 'Violet']];
+// controls
+document.getElementById('start').onclick = () => go(0);
+document.getElementById('next').onclick = () => (step < STOPS.length - 1 ? go(step + 1) : go(-1));
+document.getElementById('back').onclick = () => go(step - 1);
+document.getElementById('skip').onclick = () => go(1);
+// pull down on a step to step back out to the object before it (research: swipe down returns to the object)
+let y0 = null; addEventListener('pointerdown', (e) => { y0 = step >= 0 && !e.target.closest('.rail,.songs,input') ? e.clientY : null; }, { passive: true });
+addEventListener('pointerup', (e) => { if (y0 != null && e.clientY - y0 > 90) go(step - 1); y0 = null; });
+// the press shows the instant a finger lands (same as the app, 10-22)
+addEventListener('pointerdown', (e) => { const b = e.target.closest('.press'); if (!b) return; b.classList.add('down'); const t0 = performance.now();
+  const up = () => { setTimeout(() => b.classList.remove('down'), Math.max(0, 140 - (performance.now() - t0))); removeEventListener('pointerup', up, true); removeEventListener('pointercancel', up, true); };
+  addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true); }, { capture: true, passive: true });
+// the phone keyboard resizes the page on Android - don't re-aim the camera (the room would jump) while someone is typing
+addEventListener('resize', () => { if (document.activeElement?.tagName !== 'INPUT') aim(step); });
+drawProg();
+// board.html shows every step at once: ?s=N opens straight on that step, with no walk-in
+const q = new URLSearchParams(location.search), s0 = q.get('s');
+if (q.has('veil')) document.documentElement.classList.add('veil');
+if (s0 != null) { document.querySelector('.tag').hidden = true; document.documentElement.style.setProperty('--still', '1');
+  const st = document.createElement('style'); st.textContent = '*{transition:none!important;transition-delay:0s!important}'; document.head.append(st);
+  go(+s0); requestAnimationFrame(() => requestAnimationFrame(() => st.remove())); }
+</script>
+<script>
+// ── entrance light (10-24) — 21st 2891 (reveal) + 19257 (text reveal), rebuilt for the room rather than pasted:
+// a warm night instead of black (the room is still there), the lighting spreads from where the finger was, and once lit the canvas
+// switches to soft-light so it only warms and shades the room (principle 11: light from one side, following the hand).
+(() => {
+  const c = document.getElementById('lamp'), ctx = c.getContext('2d'), body = document.body, hint = document.getElementById('hint');
+  const still = new URLSearchParams(location.search).has('s') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ease = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  let W = 0, H = 0, x = -1e4, y = -1e4, tx = x, ty = y, phase = 'dark', t0 = performance.now(), last = 0, down = 0, onAt = 0, cx = 0, cy = 0;
+  const R0 = () => Math.max(85, Math.min(W, H) * .28);   // the torch in the dark - .42 was too wide (영샘 10-24 '좁게')
+  const RL = () => Math.max(120, Math.min(W, H) * .42);  // the soft glow that follows the hand once the room is lit
+  function size() { const dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  function at(px, py) { tx = px; ty = py; if (x < -1e3) { x = tx; y = ty; } last = performance.now(); body.classList.add('touched'); }
+
+  // the name comes up letter by letter out of a mask (19257); italic needs a little room on the right or the mask clips it
+  const units = [];
+  ['brand', 'l1', 'l2'].forEach((id, row) => {
+    const el = document.getElementById(id), text = el.textContent; el.textContent = ''; el.setAttribute('aria-label', text.trim());
+    text.split(/(\s+)/).forEach((tok) => {
+      if (/^\s+$/.test(tok)) { el.append(tok); return; }
+      [...tok].forEach((ch) => {
+        const m = document.createElement('span'); m.setAttribute('aria-hidden', 'true');
+        Object.assign(m.style, { display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom', padding: '0 .12em .12em 0', margin: '0 -.12em 0 0' });
+        const u = document.createElement('span'); u.textContent = ch; u.style.display = 'inline-block'; u.dataset.row = row;
+        m.append(u); el.append(m); units.push(u);
+      });
+    });
+  });
+  function hideName() { units.forEach((u) => { u.style.transition = 'none'; u.style.transform = 'translateY(115%)'; }); }
+  function showName(now) { units.forEach((u, i) => { u.style.transition = now ? 'none' : `transform 900ms cubic-bezier(.16,1,.3,1) ${+u.dataset.row * 220 + i * 28}ms`; u.style.transform = 'translateY(0)'; }); }
+
+  function lightUp() {
+    if (phase !== 'dark') return;
+    phase = 'bloom'; onAt = performance.now(); cx = x > -1e3 ? x : W / 2; cy = x > -1e3 ? y : H * .45;
+    navigator.vibrate && navigator.vibrate(20);
+    setTimeout(() => { body.classList.remove('dark'); showName(); }, 900);
+  }
+  function reset() {
+    phase = 'dark'; t0 = performance.now(); last = 0; x = y = tx = ty = -1e4; body.classList.remove('touched');
+    c.classList.remove('lit'); body.classList.remove('lit'); body.classList.add('dark'); hideName();
+  }
+
+  addEventListener('pointerdown', (e) => { down = performance.now(); at(e.clientX, e.clientY); if (phase === 'dark' && e.pointerType === 'mouse') lightUp(); }, { passive: true });
+  addEventListener('pointermove', (e) => { if (down || e.pointerType === 'mouse') at(e.clientX, e.clientY); }, { passive: true });
+  addEventListener('pointerup', () => { down = 0; if (phase === 'dark' && last) lightUp(); }, { passive: true });
+  addEventListener('pointercancel', () => { down = 0; }, { passive: true });
+  document.getElementById('tag').addEventListener('click', reset);
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (body.classList.contains('step')) return;
+    if (phase === 'dark') {
+      if (!last && now - t0 > 2200) {   // nobody has touched yet: the light wanders on its own, then lights the room by itself
+        const t = now - t0; tx = W * (.5 + .28 * Math.sin(t * .00045)); ty = H * (.48 + .2 * Math.sin(t * .00071 + 1)); if (x < -1e3) { x = tx; y = ty; }
+        if (t > 7000) lightUp();
+      }
+      if (down && now - down > 1000) lightUp();   // a finger that rests a second lights the room too
+    }
+    if (phase === 'lit' && now - last > 2500) { tx += (W * .86 - tx) * .02; ty += (H * .1 - ty) * .02; }   // idle: drift back to the window
+    if (x > -1e3) { const k = phase === 'lit' && now - last > 2500 ? .03 : .16; x += (tx - x) * k; y += (ty - y) * k; }
+    ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, W, H);
+    if (phase === 'dark' || phase === 'bloom') {
+      const b = phase === 'bloom' ? (now - onAt) : 0, kR = ease(b / 2200), kA = ease(b / 2700);   // 1.5 s first try felt hurried (principle 9: this one is the slow one)
+      const px = phase === 'bloom' ? cx : x, py = phase === 'bloom' ? cy : y, R = R0() + (Math.hypot(W, H) * 1.15 - R0()) * kR;
+      ctx.fillStyle = `rgba(18,12,7,${.94 * (1 - kA)})`; ctx.fillRect(0, 0, W, H);
+      if (px > -1e3) {
+        ctx.globalCompositeOperation = 'destination-out';
+        // a long soft falloff - the first try (1 → .72 at .55 → 0) read as a cut-out disc
+        let g = ctx.createRadialGradient(px, py, 0, px, py, R * 1.15); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.3, 'rgba(0,0,0,.9)'); g.addColorStop(.62, 'rgba(0,0,0,.45)'); g.addColorStop(.85, 'rgba(0,0,0,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'source-over';
+        g = ctx.createRadialGradient(px, py, 0, px, py, R * .8); g.addColorStop(0, `rgba(255,180,100,${.09 * (1 - kA)})`); g.addColorStop(1, 'rgba(255,180,100,0)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      }
+      if (phase === 'bloom' && b > 2700) { phase = 'lit'; c.classList.add('lit'); body.classList.add('lit'); last = now; tx = x = cx; ty = y = cy; }
+    } else {
+      // soft-light: a faint brown everywhere shades the room, the warm white where the hand (or the window) is lifts it
+      const idle = Math.min(1, Math.max(0, (now - last - 2500) / 2000)), R = RL() * (1.3 + idle * 1.1);
+      ctx.fillStyle = 'rgba(70,45,20,.22)'; ctx.fillRect(0, 0, W, H);
+      const g = ctx.createRadialGradient(x, y, 0, x, y, R); g.addColorStop(0, `rgba(255,236,200,${.62 - idle * .14})`); g.addColorStop(1, 'rgba(255,236,200,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+  }
+  size(); addEventListener('resize', size);
+  if (still) { phase = 'lit'; c.classList.add('lit'); body.classList.remove('dark'); body.classList.add('lit'); x = tx = W * .86; y = ty = H * .1; showName(true); }
+  else hideName();
+  requestAnimationFrame(draw);
+})();
+</script>
+<script>
+// ── style step (10-24): swipe the arch to wipe in the next look; its colour bleeds into the wall
+(() => {
+  const $ = (id) => document.getElementById(id), N = LOOKS.length, url = (k) => `looks/look_${LOOKS[k][0]}.mp4`;
+  const screen = $('screen'), seam = $('seam'), tint = $('tint'), glow = $('glowimg'), nameEl = $('lookname'), noEl = $('lookno'), dots = $('dots');
+  let front = $('vA'), back = $('vB'), cur = 0, active = false, busy = false;
+  dots.innerHTML = LOOKS.map(() => '<i></i>').join('');
+  const cols = {};
+  // the look's colour = its poster averaged, pushed a little away from grey so the wall takes a hue, not a stain
+  function colour(k) {
+    if (cols[k]) return Promise.resolve(cols[k]);
+    return new Promise((ok) => { const im = new Image(); im.onload = () => {
+      const c = document.createElement('canvas'); c.width = 6; c.height = 10; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 6, 10);
+      const d = x.getImageData(0, 0, 6, 10).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
+      r /= 60; g /= 60; b /= 60; const m = (r + g + b) / 3, f = (v) => Math.round(Math.max(0, Math.min(255, v + (v - m) * .9 + 20)));
+      ok(cols[k] = `${f(r)} ${f(g)} ${f(b)}`); }; im.onerror = () => ok('200 170 130'); im.src = `looks/look_${LOOKS[k][0]}.jpg`; });
+  }
+  function show(k, first) {
+    cur = k; noEl.textContent = `STYLE · ${String(k + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
+    if (!first) $('swipe').classList.add('gone');
+    nameEl.textContent = LOOKS[k][1];
+    if (!first) nameEl.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 700, easing: 'cubic-bezier(.22,1,.36,1)' });
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === k));
+    glow.src = `looks/look_${LOOKS[k][0]}.jpg`;
+    colour(k).then((c) => { if (cur === k) tint.style.backgroundColor = $('tint2').style.backgroundColor = `rgb(${c})`; });
+    colour((k + 1) % N); colour((k + N - 1) % N);
+  }
+  function load(v, k) { if (v.dataset.k != k) { v.dataset.k = k; v.src = url(k); } v.play().catch(() => {}); }
+  // p 0..1 of the wipe; dir +1 = next comes in from the right edge, -1 = previous from the left
+  function paint(p, dir) {
+    const e = (dir > 0 ? 1 - p : p) * 100;
+    back.style.clipPath = dir > 0 ? `inset(0 0 0 ${e}%)` : `inset(0 ${100 - e}% 0 0)`;
+    seam.style.left = e + '%'; seam.style.opacity = p > 0 && p < 1 ? 1 : 0;
+  }
+  function finish(dir, from, to, done) {
+    busy = true; const t0 = performance.now(), dur = 520 * Math.abs(to - from) + 140;
+    (function f(now) {
+      const t = Math.min(1, (now - t0) / dur), k = 1 - Math.pow(1 - t, 3); paint(from + (to - from) * k, dir);
+      if (t < 1) requestAnimationFrame(f); else { busy = false; done && done(); }
+    })(t0);
+  }
+  function commit(dir) {   // the wiped-in video becomes the one underneath - no reload, no flash
+    const k = (cur + dir + N) % N;
+    back.classList.remove('top'); back.style.clipPath = ''; front.classList.add('top'); front.style.clipPath = 'inset(0 0 0 100%)';
+    [front, back] = [back, front]; back.pause(); show(k); tick();
+  }
+  function tick() { navigator.vibrate && navigator.vibrate(16); }   // 6 ms was barely felt on the Galaxy (영샘 10-24 '조금 더 강하게')
+  function step(dir) { if (busy || !active) return; load(back, (cur + dir + N) % N); finish(dir, 0, 1, () => commit(dir)); }
+  // drag
+  let x0 = null, y0 = 0, t0 = 0, dir = 0, p = 0;
+  addEventListener('pointerdown', (e) => { if (!active || busy || e.target.closest('button,.dots')) return; x0 = e.clientX; y0 = e.clientY; t0 = performance.now(); dir = 0; p = 0; }, { passive: true });
+  addEventListener('pointermove', (e) => {
+    if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (!dir) { if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return; dir = dx < 0 ? 1 : -1; load(back, (cur + dir + N) % N); }
+    p = Math.max(0, Math.min(1, (-dx * dir) / screen.getBoundingClientRect().width)); paint(p, dir);
+  }, { passive: true });
+  const up = (e) => {
+    if (x0 == null) return; const v = (x0 - e.clientX) * dir / Math.max(1, performance.now() - t0); x0 = null;
+    if (!dir) return;
+    const d = dir; if (p > .35 || v > .45) finish(d, p, 1, () => commit(d)); else finish(d, p, 0, () => back.pause());
+  };
+  addEventListener('pointerup', up, { passive: true }); addEventListener('pointercancel', up, { passive: true });
+  addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+  dots.addEventListener('click', (e) => { const i = [...dots.children].indexOf(e.target); if (i < 0 || i === cur || busy) return;
+    const d = i > cur ? 1 : -1; load(back, i); finish(d, 0, 1, () => { const k = i; back.classList.remove('top'); back.style.clipPath = ''; front.classList.add('top'); front.style.clipPath = 'inset(0 0 0 100%)'; [front, back] = [back, front]; back.pause(); show(k); tick(); }); });
+  window.styleStep = (on) => { active = on; if (on) load(front, cur); else { front.pause(); back.pause(); } };
+  // the making step plays the chosen look in the arch again (without the swipe)
+  window.playLook = (on) => { if (on) load(front, cur); else if (!active) front.pause(); };
+  window.chosenLook = () => LOOKS[cur][0];
+  show(0, true); front.dataset.k = 0; front.src = url(0);
+  if (body.classList.contains('s0')) window.styleStep(true);   // ?s=0 opened the step before this script ran
+})();
+</script>
+<script>
+// ── photos step (10-24): tap an empty polaroid → the phone's own picker → each photo flies in on a curve, lands, develops
+(() => {
+  const $ = (id) => document.getElementById(id), wall = $('wall'), pick = $('pick'), no = $('photono'), next = $('next');
+  // left %, top %, tilt, required - three rows that don't line up (principle 7)
+  // (first try had each row on one line - it read as a grid; the tops now wander more)
+  const SLOTS = [[4, 3, -4, 1], [36, -2, 3, 1], [68, 7, -2, 1], [0, 37, 3], [25, 29, -5], [51, 40, 4], [75, 31, -3], [7, 64, -3], [38, 71, 5], [67, 61, -1]];
+  const cards = SLOTS.map(([l, t, r, req], i) => {
+    const c = document.createElement('div'); c.className = 'pola' + (req ? ' req' : ''); c.dataset.r = r;
+    c.style.cssText = `left:${l}%;top:${t}%;width:${req ? 29 : 24}%;--r:${r}deg`;
+    c.innerHTML = `<i class="pin"></i><div class="ph"></div><span class="no">${i + 1}</span><button class="x glass press" aria-label="빼기">✕</button>`;
+    wall.append(c); return c;
+  });
+  const filled = Array(SLOTS.length).fill(null);
+  function count() { const n = filled.filter(Boolean).length; no.textContent = `PHOTOS · ${n} / ${SLOTS.length}`; next.classList.toggle('ready', n >= 3); }
+  window.chosenPhotos = () => filled.filter(Boolean);
+  function fly(i, src, delay) {
+    filled[i] = src; const card = cards[i], wr = wall.getBoundingClientRect(), r = +card.dataset.r;
+    const w = card.offsetWidth, ex = wr.left + card.offsetLeft, ey = wr.top + card.offsetTop;
+    const sx = innerWidth / 2 - w / 2, sy = innerHeight - 40, cx = (sx + ex) / 2 + (ex > sx ? -90 : 90), cy = Math.min(sy, ey) - 140, r0 = (Math.random() - .5) * 24;
+    const f = document.createElement('div'); f.className = 'pola fly'; f.style.width = w + 'px';
+    f.innerHTML = `<i class="pin"></i><div class="ph"><img src="${src}" alt=""></div>`; document.body.append(f);
+    const frames = []; for (let k = 0; k <= 14; k++) { const t = k / 14, u = 1 - t;
+      const x = u * u * sx + 2 * u * t * cx + t * t * ex, y = u * u * sy + 2 * u * t * cy + t * t * ey, s = t < .85 ? .55 + .53 * t / .85 : 1.08 - .08 * (t - .85) / .15;
+      frames.push({ transform: `translate(${x}px,${y}px) rotate(${r0 + (r - r0) * t}deg) scale(${s})`, opacity: t < .08 ? t / .08 : 1 }); }
+    f.animate(frames, { duration: 950, delay, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'both' }).onfinish = () => {
+      f.remove(); if (filled[i] !== src) return;
+      card.querySelector('.ph').innerHTML = `<img class="dev" src="${src}" alt="">`; card.classList.add('full');
+      card.animate([{ transform: `rotate(${r}deg) scale(1.06)` }, { transform: `rotate(${r}deg) scale(1)` }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' });
+      navigator.vibrate && navigator.vibrate(12); count();
+    };
+  }
+  function add(srcs) { const free = filled.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0); srcs.slice(0, free.length).forEach((s, k) => fly(free[k], s, k * 280)); }
+  function unlift() { cards.forEach((c) => c.classList.remove('lift')); }
+  function remove(i) {
+    const c = cards[i], img = c.querySelector('img'); filled[i] = null; c.classList.remove('full', 'lift'); count();
+    if (img) { img.classList.add('gone'); setTimeout(() => { if (!filled[i]) c.querySelector('.ph').innerHTML = ''; }, 520); }
+  }
+  wall.addEventListener('click', (e) => {
+    const c = e.target.closest('.pola'); if (!c) { unlift(); return; } const i = cards.indexOf(c);
+    if (e.target.closest('.x')) { remove(i); return; }
+    if (c.classList.contains('full')) { const on = c.classList.contains('lift'); unlift(); c.classList.toggle('lift', !on); return; }
+    unlift(); pick.click();
+  });
+  pick.addEventListener('change', () => { add([...pick.files].map((f) => URL.createObjectURL(f))); pick.value = ''; });
+  const DEMO = ['covers/hw_eira_wind_me_up.jpg', 'covers/hw_violet_one_candle_left.jpg', 'covers/hh_seren_three_words.jpg', 'covers/hw_veronica_velvet_fangs.jpg',
+    'covers/hh_veronica_world_inside_glass.jpg', 'covers/hh_violet_before_it_disappears.jpg', 'covers/hw_seren_porcelain_party.jpg', 'covers/green.jpg'];
+  $('demo').addEventListener('click', () => { const used = new Set(filled); add(DEMO.filter((d) => !used.has(d)).slice(0, 5)); });
+  count();
+})();
+</script>
+<script>
+// ── song step (10-24): flick through the crate, tap a sleeve → the record slides out, flies to the platter, the needle drops, 15 s plays
+(() => {
+  const $ = (id) => document.getElementById(id), box = $('sleeves'), vinyl = $('vinyl'), label = $('label'), arm = $('arm'), deck = $('deck');
+  const nameEl = $('songname'), noEl = $('songno'), next = $('next'), light = $('songlight');
+  const src = (id) => (id === 'green' ? '../../test/assets/green_light.mp3' : `../../test/assets/songs/${id}.mp3`);
+  // the line under the crate: only what the app's song list already says (core.js group) + who sings - no invented genres
+  const GENRE = (i) => { const [id, , who] = SONGS[i]; const g = id.startsWith('hw_') ? 'HALLOWEEN' : id === 'green' ? 'HER HOURS · LYRICS' : 'HER HOURS · VOCAL'; return `<b>${g}</b>  ·  SUNG BY ${who.toUpperCase()}`; };
+  const sleeves = SONGS.map(([id, n, who], i) => { const s = document.createElement('div'); s.className = 'sleeve'; s.style.backgroundImage = `url(covers/${id}.jpg)`; s.dataset.i = i; s.setAttribute('aria-label', n); box.append(s); return s; });
+  // standing in the crate: the one in the middle stands up, the rest lean back and turn a little away (principle 6: follows the finger 1:1)
+  // all positions read first, then all styles written (reading a rect after each write forced 8 layouts a frame); offsets ignore transforms
+  function lean() {
+    const mid = box.scrollLeft + box.clientWidth / 2, ds = sleeves.map((s) => Math.max(-2.5, Math.min(2.5, (s.offsetLeft + s.offsetWidth / 2 - mid) / 100)));
+    sleeves.forEach((s, k) => { const d = ds[k], a = Math.min(1, Math.abs(d));
+      s.style.transform = `translateZ(${(1 - a) * 30}px) rotateX(${8 + a * 22}deg) rotateY(${-d * 14}deg) translateY(${a * 10}px)`; s.style.zIndex = 10 - Math.round(Math.abs(d) * 3); });
+  }
+  box.addEventListener('scroll', () => requestAnimationFrame(lean), { passive: true });
+  let ctx = null, gain = null, audio = null, cur = -1, busy = false, stopT = 0;
+  const cols = {};
+  function colour(i) { const id = SONGS[i][0]; if (cols[id]) return Promise.resolve(cols[id]);
+    return new Promise((ok) => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = 6; c.height = 6; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 6, 6);
+      const d = x.getImageData(0, 0, 6, 6).data; let r = 0, g = 0, b = 0; for (let k = 0; k < d.length; k += 4) { r += d[k]; g += d[k + 1]; b += d[k + 2]; } r /= 36; g /= 36; b /= 36;
+      const m = (r + g + b) / 3, f = (v) => Math.round(Math.max(0, Math.min(255, v + (v - m) * 1.1 + 30))); ok(cols[id] = `rgb(${f(r)} ${f(g)} ${f(b)})`); }; im.onerror = () => ok(''); im.src = `covers/${id}.jpg`; }); }
+  function fade(to, sec) { if (!gain) return; const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(to, t + sec); }
+  function stop(keepDisc) {
+    clearTimeout(stopT); body.classList.remove('playing');
+    if (audio) { const a = audio; fade(0, .6); setTimeout(() => a.pause(), 650); }
+    arm.classList.remove('down'); setTimeout(() => vinyl.classList.remove('spin'), keepDisc ? 700 : 0);
+  }
+  function play(i) {
+    // iOS only lets sound start inside the tap: start it now, silent through Web Audio, and let it rise when the needle lands
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume();
+    if (audio) { audio.pause(); audio.src = ''; }
+    audio = new Audio(src(SONGS[i][0])); audio.crossOrigin = 'anonymous'; audio.preload = 'auto';
+    const node = ctx.createMediaElementSource(audio); gain = ctx.createGain(); gain.gain.value = 0; node.connect(gain).connect(ctx.destination);
+    audio.addEventListener('loadedmetadata', () => { if (isFinite(audio.duration)) audio.currentTime = Math.max(0, audio.duration * .32 - 1.6); }, { once: true });
+    audio.play().catch(() => {});
+  }
+  function choose(i) {
+    if (busy) return; busy = true; const prev = cur; cur = i; stop(); play(i);
+    sleeves[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    const sb = sleeves[i].getBoundingClientRect(), db = deck.getBoundingClientRect(), D = db.width * .94, sw = sb.width * .92;
+    // the disc is made at its final size and scaled down to start (scaling a small one up re-rasterised it every frame)
+    const f = document.createElement('div'); f.className = 'flydisc'; f.style.width = f.style.height = D + 'px'; f.innerHTML = `<i style="background-image:url(covers/${SONGS[i][0]}.jpg)"></i>`;
+    document.body.append(f);
+    // ONE path, ONE easing (영샘 10-24 '부자연스러워'): the first version was three pieces - rise, fly, settle - each starting and
+    // ending at rest, so it stopped twice in the air. Now a single cubic curve leaves the sleeve straight up, swings over and comes
+    // DOWN onto the platter from above; one ease carries it, quick out of the crate and slowing all the way into the settle.
+    const ax = sb.left + sb.width / 2, ay = sb.top + sw / 2, bx = db.left + db.width / 2, by = db.top + db.height / 2, k0 = sw / D;
+    // the platter sits right above the crate, so a straight up-and-back-down path reversed and stood still at its top (measured);
+    // swinging out to the right keeps it moving sideways through the turn and brings it in from the upper right
+    const c1x = ax + D * .5, c1y = ay - sw * 1.2, c2x = bx + D * .45, c2y = by - D * .35;
+    const at = (x, y, s, r) => `translate(${x - D / 2}px,${y - D / 2}px) scale(${s}) rotate(${r}deg)`;
+    vinyl.classList.remove('on');
+    const bez = (x1, y1, x2, y2) => (t) => { let lo = 0, hi = 1, u = t; for (let n = 0; n < 24; n++) { u = (lo + hi) / 2; const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u; if (x < t) lo = u; else hi = u; }
+      return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u; };
+    const ease = bez(.32, 0, .12, 1), N = 48, frames = [];
+    for (let k = 0; k <= N; k++) { const u = ease(k / N), v = 1 - u;
+      const x = v * v * v * ax + 3 * v * v * u * c1x + 3 * v * u * u * c2x + u * u * u * bx, y = v * v * v * ay + 3 * v * v * u * c1y + 3 * v * u * u * c2y + u * u * u * by;
+      // grows to a touch over full size while still in the air, then eases back to 1 as it lands
+      const s = k0 + (1 - k0) * Math.min(1, u / .8) + .05 * Math.sin(Math.PI * u) * u;
+      frames.push({ offset: k / N, transform: at(x, y, s, 360 * (1 - Math.pow(1 - u, 2))) }); }
+    frames[N].transform = at(bx, by, 1, 360);
+    f.animate(frames, { duration: 1900, easing: 'linear', fill: 'forwards' }).onfinish = () => {
+      // hand over to the platter's record without its own fade/scale-in (that read as a second pop)
+      label.style.backgroundImage = `url(covers/${SONGS[i][0]}.jpg)`; vinyl.style.transition = 'none'; vinyl.classList.add('on', 'spin'); vinyl.offsetWidth; vinyl.style.transition = ''; f.remove();
+      const ge = $('genre'); ge.classList.remove('on'); ge.innerHTML = GENRE(i); ge.offsetWidth; ge.classList.add('on');
+      sleeves.forEach((s, k) => s.classList.toggle('empty', k === i));
+      nameEl.textContent = SONGS[i][1]; noEl.textContent = `SONG · ${SONGS[i][2].toUpperCase()}`;
+      nameEl.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 700, easing: 'cubic-bezier(.22,1,.36,1)' });
+      colour(i).then((c) => c && light.style.setProperty('--sl', c));
+      drop(i);
+    };
+  }
+  // the arm swings over, the needle lands (tick), the sound rises; after 15 s it lifts again
+  function drop(i) {
+    vinyl.classList.add('spin'); setTimeout(() => arm.classList.add('down'), 150);
+    setTimeout(() => { busy = false; if (cur !== i) return; navigator.vibrate && navigator.vibrate(14); fade(1, .8); body.classList.add('playing'); next.classList.add('sready');
+      stopT = setTimeout(() => { if (cur === i) stop(true); }, 15000); }, 1050);
+  }
+  box.addEventListener('click', (e) => { const s = e.target.closest('.sleeve'); if (s) choose(+s.dataset.i); });
+  // tap the record: lift the needle / drop it again on the same record (no second flight)
+  deck.addEventListener('click', () => { if (cur < 0 || busy) return; if (body.classList.contains('playing')) stop(true); else { busy = true; play(cur); drop(cur); } });
+  window.songStep = (on) => { if (on) requestAnimationFrame(() => { box.scrollLeft = (box.scrollWidth - box.clientWidth) / 2 - 50; lean(); }); else stop(true); };
+  if (body.classList.contains('s2')) window.songStep(true);
+})();
+</script>
+<script>
+// ── words step (10-24): the letters bloom up in gold as they're typed; 「다음」 sends a gold wave through them first
+(() => {
+  const lines = [...document.querySelectorAll('.note .line')], next = document.getElementById('next');
+  const QS = { name: ['그녀의 이름은?', '오늘의 주인공은?', '누구의 하루인가요?'], title: ['이 영상의 제목은?', '이 순간에 이름을 붙인다면?', '한 줄로 남긴다면?'] };
+  const GHOST = { name: '유나', title: '우리의 겨울' }, qi = { name: 0, title: 0 };
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  lines.forEach((L, n) => {
+    const k = L.dataset.k, inp = L.querySelector('input'), ink = L.querySelector('.ink'); let prev = [];
+    // only letters that are new or changed bloom (Korean composes ㅇ→유→윤 in place, so that one blooms each step - it reads as writing)
+    function render() {
+      const cs = [...inp.value];
+      ink.innerHTML = (cs.length ? cs.map((ch, i) => `<span class="c${i >= prev.length || prev[i] !== ch ? ' new' : ''}">${esc(ch)}</span>`).join('') : `<span class="ghost">${GHOST[k]}</span>`) + '<i class="caret"></i>';
+      prev = cs; ink.style.fontSize = ''; let fs = 28; while (ink.scrollWidth > ink.clientWidth + 1 && fs > 16) ink.style.fontSize = (fs -= 2) + 'px';
+    }
+    inp.addEventListener('input', render);
+    inp.addEventListener('focus', () => { lines.forEach((x) => x.classList.toggle('on', x === L)); });
+    inp.addEventListener('blur', () => setTimeout(() => { if (!lines.some((x) => x.querySelector('input') === document.activeElement)) L.classList.remove('on'); }, 0));
+    inp.addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; e.preventDefault(); if (lines[n + 1]) lines[n + 1].querySelector('input').focus(); else inp.blur(); });
+    render();
+  });
+  // a different question for the line being written (or the first one)
+  document.getElementById('otherq').addEventListener('click', () => {
+    const L = lines.find((x) => x.classList.contains('on')) || lines[0], k = L.dataset.k, q = L.querySelector('.q');
+    qi[k] = (qi[k] + 1) % QS[k].length; q.style.opacity = 0; setTimeout(() => { q.textContent = QS[k][qi[k]]; q.style.opacity = 1; }, 260);
+    L.querySelector('input').focus({ preventScroll: true });
+  });
+  // 「다음」 on this step: a gold wave runs through what was written, then on to the candle
+  const go0 = next.onclick;
+  next.onclick = (e) => {
+    if (step !== 3) return go0(e);
+    const cs = [...document.querySelectorAll('.note .ink .c')]; if (document.activeElement?.tagName === 'INPUT') document.activeElement.blur();
+    if (!cs.length) return go0(e);
+    cs.forEach((c, i) => { c.classList.remove('new', 'wave'); c.offsetWidth; c.style.animationDelay = i * 45 + 'ms'; c.classList.add('wave'); });
+    navigator.vibrate && navigator.vibrate(12);
+    setTimeout(() => go0(e), Math.min(1400, 700 + cs.length * 45));
+  };
+})();
+</script>
+<script>
+// ── make step (10-24): light the candle → back to the arch → the chosen photos unravel into gold threads woven into the arch,
+// the frost clears from the bottom as the progress, the rim burns round at the end. making.html (10-23) rebuilt for the phone.
+(() => {
+  const $ = (id) => document.getElementById(id), candle = $('candle'), cv = $('mk'), ctx = cv.getContext('2d'), box = $('mkpols');
+  const screen = $('screen'), frost = $('frost'), fi = $('fi'), fimg = $('fimg'), head = $('mkh'), no = $('mkno'), pn = $('mkn'), left = $('mkleft'), pctEl = $('mkpct');
+  const DUR = 16000, K = 12, AT = [.08, .26, .5, .7, .9, .38];
+  const DEMO = ['covers/hw_eira_wind_me_up.jpg', 'covers/hw_violet_one_candle_left.jpg', 'covers/hh_seren_three_words.jpg', 'covers/hw_veronica_velvet_fangs.jpg', 'covers/hh_violet_before_it_disappears.jpg'];
+  let dpr = 1, W = 0, H = 0, A = null, rim = [], rimLen = 0, pols = [], threads = [], sparks = [], t0 = 0, raf = 0, running = false, finished = false, burnAt = 0, timers = [];
+  const later = (f, ms) => timers.push(setTimeout(f, ms));
+  function sample(p) {
+    const c = document.createElement('canvas'); c.width = 24; c.height = K; const x = c.getContext('2d');
+    try { x.drawImage(p.img, 0, 0, 24, K); const d = x.getImageData(0, 0, 24, K).data; p.cols = [];
+      for (let j = 0; j < K; j++) { let r = 0, g = 0, b = 0; for (let i = 0; i < 24; i++) { const o = (j * 24 + i) * 4; r += d[o]; g += d[o + 1]; b += d[o + 2]; } p.cols.push([r / 24, g / 24, b / 24]); }
+    } catch (e) { p.cols = null; }
+  }
+  // the frost picture: the look's poster at 18x32, scaled up by the browser = soft, and costs nothing per frame
+  function frostFrom(id) { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = 18; c.height = 32; c.getContext('2d').drawImage(im, 0, 0, 18, 32); fimg.src = c.toDataURL('image/jpeg', .8); }; im.src = `looks/look_${id}.jpg`; }
+  function setFrost(p) { frost.style.transform = `translateY(${-p * 100}%)`; fi.style.transform = `translateY(${p * 100}%)`; }
+  function hang() {
+    const got = window.chosenPhotos ? window.chosenPhotos() : [], list = (got.length >= 3 ? got : DEMO).slice(0, 6);
+    box.innerHTML = ''; pols = list.map((src, i) => { const f = document.createElement('figure'); f.className = 'mkpol';
+      f.style.setProperty('--r', `${(i % 2 ? 1 : -1) * (3 + (i * 5) % 6)}deg`); f.style.setProperty('--dl', `${-i * 1.3}s`); f.innerHTML = `<img src="${src}" alt="">`; box.append(f);
+      const p = { el: f, img: f.querySelector('img'), side: i % 2 ? 1 : -1, at: AT[i], cols: null, peeled: 0 }; p.img.complete ? sample(p) : p.img.addEventListener('load', () => sample(p), { once: true }); return p; });
+  }
+  // the arch outline as points (sides + the elliptical top of .screen's border-radius 50%/27%) - the rim light runs along it on the canvas
+  function layout() {
+    dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    A = screen.getBoundingClientRect(); const rx = A.width / 2, ry = A.height * .27, cx = A.left + rx, cy = A.top + ry; rim = [];
+    for (let k = 0; k <= 20; k++) rim.push([A.left, A.bottom - (A.bottom - cy) * k / 20]);
+    for (let k = 1; k <= 60; k++) { const a = Math.PI + Math.PI * k / 60; rim.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); }
+    for (let k = 1; k <= 20; k++) rim.push([A.right, cy + (A.bottom - cy) * k / 20]);
+    rimLen = rim.length;
+    pctEl.style.top = A.bottom + 16 + 'px';
+    pols.forEach((p) => { const w = 64, x = p.side < 0 ? Math.max(6, A.left - w * .62) : Math.min(W - w - 6, A.right - w * .38);
+      p.el.style.transform = `translate(${x}px,${A.top + A.height * p.at - 38}px)`; });
+  }
+  const ease = (x) => 1 - Math.pow(1 - x, 3);
+  const mix = (c, k) => `rgba(${Math.round(c[0] + (255 - c[0]) * .25 + (232 - c[0]) * k)},${Math.round(c[1] + (214 - c[1]) * k)},${Math.round(c[2] + (150 - c[2]) * k)},`;
+  function launch(p, j) {
+    const img = p.img.getBoundingClientRect();
+    threads.push({ sx: img.left + img.width * (.15 + Math.random() * .7), sy: img.top + img.height * (j + .5) / K, tx: A.left + A.width * (.18 + Math.random() * .64),
+      born: performance.now(), col: p.cols ? p.cols[j] : [220, 180, 120], lift: 40 + Math.random() * 90, side: Math.random() < .5 ? -1 : 1 });
+  }
+  // a stroke along the outline from point a to b (indices), drawn as two passes - wide faint + thin bright - instead of shadowBlur
+  function strokeRim(a, b, alpha) {
+    if (b <= a) return; ctx.beginPath(); for (let k = Math.max(0, Math.floor(a)); k <= Math.min(rimLen - 1, Math.ceil(b)); k++) { const [x, y] = rim[k]; k === Math.max(0, Math.floor(a)) ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.strokeStyle = `rgba(255,205,130,${.28 * alpha})`; ctx.lineWidth = 7; ctx.stroke(); ctx.strokeStyle = `rgba(255,244,215,${.95 * alpha})`; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+  function frame(now) {
+    if (!running) return; raf = requestAnimationFrame(frame);
+    const p = Math.min(1, (now - t0) / DUR);
+    setFrost(p); pn.textContent = Math.round(p * 100) + '%'; left.textContent = p < 1 ? `잠시만요 · 약 ${Math.ceil((1 - p) * DUR / 1000)}초` : '';
+    pols.forEach((ph, i) => { const a = i / pols.length * .72, b = a + .26, k = Math.max(0, Math.min(1, (p - a) / (b - a))), want = Math.floor(k * K);
+      while (ph.peeled < want) { launch(ph, ph.peeled); ph.peeled++; }
+      ph.img.style.clipPath = `inset(${ph.peeled / K * 100}% 0 0 0)`; ph.el.style.opacity = 1 - Math.max(0, k - .75) * 4; });
+    ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const sy = A.top + A.height * (1 - p);
+    threads = threads.filter((t) => {
+      const age = (now - t.born) / 1500; if (age > 1.35) return false;
+      const h = ease(Math.min(1, age)), tail = Math.max(0, h - .42), fade = age > 1 ? 1 - (age - 1) / .35 : 1, cx = (t.sx + t.tx) / 2 + t.side * 50, cy = Math.min(t.sy, sy) - t.lift;
+      const pt = (u) => [(1 - u) * (1 - u) * t.sx + 2 * (1 - u) * u * cx + u * u * t.tx, (1 - u) * (1 - u) * t.sy + 2 * (1 - u) * u * cy + u * u * sy];
+      for (let s = 0; s < 12; s++) { const u0 = tail + (h - tail) * s / 12, u1 = tail + (h - tail) * (s + 1) / 12, [x0, y0] = pt(u0), [x1, y1] = pt(u1), w = s / 12;
+        ctx.strokeStyle = mix(t.col, .55 + w * .45) + (.15 + w * .55) * fade + ')'; ctx.lineWidth = .6 + w * 1.1; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+      const [hx, hy] = pt(h), g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 9); g.addColorStop(0, `rgba(255,248,225,${.95 * fade})`); g.addColorStop(1, 'rgba(255,210,140,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, 7); ctx.fill();
+      if (age >= 1 && !t.hit) { t.hit = true; for (let n = 0; n < 3; n++) sparks.push({ x: hx, y: hy, vx: (Math.random() - .5) * .8, vy: -Math.random() * .9, b: now }); }
+      return true;
+    });
+    // while it works a short light walks round the rim from the candle side; at the end it burns all the way round and fades
+    if (!finished) { const u = (p * 2.2 % 1) * rimLen; strokeRim(u - rimLen * .1, u, .9); }
+    else { const k = Math.min(1, (now - burnAt) / 700), f = 1 - Math.max(0, (now - burnAt - 700) / 1200); if (f > 0) strokeRim(0, rimLen * k, f); }
+    sparks = sparks.filter((s) => { const a = (now - s.b) / 900; if (a > 1) return false; if (a < 0) return true; s.x += s.vx; s.y += s.vy; s.vy += .02;
+      ctx.fillStyle = `rgba(255,236,190,${1 - a})`; ctx.beginPath(); ctx.arc(s.x, s.y, 1.4, 0, 7); ctx.fill(); return true; });
+    ctx.globalCompositeOperation = 'source-over';
+    if (p >= 1 && !finished) finish(now);
+    if (finished && now - burnAt > 2400 && !threads.length && !sparks.length) { running = false; ctx.clearRect(0, 0, W, H); }
+  }
+  function title(t) { head.textContent = t; head.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 700, easing: 'cubic-bezier(.22,1,.36,1)' }); }
+  function finish(now) {
+    finished = true; burnAt = now; body.classList.add('finished'); title('There she is.'); no.textContent = 'LIGHT IT · DONE'; navigator.vibrate && navigator.vibrate([18, 60, 24]);
+    for (let n = 0; n < 70; n++) { const [x, y] = rim[Math.floor(n / 70 * (rimLen - 1))]; sparks.push({ x, y, vx: (Math.random() - .5) * .9, vy: -.3 - Math.random() * .8, b: now + n / 70 * 700 }); }
+  }
+  function weave() {   // (re)start the making from the beginning
+    cancelAnimationFrame(raf); threads = []; sparks = []; finished = false; body.classList.remove('finished');
+    pols.forEach((p) => { p.peeled = 0; p.img.style.clipPath = ''; p.el.style.opacity = ''; p.el.classList.add('in'); });
+    setFrost(0); layout(); title('Lighting it…'); no.textContent = 'LIGHT IT · WEAVING'; t0 = performance.now(); running = true; raf = requestAnimationFrame(frame);
+  }
+  function light() {
+    if (body.classList.contains('making')) return;
+    candle.classList.add('lit'); navigator.vibrate && navigator.vibrate(18);
+    const id = window.chosenLook ? window.chosenLook() : 'halloween'; frostFrom(id); setFrost(0); hang();
+    later(() => { body.classList.add('making'); window.playLook && window.playLook(true); aim(0); }, 900);   // walk back to the arch
+    later(weave, 900 + 1250);   // once the camera has arrived
+  }
+  function reset() {
+    timers.forEach(clearTimeout); timers = []; running = false; cancelAnimationFrame(raf); ctx.clearRect(0, 0, W, H);
+    body.classList.remove('making', 'finished'); candle.classList.remove('lit'); box.innerHTML = ''; pols = []; threads = []; sparks = [];
+    head.textContent = 'Light it'; no.textContent = 'LIGHT IT · LAST STEP'; window.playLook && window.playLook(false);
+  }
+  candle.addEventListener('click', light);
+  $('mkagain').addEventListener('click', weave);
+  $('mkopen').addEventListener('click', () => { const b = $('mkopen'); b.textContent = '여기서 완성 영상이 열려요 (시안)'; setTimeout(() => (b.textContent = '열어 보기'), 1800); });
+  addEventListener('resize', () => { if (running && document.activeElement?.tagName !== 'INPUT') layout(); });
+  window.makeStep = (on) => { if (!on) reset(); };
+})();
+</script>
+</body>
+</html>

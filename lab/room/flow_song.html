@@ -303,7 +303,9 @@ function aim(i) {
   // never let the room's edge come into view (10-24 phone: the turntable stop pulled the room's left edge in - a bare cream strip).
   // The room's untransformed corner sits at (vw-W)/2, (vh-H)/2; keep its scaled box covering the screen.
   const vw = innerWidth, vh = innerHeight, L0 = (vw - W) / 2, T0 = (vh - H) / 2, cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-  const tx = cl(W / 2 - px * s, vw - L0 - W * s, -L0), ty = cl(H / 2 - py * s + dy, vh - T0 - H * s, -T0);
+  // ...except up/down on the arch stop: the arch sits near the picture's top, so clamping there pushed it up under the title
+  // (it changed the locked style screen). Its small gap at the very top is under the progress thread and blends into the wall colour.
+  const tx = cl(W / 2 - px * s, vw - L0 - W * s, -L0), ty0 = H / 2 - py * s + dy, ty = p.fit ? ty0 : cl(ty0, vh - T0 - H * s, -T0);
   room.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
 }
 function go(i) {
