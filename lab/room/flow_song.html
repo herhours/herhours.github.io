@@ -184,21 +184,29 @@ body.s0 .room{filter:none}
 body.s1 .next:not(.ready){opacity:.5}
 /* song step (10-24): the turntable above, a wooden crate of sleeves below. Contents are things (vinyl, sleeves, wood),
    only 「다음」/「뒤로」 stay glass (research: controls are glass, content is the room's objects). */
-.songlight{position:fixed;inset:0;pointer-events:none;opacity:0;mix-blend-mode:soft-light;background:radial-gradient(85% 55% at 50% 32%,var(--sl,rgb(255 220 170)),transparent 75%);transition:opacity 1200ms var(--io)}
-body.s2.playing .songlight{opacity:.95}
+/* phone stutter (영샘 10-24 '모션이 엄청 끊기는데'): desktop ran 100 fps, so it was the phone's GPU - every blend mode over the
+   spinning record re-mixed the whole blurred room each frame. The light is now a plain see-through colour, no blending. */
+.songlight{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(85% 55% at 50% 32%,var(--sl,rgb(255 220 170)),transparent 75%);transition:opacity 1200ms var(--io)}
+body.s2.playing .songlight{opacity:.28}
+/* the same reason: nothing may keep moving inside the blurred room (the breathing, the gold thread's dash flow) or the 7px blur is
+   re-run over the whole scaled room every frame; and the style step's blend layers are taken out of the picture when not on that step */
+body.step .breath,body.step .thread path{animation:none}
+body.step .thread{visibility:hidden;transition:opacity 600ms,visibility 0s 600ms}
+body:not(.s0) .screen,body:not(.s0) .glowvid,body:not(.s0) .tint,body:not(.s0) .tint2{visibility:hidden;transition:opacity 700ms,visibility 0s 700ms}
+body.step #lamp{visibility:hidden;transition:opacity 700ms,visibility 0s 700ms}
 .deck{position:relative;width:min(72vw,300px);aspect-ratio:1;margin:16px auto 0;flex:none}
 .mat{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,#3a332d 0 18%,#2b2520 19% 64%,#221d19 65% 100%);
   box-shadow:0 0 0 7px rgb(214 196 168 / .55),0 0 0 8px rgb(255 255 255 / .55),0 22px 44px -14px rgb(40 25 10 / .6)}
 .vinyl{position:absolute;inset:3%;border-radius:50%;opacity:0;transform:scale(.9);transition:opacity 300ms,transform 300ms var(--out);
   background:repeating-radial-gradient(circle at 50% 50%,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:inset 0 0 0 2px #0c0b0a}
 .vinyl.on{opacity:1;transform:none}
-.vinyl.spin{animation:spin 1.8s linear infinite}
+.vinyl.spin{animation:spin 1.8s linear infinite;will-change:rotate}
 @keyframes spin{to{rotate:360deg}}
 .vinyl .label{position:absolute;inset:34%;border-radius:50%;background:#C9A36A center/cover;box-shadow:0 0 0 2px rgb(0 0 0 / .35)}
 .vinyl .label::after{content:"";position:absolute;left:50%;top:50%;width:7%;height:7%;margin:-3.5% 0 0 -3.5%;border-radius:50%;background:#E8DFD0;box-shadow:inset 0 1px 2px rgb(0 0 0 / .6)}
 /* the light on a record doesn't turn with it - the sheen sits still above the spinning disc */
-.sheen{position:absolute;inset:3%;border-radius:50%;pointer-events:none;mix-blend-mode:screen;
-  background:conic-gradient(from 20deg,transparent 0 8%,rgb(255 245 225 / .16) 13%,transparent 20% 50%,rgb(255 245 225 / .12) 63%,transparent 70%)}
+.sheen{position:absolute;inset:3%;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 20deg,transparent 0 8%,rgb(255 245 225 / .13) 13%,transparent 20% 50%,rgb(255 245 225 / .10) 63%,transparent 70%)}
 .arm{position:absolute;right:3%;top:1%;width:12px;height:66%;margin-right:-6px;transform-origin:6px 10px;transform:rotate(3deg);transition:transform 900ms cubic-bezier(.45,0,.2,1);z-index:2;pointer-events:none}
 .arm::before{content:"";position:absolute;left:-5px;top:-1px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfc7bb 45%,#8d857a);box-shadow:0 3px 6px rgb(40 25 10 / .45)}
 .arm i{position:absolute;left:4px;top:10px;bottom:10px;width:4px;border-radius:2px;background:linear-gradient(90deg,#9a9288,#f4efe7 45%,#a9a196);box-shadow:2px 3px 5px rgb(40 25 10 / .35)}
@@ -215,7 +223,9 @@ body.s2.playing .songlight{opacity:.95}
   background:repeating-linear-gradient(92deg,rgb(255 255 255 / .05) 0 2px,transparent 2px 9px),linear-gradient(180deg,#C99A62,#A87A45 60%,#8E6435);
   box-shadow:inset 0 2px 0 rgb(255 230 190 / .7),inset 0 -6px 12px rgb(60 35 10 / .35),0 14px 26px -10px rgb(60 35 10 / .55)}
 .front::after{content:"";position:absolute;left:50%;top:18px;width:46px;height:14px;margin-left:-23px;border-radius:7px;background:rgb(60 35 10 / .45);box-shadow:inset 0 2px 3px rgb(0 0 0 / .4)}
-.flydisc{position:fixed;left:0;top:0;z-index:30;border-radius:50%;pointer-events:none;background:repeating-radial-gradient(circle,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:0 10px 24px rgb(0 0 0 / .4)}
+/* drawn once at full size and only moved/scaled (an animated shadow on a growing disc was a repaint every frame) */
+.flydisc{position:fixed;left:0;top:0;z-index:30;border-radius:50%;pointer-events:none;will-change:transform;
+  background:repeating-radial-gradient(circle,#121010 0 1.2px,#1d1a18 1.2px 2.6px);box-shadow:0 12px 26px rgb(0 0 0 / .38)}
 .flydisc i{position:absolute;inset:34%;border-radius:50%;background:center/cover}
 body.s2 .next:not(.sready){opacity:.5}
 /* the chosen record's kind, in the gap between the crate and 「다음」 (영샘 10-24) */
@@ -561,9 +571,10 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   const GENRE = (i) => { const [id, , who] = SONGS[i]; const g = id.startsWith('hw_') ? 'HALLOWEEN' : id === 'green' ? 'HER HOURS · LYRICS' : 'HER HOURS · VOCAL'; return `<b>${g}</b>  ·  SUNG BY ${who.toUpperCase()}`; };
   const sleeves = SONGS.map(([id, n, who], i) => { const s = document.createElement('div'); s.className = 'sleeve'; s.style.backgroundImage = `url(covers/${id}.jpg)`; s.dataset.i = i; s.setAttribute('aria-label', n); box.append(s); return s; });
   // standing in the crate: the one in the middle stands up, the rest lean back and turn a little away (principle 6: follows the finger 1:1)
+  // all positions read first, then all styles written (reading a rect after each write forced 8 layouts a frame); offsets ignore transforms
   function lean() {
-    const r = box.getBoundingClientRect(), mid = r.left + r.width / 2;
-    sleeves.forEach((s) => { const b = s.getBoundingClientRect(), d = Math.max(-2.5, Math.min(2.5, (b.left + b.width / 2 - mid) / 100)), a = Math.min(1, Math.abs(d));
+    const mid = box.scrollLeft + box.clientWidth / 2, ds = sleeves.map((s) => Math.max(-2.5, Math.min(2.5, (s.offsetLeft + s.offsetWidth / 2 - mid) / 100)));
+    sleeves.forEach((s, k) => { const d = ds[k], a = Math.min(1, Math.abs(d));
       s.style.transform = `translateZ(${(1 - a) * 30}px) rotateX(${8 + a * 22}deg) rotateY(${-d * 14}deg) translateY(${a * 10}px)`; s.style.zIndex = 10 - Math.round(Math.abs(d) * 3); });
   }
   box.addEventListener('scroll', () => requestAnimationFrame(lean), { passive: true });
@@ -592,22 +603,28 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
     if (busy) return; busy = true; const prev = cur; cur = i; stop(); play(i);
     sleeves[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     const sb = sleeves[i].getBoundingClientRect(), db = deck.getBoundingClientRect(), D = db.width * .94, sw = sb.width * .92;
-    const f = document.createElement('div'); f.className = 'flydisc'; f.style.width = f.style.height = sw + 'px'; f.innerHTML = `<i style="background-image:url(covers/${SONGS[i][0]}.jpg)"></i>`;
+    // the disc is made at its final size and scaled down to start (scaling a small one up re-rasterised it every frame)
+    const f = document.createElement('div'); f.className = 'flydisc'; f.style.width = f.style.height = D + 'px'; f.innerHTML = `<i style="background-image:url(covers/${SONGS[i][0]}.jpg)"></i>`;
     document.body.append(f);
-    const x0 = sb.left + (sb.width - sw) / 2, y0 = sb.top, x2 = db.left + db.width * .03, y2 = db.top + db.height * .03, cx = (x0 + x2) / 2 + 70, cy = Math.min(y0, y2) - 30;
+    // ONE path, ONE easing (영샘 10-24 '부자연스러워'): the first version was three pieces - rise, fly, settle - each starting and
+    // ending at rest, so it stopped twice in the air. Now a single cubic curve leaves the sleeve straight up, swings over and comes
+    // DOWN onto the platter from above; one ease carries it, quick out of the crate and slowing all the way into the settle.
+    const ax = sb.left + sb.width / 2, ay = sb.top + sw / 2, bx = db.left + db.width / 2, by = db.top + db.height / 2, k0 = sw / D;
+    // the platter sits right above the crate, so a straight up-and-back-down path reversed and stood still at its top (measured);
+    // swinging out to the right keeps it moving sideways through the turn and brings it in from the upper right
+    const c1x = ax + D * .5, c1y = ay - sw * 1.2, c2x = bx + D * .45, c2y = by - D * .35;
+    const at = (x, y, s, r) => `translate(${x - D / 2}px,${y - D / 2}px) scale(${s}) rotate(${r}deg)`;
     vinyl.classList.remove('on');
-    // out of the sleeve (to .22) → a curve to a spot just above the platter, a touch large, shadow wide (to .72) →
-    // then it settles down onto the platter, slowing all the way (영샘 10-24 '올라갔다가 감속으로 천천히 살짝 정착')
-    const S = D / sw, hover = D * .07, ys = y0 - sw * .55, sh = (b, o) => `0 ${b}px ${b * 2.2}px rgb(0 0 0 / ${o})`;
-    const io = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-    const frames = [{ transform: `translate(${x0}px,${y0}px) scale(1) rotate(0deg)`, boxShadow: sh(6, .35), offset: 0 },
-      { transform: `translate(${x0}px,${ys}px) scale(1) rotate(0deg)`, boxShadow: sh(8, .35), offset: .22, easing: 'linear' }];
-    for (let k = 1; k <= 12; k++) { const t = io(k / 12), u = 1 - t, yh = y2 - hover;
-      frames.push({ offset: .22 + .5 * k / 12, easing: 'linear', boxShadow: sh(8 + 14 * t, .35 - .1 * t),
-        transform: `translate(${u * u * x0 + 2 * u * t * cx + t * t * x2}px,${u * u * ys + 2 * u * t * cy + t * t * yh}px) scale(${1 + (S * 1.05 - 1) * t}) rotate(${300 * t}deg)` }); }
-    frames[frames.length - 1].easing = 'cubic-bezier(.16,1,.3,1)';
-    frames.push({ offset: 1, transform: `translate(${x2}px,${y2}px) scale(${S}) rotate(360deg)`, boxShadow: sh(3, .3) });
-    f.animate(frames, { duration: 2100, fill: 'forwards' }).onfinish = () => {
+    const bez = (x1, y1, x2, y2) => (t) => { let lo = 0, hi = 1, u = t; for (let n = 0; n < 24; n++) { u = (lo + hi) / 2; const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u; if (x < t) lo = u; else hi = u; }
+      return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u; };
+    const ease = bez(.32, 0, .12, 1), N = 48, frames = [];
+    for (let k = 0; k <= N; k++) { const u = ease(k / N), v = 1 - u;
+      const x = v * v * v * ax + 3 * v * v * u * c1x + 3 * v * u * u * c2x + u * u * u * bx, y = v * v * v * ay + 3 * v * v * u * c1y + 3 * v * u * u * c2y + u * u * u * by;
+      // grows to a touch over full size while still in the air, then eases back to 1 as it lands
+      const s = k0 + (1 - k0) * Math.min(1, u / .8) + .05 * Math.sin(Math.PI * u) * u;
+      frames.push({ offset: k / N, transform: at(x, y, s, 360 * (1 - Math.pow(1 - u, 2))) }); }
+    frames[N].transform = at(bx, by, 1, 360);
+    f.animate(frames, { duration: 1900, easing: 'linear', fill: 'forwards' }).onfinish = () => {
       // hand over to the platter's record without its own fade/scale-in (that read as a second pop)
       label.style.backgroundImage = `url(covers/${SONGS[i][0]}.jpg)`; vinyl.style.transition = 'none'; vinyl.classList.add('on', 'spin'); vinyl.offsetWidth; vinyl.style.transition = ''; f.remove();
       const ge = $('genre'); ge.classList.remove('on'); ge.innerHTML = GENRE(i); ge.offsetWidth; ge.classList.add('on');
