@@ -310,6 +310,10 @@ body.making .frost{visibility:visible}
 .frost .seam2{position:absolute;left:-10%;right:-10%;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,#FFE7A8 20%,#fff 50%,#FFE7A8 80%,transparent);
   box-shadow:0 0 8px 2px rgb(255 214 140 / .85),0 0 20px 6px rgb(255 200 120 / .35)}
 #mk{position:fixed;inset:0;pointer-events:none}
+/* the finish flash (영샘 10-24 '완성했을 때 조금만 더 이펙트'): one pre-drawn warm glow, only scaled and faded - no blur, no blend */
+.mkflash{position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;opacity:0;will-change:transform,opacity;
+  background:radial-gradient(circle,rgb(255 252 240 / .95) 0 12%,rgb(255 230 170 / .6) 32%,rgb(255 210 140 / .22) 52%,rgb(255 200 120 / 0) 70%)}
+.mkh-c{display:inline-block;white-space:pre}
 .mkpol{position:fixed;left:0;top:0;margin:0;width:64px;padding:5px 5px 15px;border-radius:3px;background:linear-gradient(180deg,#FFFDF8,#F4ECDD);opacity:0;
   box-shadow:inset 0 1px 0 #fff,-6px 10px 18px -6px rgb(60 40 15 / .35);rotate:var(--r);transition:opacity 700ms var(--out);will-change:transform}
 .mkpol.in{opacity:1;animation:hang 6s ease-in-out infinite alternate;animation-delay:var(--dl)}
@@ -340,7 +344,7 @@ body.finished .mkdone{opacity:1;translate:0 0;pointer-events:auto}
   <svg class="thread" viewBox="0 0 100 150" preserveAspectRatio="none"><path class="glow" id="tg" d=""/><path id="tp" d=""/></svg></div></div>
 <canvas id="lamp"></canvas>
 <div class="wash"></div><div class="songlight" id="songlight"></div>
-<div id="mkpols"></div><canvas id="mk"></canvas>
+<div id="mkpols"></div><div class="mkflash" id="mkflash"></div><canvas id="mk"></canvas>
 <span class="tag" id="tag">입구 빛 시안 · 10-24 · 다시 ↺</span>
 <p class="hint" id="hint">touch the room</p>
 
@@ -812,7 +816,7 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   const screen = $('screen'), frost = $('frost'), fi = $('fi'), fimg = $('fimg'), head = $('mkh'), no = $('mkno'), pn = $('mkn'), left = $('mkleft'), pctEl = $('mkpct');
   const DUR = 16000, K = 12, AT = [.08, .26, .5, .7, .9, .38];
   const DEMO = ['covers/hw_eira_wind_me_up.jpg', 'covers/hw_violet_one_candle_left.jpg', 'covers/hh_seren_three_words.jpg', 'covers/hw_veronica_velvet_fangs.jpg', 'covers/hh_violet_before_it_disappears.jpg'];
-  let dpr = 1, W = 0, H = 0, A = null, rim = [], rimLen = 0, pols = [], threads = [], sparks = [], t0 = 0, raf = 0, running = false, finished = false, burnAt = 0, timers = [];
+  let dpr = 1, W = 0, H = 0, A = null, rim = [], rimLen = 0, pols = [], threads = [], sparks = [], flakes = [], t0 = 0, raf = 0, running = false, finished = false, burnAt = 0, timers = [];
   const later = (f, ms) => timers.push(setTimeout(f, ms));
   function sample(p) {
     const c = document.createElement('canvas'); c.width = 24; c.height = K; const x = c.getContext('2d');
@@ -875,20 +879,49 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
     });
     // while it works a short light walks round the rim from the candle side; at the end it burns all the way round and fades
     if (!finished) { const u = (p * 2.2 % 1) * rimLen; strokeRim(u - rimLen * .1, u, .9); }
-    else { const k = Math.min(1, (now - burnAt) / 700), f = 1 - Math.max(0, (now - burnAt - 700) / 1200); if (f > 0) strokeRim(0, rimLen * k, f); }
+    else { const k = Math.min(1, (now - burnAt) / 700), f = 1 - Math.max(0, (now - burnAt - 700) / 1200); if (f > 0) strokeRim(0, rimLen * k, f);
+      // two rings in the arch's own shape ripple outward once the rim has gone round
+      for (const d of [500, 900]) { const q = (now - burnAt - d) / 1300; if (q > 0 && q < 1) ring(1 + ease(q) * .32, (1 - q) * .8); } }
+    // gold flakes: they burst up off the arch, turn and glint as they fall; then slow motes rise
+    flakes = flakes.filter((f) => { const a = (now - f.b) / f.life; if (a > 1) return false; if (a < 0) return true;
+      f.vy += f.g; f.vx *= .992; f.x += f.vx; f.y += f.vy; f.r += f.vr; const tw = .55 + .45 * Math.sin(now * f.tw + f.ph), al = (a < .1 ? a / .1 : 1 - Math.max(0, (a - .6) / .4)) * tw;
+      ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.r); ctx.scale(1, Math.abs(Math.cos(f.r * 1.7)) * .8 + .2);
+      ctx.fillStyle = f.mote ? `rgba(255,240,205,${al * .8})` : `rgba(${f.c},${al})`; ctx.fillRect(-f.s, -f.s * .55, f.s * 2, f.s * 1.1); ctx.restore(); return true; });
     sparks = sparks.filter((s) => { const a = (now - s.b) / 900; if (a > 1) return false; if (a < 0) return true; s.x += s.vx; s.y += s.vy; s.vy += .02;
       ctx.fillStyle = `rgba(255,236,190,${1 - a})`; ctx.beginPath(); ctx.arc(s.x, s.y, 1.4, 0, 7); ctx.fill(); return true; });
     ctx.globalCompositeOperation = 'source-over';
     if (p >= 1 && !finished) finish(now);
-    if (finished && now - burnAt > 2400 && !threads.length && !sparks.length) { running = false; ctx.clearRect(0, 0, W, H); }
+    if (finished && now - burnAt > 2400 && !threads.length && !sparks.length && !flakes.length) { running = false; ctx.clearRect(0, 0, W, H); }
+  }
+  // the arch outline scaled about its centre - for the outward ripples
+  function ring(k, alpha) {
+    const cx = A.left + A.width / 2, cy = A.top + A.height / 2; ctx.beginPath();
+    rim.forEach(([x, y], i) => { const X = cx + (x - cx) * k, Y = cy + (y - cy) * k; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+    ctx.strokeStyle = `rgba(255,214,150,${.25 * alpha})`; ctx.lineWidth = 8; ctx.stroke(); ctx.strokeStyle = `rgba(255,246,220,${.85 * alpha})`; ctx.lineWidth = 1.4; ctx.stroke();
   }
   function title(t) { head.textContent = t; head.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 700, easing: 'cubic-bezier(.22,1,.36,1)' }); }
   function finish(now) {
-    finished = true; burnAt = now; body.classList.add('finished'); title('There she is.'); no.textContent = 'LIGHT IT · DONE'; navigator.vibrate && navigator.vibrate([18, 60, 24]);
+    finished = true; burnAt = now; body.classList.add('finished'); no.textContent = 'LIGHT IT · DONE'; navigator.vibrate && navigator.vibrate([18, 60, 24, 90, 40]);
+    // the name of the moment blooms letter by letter
+    head.innerHTML = [...'There she is.'].map((c) => `<span class="mkh-c">${c}</span>`).join('');
+    [...head.children].forEach((s, i) => s.animate([{ opacity: 0, transform: 'translateY(12px) scale(.6)', color: '#FFE7A8' }, { opacity: 1, transform: 'none' }],
+      { duration: 700, delay: 500 + i * 55, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
     for (let n = 0; n < 70; n++) { const [x, y] = rim[Math.floor(n / 70 * (rimLen - 1))]; sparks.push({ x, y, vx: (Math.random() - .5) * .9, vy: -.3 - Math.random() * .8, b: now + n / 70 * 700 }); }
+    // warm light opens out of the arch as the rim closes, and the arch takes one breath
+    const cx = A.left + A.width / 2, cy = A.top + A.height * .42, fl = $('mkflash');
+    fl.animate([{ opacity: 0, transform: `translate(${cx}px,${cy}px) scale(.4)` }, { opacity: .9, transform: `translate(${cx}px,${cy}px) scale(1)`, offset: .3 }, { opacity: 0, transform: `translate(${cx}px,${cy}px) scale(1.7)` }],
+      { duration: 1700, delay: 650, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' });
+    screen.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.035)', offset: .35 }, { transform: 'scale(1)' }], { duration: 1400, delay: 650, easing: 'cubic-bezier(.45,0,.2,1)' });
+    // gold flakes burst off the arch top (120), then soft motes drift up for a while (40)
+    const GOLD = ['255,226,150', '255,240,200', '232,186,104', '255,212,128'];
+    for (let n = 0; n < 120; n++) { const ang = -Math.PI / 2 + (Math.random() - .5) * 2.2, sp = 2 + Math.random() * 4.5;
+      flakes.push({ x: cx + (Math.random() - .5) * A.width * .6, y: A.top + A.height * (.1 + Math.random() * .25), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, g: .07 + Math.random() * .05,
+        r: Math.random() * 6, vr: (Math.random() - .5) * .25, s: 1.4 + Math.random() * 2.6, c: GOLD[n % 4], tw: .01 + Math.random() * .02, ph: Math.random() * 6, b: now + 650 + Math.random() * 250, life: 2200 + Math.random() * 1400 }); }
+    for (let n = 0; n < 40; n++) flakes.push({ x: A.left + Math.random() * A.width, y: A.bottom - Math.random() * A.height * .3, vx: (Math.random() - .5) * .3, vy: -.35 - Math.random() * .5, g: -.002,
+      r: 0, vr: 0, s: .9 + Math.random() * 1.2, mote: true, tw: .006 + Math.random() * .01, ph: Math.random() * 6, b: now + 1200 + Math.random() * 1500, life: 2600 + Math.random() * 1600 });
   }
   function weave() {   // (re)start the making from the beginning
-    cancelAnimationFrame(raf); threads = []; sparks = []; finished = false; body.classList.remove('finished');
+    cancelAnimationFrame(raf); threads = []; sparks = []; flakes = []; finished = false; body.classList.remove('finished');
     pols.forEach((p) => { p.peeled = 0; p.img.style.clipPath = ''; p.el.style.opacity = ''; p.el.classList.add('in'); });
     setFrost(0); layout(); title('Lighting it…'); no.textContent = 'LIGHT IT · WEAVING'; t0 = performance.now(); running = true; raf = requestAnimationFrame(frame);
   }
@@ -901,7 +934,7 @@ if (s0 != null) { document.querySelector('.tag').hidden = true; document.documen
   }
   function reset() {
     timers.forEach(clearTimeout); timers = []; running = false; cancelAnimationFrame(raf); ctx.clearRect(0, 0, W, H);
-    body.classList.remove('making', 'finished'); candle.classList.remove('lit'); box.innerHTML = ''; pols = []; threads = []; sparks = [];
+    body.classList.remove('making', 'finished'); candle.classList.remove('lit'); box.innerHTML = ''; pols = []; threads = []; sparks = []; flakes = [];
     head.textContent = 'Light it'; no.textContent = 'LIGHT IT · LAST STEP'; window.playLook && window.playLook(false);
   }
   candle.addEventListener('click', light);
