@@ -1091,7 +1091,15 @@ async function doShare() {
       if (!KIDS) $('doneMeta').textContent += ' ' + T('인스타에서 「할 수 없습니다」가 뜨면 한 번 더 눌러 주세요.', 'If Instagram says it can’t, tap share once more.');
       $('save').classList.add('nudge');
     }
-    catch (e) { rlog(`share failed ${e.name} ${e.message}`); if (e.name !== 'AbortError') $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; }
+    catch (e) {
+      rlog(`share failed ${e.name} ${e.message}`);
+      if (e.name !== 'AbortError') { $('doneMeta').textContent = `${T('공유 실패', 'Share failed')}: ${e.message}`; return; }
+      // 10-27 log: two iPhone testers closed the share sheet (one twice) and never saved - say where the video goes
+      $('doneMeta').textContent = isIOS()
+        ? T('공유 창을 닫았어요. 사진 앱에 두려면 한 번 더 눌러 「동영상 저장」을, 파일로 받으려면 아래 「저장」을 눌러 주세요.', 'You closed the share sheet. To keep it in Photos, tap again and choose “Save Video” — or tap “Save” below for Files.')
+        : T('공유 창을 닫았어요. 폰에 남기려면 아래 「저장」을 눌러 주세요.', 'You closed the share sheet. Tap “Save” below to keep it on your phone.');
+      $('save').classList.add('nudge');
+    }
   } else {
     $('doneMeta').textContent = inAppBrowser()
       ? T('앱 안 브라우저라 바로 공유가 안 돼요. 크롬·사파리로 열어서 다시 만들거나, 「저장」으로 받아서 인스타에서 올려주세요.', 'This in-app browser can’t share. Open the page in Chrome or Safari, or tap “Save” and post it from Instagram.')
