@@ -56,7 +56,27 @@ export function analyze(buf, seconds) {
   // the loudest stretch decides when the look turns up (sparks go to full)
   const chorusFrom = hits.length ? hits[Math.min(1, hits.length - 1)] : Math.round(N / 2);
 
-  return { beat, period, hits, chorusFrom, energy, spec: spectrum(data, sr, N, hop) };
+  return { beat, period, hits, chorusFrom, energy, beats: beatGrid(onset, beat, N), spec: spectrum(data, sr, N, hop) };
+}
+
+// 11-07: whole-frame beats drift off a song within a minute (88 bpm is 20.45 frames, not 20). The looks that move on
+// every beat read this grid: the best fractional beat near `beat`, with the phase that lands on the most onsets. A very
+// fast pulse is doubled, so a move is never shorter than half a second's worth of motion allows.
+function beatGrid(onset, beat, N) {
+  let bestL = beat, bestP = 0, bestV = -1;
+  for (let L = beat - 1; L <= beat + 1.001; L += 0.02) {
+    for (let p = 0; p < L; p += 1) {
+      let v = 0;
+      for (let x = p; x < N; x += L) v += onset[Math.round(x)] || 0;
+      v /= Math.floor(N / L) || 1;
+      if (v > bestV) { bestV = v; bestL = L; bestP = p; }
+    }
+  }
+  while (bestL < 14) bestL *= 2;
+  const out = [];
+  for (let x = bestP; x < N + bestL * 8; x += bestL) out.push(x);
+  if (out[0] > 0) out.unshift(0);
+  return out;
 }
 
 // ---------- where to start the short ----------

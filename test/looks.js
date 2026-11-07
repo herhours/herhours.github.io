@@ -2,6 +2,7 @@
 // Each look is one approved channel short, redrawn for the phone canvas. The Remotion
 // originals live in D:\_research\visual_playlist_pilot\shorts_clo\src\templates\ — layout,
 // timings and colours are carried over from there; only the drawing code is new.
+import { HJ_LOOKS } from './looks_hj.js';
 import { W, H, drawFrame as drawWindowBand, drawCover, grainPattern, F_LYRIC, F_CAPS, paintWord, LYRIC, krScale, titleCase } from './core.js';
 
 const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
@@ -2351,6 +2352,7 @@ export const LOOKS = [
   // shown only through the class link (?class=kids) — ui.js puts these first there and leaves them out elsewhere
   minjeongLook('minjeong-hw', '민정샘 · 핼러윈', T('핼러윈 특집 · 네온 사진 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'Halloween special · neon photos · three panels with a pulse · a 「well done」 badge'), 'halloween'),
   minjeongLook('minjeong', '민정샘', T('노을빛 네온 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'pastel dusk neon · three panels with a pulse · a 「well done」 badge'), 'everyday'),
+  ...HJ_LOOKS,
 ];
 // How many photos each look actually shows for this song, and which shape suits it.
 // slots = distinct picture places in N frames; fewer photos than `min` and the repeats show.
@@ -2367,6 +2369,6 @@ const PHOTO = {
   minjeong: { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) + 6 },
   'minjeong-hw': { min: 6, shape: 'tall', slots: (d, N) => Math.ceil(N / d.step) + 6 },
 };
-for (const l of LOOKS) l.photo = PHOTO[l.id];
+for (const l of LOOKS) l.photo = PHOTO[l.id] || l.photo;
 
 export const lookById = (id) => LOOKS.find((l) => l.id === id) ?? LOOKS[0];

@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./ui.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&family=Jua&display=swap">
 <script type="importmap">{"imports":{"mediabunny":"./vendor/mediabunny.min.mjs"}}</script>
 <style>
 /* ---- Design B: 무대 + 도구줄 (stage & rail) — the reel fills the screen, tools float on it ---- */
@@ -395,6 +395,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"><span class="cnt" data-for="t2"></span></div>
     <!-- 10-20 class link: our song's lyric captions only when asked for -->
     <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics" style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
+    <!-- 11-07 (10-17 시험자 의견 '음악만'): 제목·가사를 끌 수 있게 - 가족 영상처럼 글자 없이 음악만 깔고 싶은 사람 -->
+    <div class="row" id="showTitleRow" hidden><label for="showTitle">제목</label><input type="checkbox" id="showTitle" checked style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">끄면 영상에 제목이 안 나와요</span></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
     <p class="hint" id="blankHint" hidden>비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.</p>
     <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">도움말</button></div>

@@ -13,6 +13,8 @@ const $ = (id) => document.getElementById(id);
 // only the kids' songs, picture-book demo pictures, and its own words kept when a song is picked.
 const KIDS = ['kids', 'minjeong'].includes(new URLSearchParams(location.search).get('class'));
 const QLOOK = new URLSearchParams(location.search).get('look');
+// 11-07: looks still being judged show only to whoever opened ?lab=1 once - the testers' app stays as it is (영샘 10-22)
+const LAB = (() => { try { const q = new URLSearchParams(location.search).get('lab'); if (q === '1') localStorage.setItem('hh-lab', '1'); if (q === '0') localStorage.removeItem('hh-lab'); return !!localStorage.getItem('hh-lab'); } catch { return false; } })();
 // each class template opens with its own words; switching templates swaps them only if the class has not changed them
 const KIDS_TEXT = { 'minjeong-hw': { brand: '민정샘 반', t1: 'HALLOWEEN', t2: 'NIGHT PARTY' }, minjeong: { brand: '민정샘 반', t1: 'OUR CLASS', t2: 'BEST DAY EVER' } };
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -27,6 +29,7 @@ const S = {
   look: lookById(QLOOK || (KIDS ? 'minjeong-hw' : null)), beat: null,
   clipGain: 0.35,
   songLyrics: !KIDS,            // 10-20: on the class link our song's lyric captions are off until 「가사 자막」 is ticked
+  showTitle: true,
   userPhrases: [], tap: null,   // lyrics the user timed to their own song by tapping   // clip sound under the song: present, never on top of it
   // which part of the song becomes the short (영샘 10-03): length, start, and where the chorus is
   len: 32, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
@@ -55,6 +58,9 @@ function rebuild() {
     phrases: S.userPhrases, blank: KIDS, songLyrics: S.songLyrics,
   });
   base.N = S.N;
+  // 11-07 '음악만': either kind of words can be switched off; the class link keeps its own rule (empty field = nothing)
+  if (!KIDS && !S.songLyrics) base.phrases = [];
+  if (!KIDS && !S.showTitle) { base.title1 = ''; base.title2 = ''; base.tag = ''; }
   // our own song's lyrics are timed from 0; a later start moves them with it
   if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
   S.d = S.look.build(base, S.beat);
@@ -120,7 +126,8 @@ function renderLooks() {
   const box = $('looks'); if (!box) return;
   const keep = box.scrollLeft;
   box.innerHTML = '';
-  const shown = KIDS ? [...LOOKS.filter((l) => l.kids), ...LOOKS.filter((l) => !l.kids)] : LOOKS.filter((l) => !l.kids);
+  const open = LOOKS.filter((l) => !l.lab || LAB);
+  const shown = KIDS ? [...open.filter((l) => l.kids), ...open.filter((l) => !l.kids)] : open.filter((l) => !l.kids);
   for (const l of shown) {
     const b = document.createElement('button');
     b.className = 'tile' + (l.id === S.look.id ? ' on' : '');
@@ -663,6 +670,7 @@ for (const id of ['brand', 't1', 't2']) $(id).addEventListener('input', () => { 
 // 10-20 class link: the class words become faint examples in the empty boxes, never text in the video
 function kidsExamples(txt) { $('brand').placeholder = txt.brand; $('t1').placeholder = txt.t1; $('t2').placeholder = txt.t2; }
 $('songLyrics').addEventListener('change', (e) => { S.songLyrics = e.target.checked; rlog(`song lyrics ${S.songLyrics ? 'on' : 'off'}`); rebuild(); });
+$('showTitle').addEventListener('change', (e) => { S.showTitle = e.target.checked; rlog(`title ${S.showTitle ? 'on' : 'off'}`); rebuild(); });
 
 $('lyrics').addEventListener('input', () => saveSoon());
 
@@ -736,7 +744,7 @@ function snapshot() {
     song: S.useOurs ? S.song.id : null, audio: S.useOurs ? null : S.audioFile,
     len: S.len, offset: S.offset,
     brand: $('brand').value, t1: $('t1').value, t2: $('t2').value,
-    lyrics: $('lyrics').value, phrases: S.userPhrases, songLyrics: S.songLyrics,
+    lyrics: $('lyrics').value, phrases: S.userPhrases, songLyrics: S.songLyrics, showTitle: S.showTitle,
     photos: S.photoBlobs, clips: S.photoFiles.filter(isVideoFile).length,
     aligns: S.images.filter((x) => !x.live).map((x) => x.hhAlign || null),   // same order as photos (shrinkAll of the non-clips)
   };
@@ -767,6 +775,7 @@ async function restore(w) {
     $('brand').value = w.brand ?? $('brand').value; $('t1').value = w.t1 ?? $('t1').value; $('t2').value = w.t2 ?? $('t2').value;
     $('lyrics').value = w.lyrics || ''; S.userPhrases = w.phrases || []; lyricHint();
     if (typeof w.songLyrics === 'boolean') { S.songLyrics = w.songLyrics; $('songLyrics').checked = w.songLyrics; }
+    if (typeof w.showTitle === 'boolean') { S.showTitle = w.showTitle; $('showTitle').checked = w.showTitle; }
     if (w.photos?.length) {
       await usePhotos(w.photos.map((b, i) => new File([b], `photo_${i + 1}.jpg`, { type: 'image/jpeg' })));
       if (w.aligns) S.images.filter((x) => !x.live).forEach((x, i) => { if (w.aligns[i]) x.hhAlign = w.aligns[i]; });
@@ -1018,8 +1027,8 @@ async function make() {
     rebuild();
     status(T('글꼴 준비 중… 멈춘 게 아니에요', 'Loading fonts… it hasn’t stopped'));
     // the class templates' Halloween poster face is sliced by Google like Gaegu - fetch the syllables this short uses
-    const kidsFont = S.look.kids ? document.fonts.load('80px "Black Han Sans"', [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
-    await within(Promise.all([hangulReady(), kidsFont, ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
+    const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${S.look.id === 'paper-world' ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
+    await within(Promise.all([hangulReady(), kidsFont, S.look.ready?.(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
     const stepper = exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
@@ -1258,7 +1267,10 @@ async function boot(label, fn) {
       // are only faint examples, and our song's lyrics show only when 「가사 자막」 is ticked
       $('brand').value = ''; $('t1').value = ''; $('t2').value = ''; kidsExamples(txt);
       $('songLyricsRow').hidden = false; $('blankHint').hidden = false; $('songLyrics').checked = S.songLyrics;
-    } else { $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2; }
+    } else {
+      $('brand').value = txt.brand; $('t1').value = txt.t1; $('t2').value = txt.t2;
+      $('songLyricsRow').hidden = false; $('songLyrics').checked = S.songLyrics; $('showTitleRow').hidden = false;
+    }
     if (KIDS) {
       document.body.classList.add('kids'); rlog('class kids');
       // 10-19 랩코 점검 A1: the class is under 14 - Instagram must not be the biggest button. Android: 「저장」 becomes the
