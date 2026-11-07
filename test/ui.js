@@ -5,7 +5,7 @@ import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, tr
          encode, buildData, loadDemo, loadDemoHw, loadDemoKids, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS, KIDS_SONGS } from './core.js';
 import { LOOKS, lookById } from './looks.js';
 import { analyze, findChorus } from './beats.js';
-import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
+import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, visibleStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
 import { getDraft, putDraft, dropDraft, listMade, addMade, dropMade } from './store.js';
 
 const $ = (id) => document.getElementById(id);
@@ -204,7 +204,7 @@ function loop(now) {
   tick++;
   if (S.every > 1 && tick % S.every) return;
   if (!S.d) return;
-  tickPreview(S.d.images);
+  tickPreview(S.d.images, S.look.clipsAt?.(S.vf, S.N, S.d));
   const t0 = performance.now();
   seen.clear();
   S.look.draw(ctx, S.vf, S.N, S.d);
@@ -897,7 +897,7 @@ if (SHEET_LOG) {
   setInterval(sheetFlush, 4000); addEventListener('visibilitychange', () => { if (document.hidden) sheetFlush(); }); addEventListener('pagehide', sheetFlush);
   addEventListener('online', sheetRestore); setTimeout(sheetRestore, 1500);
 }
-const rlog = (m) => {
+const rlog = self.hhLog = (m) => {
   if (REMOTE_LOG) fetch('/log', { method: 'POST', body: `${new Date().toISOString().slice(11, 19)} ${navigator.userAgent.slice(0, 80)} | ${m}`.slice(0, 1500) }).catch(() => {});
   if (SHEET_LOG) { sheetQ.push({ t: new Date().toTimeString().slice(0, 8), m: String(m).slice(0, 600) }); if (sheetQ.length >= 20) sheetFlush(); }
 };
@@ -996,6 +996,9 @@ async function make() {
   pv.pause(); window.hhClose(); pausePreview(S.images);
   document.body.classList.remove('is-done'); document.body.classList.add('is-making');
   S.blob = null; S.logQ = -1; fill(0); $('failMsg').textContent = ''; status(T('준비 중…', 'Getting ready…'));
+  // 11-07: the finished short from the last make still held a decoder and its whole file in memory while the next one started
+  { const o = $('out'), u = o.getAttribute('src'); if (u) { o.pause?.(); o.removeAttribute('src'); o.load?.(); if (u.startsWith('blob:')) URL.revokeObjectURL(u); } }
+  rlog(`make ${S.look.id} clips ${S.images.filter((c) => c.live).length} photos ${S.images.filter((c) => !c.live).length} ${Math.round(S.seconds)}s`);
   try {
     status(T('노래 불러오는 중…', 'Reading the song…'));
     // the song was already decoded when it was chosen; decoding it a second time is what stalled on a phone
@@ -1029,11 +1032,13 @@ async function make() {
     // the class templates' Halloween poster face is sliced by Google like Gaegu - fetch the syllables this short uses
     const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${S.look.id === 'paper-world' ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
     await within(Promise.all([hangulReady(), kidsFont, S.look.ready?.(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
-    const stepper = exportStepper(S.d.images);
+    // a look that can say which clips each frame shows needs no dry run, and decodes only those
+    const known = S.look.clipsAt && live ? Array.from({ length: N }, (_, f) => S.look.clipsAt(f, N, S.d)) : null;
+    const stepper = known ? visibleStepper(S.d.images, known, FPS) : exportStepper(S.d.images);
     let mixed = audioBuf;
     if (S.d.images.some((c) => c.live) && S.clipGain > 0) {
       status(T('영상 소리 맞추는 중… 멈춘 게 아니에요 (1분쯤)', 'Mixing video sound… it hasn’t stopped (about a minute)'));
-      const vis = scanVisibility(S.look.draw, ctx, seen, S.d, N);
+      const vis = known || scanVisibility(S.look.draw, ctx, seen, S.d, N);
       mixed = await mixClipSound(audioBuf, S.d.images, vis, S.clipGain, FPS);
     }
     status(T('만드는 중', 'Making'));

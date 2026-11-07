@@ -51,10 +51,12 @@ export async function fileToClip(file) {
 }
 
 // preview: copy whatever each <video> is showing right now
-export function tickPreview(sources) {
+// only: when given, just these clips play; the rest rest (a look that knows what it shows, 11-07)
+export function tickPreview(sources, only) {
   for (const c of sources) {
     if (!c.live) continue;
     const v = c.clip.video;
+    if (only && !only.has(c)) { if (!v.paused) v.pause(); continue; }
     if (v.paused) v.play().catch(() => {});
     if (c.clip.videoOk === true) { if (v.readyState >= 2) c.getContext('2d').drawImage(v, 0, 0, c.width, c.height); }
     else if (c.clip.videoOk === false) decodedTick(c);
@@ -192,6 +194,32 @@ export async function mixClipSound(music, sources, vis, gain, fps) {
     }
   }
   return out;
+}
+
+// 11-07 영샘 폰 (영상 9~11개): 'Encoding error (Can't readback frame textures)', and a second make killed the tab. Every
+// clip was being decoded for every frame, shown or not. For a look that can say what it shows, only the clips on screen
+// decode: a clip's decoder opens when it comes on and closes when it goes off. Same call shape as exportStepper.
+export function visibleStepper(sources, vis, fps) {
+  const state = sources.filter((c) => c.live).map((c) => ({ c, it: null, cur: null, nxt: null, last: -1 }));
+  const shut = async (st) => { if (st.it) { const it = st.it; st.it = null; st.cur = st.nxt = null; await it.return?.(); } };
+  const step = async (t) => {
+    const on = vis[Math.min(vis.length - 1, Math.round(t * fps))];
+    for (const st of state) {
+      if (!on.has(st.c)) { await shut(st); continue; }
+      const { track, start, dur } = st.c.clip;
+      const local = start + (t % dur);
+      if (!st.it || local < st.last) {
+        await shut(st);
+        st.it = new CanvasSink(track, { width: st.c.width, height: st.c.height, fit: 'fill', poolSize: 3 }).canvases(local, start + dur);
+        st.cur = (await st.it.next()).value ?? null; st.nxt = (await st.it.next()).value ?? null;
+      }
+      while (st.nxt && st.nxt.timestamp <= local) { st.cur = st.nxt; st.nxt = (await st.it.next()).value ?? null; }
+      if (st.cur) st.c.getContext('2d').drawImage(st.cur.canvas, 0, 0);
+      st.last = local;
+    }
+  };
+  step.close = async () => { for (const st of state) await shut(st); };
+  return step;
 }
 
 // export: returns an async function that paints every clip at video time t (seconds).

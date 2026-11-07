@@ -130,8 +130,10 @@ function initGL() {
   if (gl !== undefined) return gl;
   try {
     glc = document.createElement('canvas');
-    gl = glc.getContext('webgl', { premultipliedAlpha: false, antialias: false, preserveDrawingBuffer: true }) || null;
+    gl = glc.getContext('webgl', { premultipliedAlpha: false, antialias: false }) || null;   // each result is copied in the same task, so no preserved buffer
     if (!gl) return gl;
+    // the phone's GPU can take the context away; the look falls back to plain black and white and says so in the test log
+    glc.addEventListener('webglcontextlost', (e) => { e.preventDefault(); gl = null; self.hhLog?.('red-run webgl context lost'); });
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
     const p = gl.createProgram();
     gl.attachShader(p, sh(gl.VERTEX_SHADER, 'attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;v.y=1.-v.y;gl_Position=vec4(a,0.,1.);}'));
@@ -158,14 +160,13 @@ function shade(src) {
 }
 const redCache = new WeakMap();
 function redGraded(src) {
+  const kept = src.live ? null : redCache.get(src);
+  if (kept) return kept;
   if (!initGL()) return null;
   if (src.live) return shade(src);
-  let c = redCache.get(src);
-  if (!c) {
-    c = document.createElement('canvas'); c.width = src.width; c.height = src.height; c.hhSrc = src;
-    c.getContext('2d').drawImage(shade(src), 0, 0);
-    redCache.set(src, c);
-  }
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height; c.hhSrc = src;
+  c.getContext('2d').drawImage(shade(src), 0, 0);
+  redCache.set(src, c);
   return c;
 }
 function redPicture(ctx, src) {
@@ -637,13 +638,27 @@ function buildPaperWorld(base, beat) {
   };
 }
 
+// Which clips are on screen in a frame, without drawing it - the export decodes only these.
+const liveSet = (d, ...idx) => { const s = new Set(); for (const i of idx) { const im = d.images[i % d.images.length]; if (im?.live) s.add(im); } return s; };
+function redClips(f, N, d) {
+  if (f >= d.end) return liveSet(d, d.lastImg);
+  const r = d.runs.find((q) => f >= q.f0 && f < q.f1);
+  return liveSet(d, r ? r.img : atCut(d.cuts, f).img);
+}
+function beatClips(f, N, d) {
+  if (f < d.open) return f >= d.open - 12 ? liveSet(d, d.cuts[0].img) : new Set();
+  const b = d.bursts.find((q) => f >= q.f0 && f < q.f1);
+  return liveSet(d, atCut(b ? b.cuts : d.cuts, f).img);
+}
+const paperClips = (f, N, d) => liveSet(d, atCut(d.hero, Math.min(f, d.end - 1)).img);
+
 const slotsOf = (d) => { let m = 0; for (const c of d.cuts || d.hero) m = Math.max(m, c.img + 1); return m; };
 
 export const HJ_LOOKS = [
   { id: 'red-run', lab: true, name: 'Red Run', sub: T('흑백에 빨강만 · RUN 띠와 초시계 · GO 도장 · 끝에 이름 카드', 'black and white, the reds kept · RUN strips with a timer · GO stamps · a name card'),
-    draw: drawRedRun, build: buildRedRun, photo: { min: 10, shape: 'tall', slots: slotsOf } },
+    draw: drawRedRun, build: buildRedRun, clipsAt: redClips, photo: { min: 10, shape: 'tall', slots: slotsOf } },
   { id: 'beat-turns', lab: true, kfont: true, name: 'Beat Turns', sub: T('박자마다 튀는 카메라 · 금속 이름 · 큰 글자 도장 · 연사 스틸', 'the camera kicks on the beat · a metal name · big stamps · burst stills'),
-    draw: drawBeatTurns, build: buildBeatTurns, photo: { min: 12, shape: 'tall', slots: slotsOf } },
+    draw: drawBeatTurns, build: buildBeatTurns, clipsAt: beatClips, photo: { min: 12, shape: 'tall', slots: slotsOf } },
   { id: 'paper-world', lab: true, kfont: true, name: T('종이 세계', 'Paper World'), sub: T('종이 그림 무대 · 작은 화면이 터짐에 전체로 · 응원 문구 · 끝은 빛 폭발', 'a paper stage · a small window opens on the hit · cheers · a burst of light'),
-    draw: drawPaperWorld, build: buildPaperWorld, ready: paperReady, photo: { min: 10, shape: 'tall', slots: slotsOf } },
+    draw: drawPaperWorld, build: buildPaperWorld, clipsAt: paperClips, ready: paperReady, photo: { min: 10, shape: 'tall', slots: slotsOf } },
 ];
