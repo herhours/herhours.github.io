@@ -288,3 +288,14 @@ body.is-tapping .tapbtn{min-height:84px}
 .rail button:active,.looks .tile:active,#ourSongs .opt:active{transform:none}
 .inapp{background:#1d1a12;border-bottom:1px solid var(--accent)}
 .toast{background:var(--accent);color:var(--accent-ink)}
+
+/* 11-09 영샘 "맨 처음 시안처럼 위가 가득 찬 게 예뻐" — 미리보기가 카드 끝까지 꽉 차고, 그 위에 Her Hours·유리 버튼.
+   9:16 영상을 넓은 카드에 채우니 위아래는 잘린다: 사진 띠(1920 중 600~1140, 가운데 45%)에 맞춰 둔다. */
+.stage,body.panel-open .stage,body.is-done .stage,body.is-making .stage{padding:0}
+.frame{width:100%;height:100%;max-width:none;aspect-ratio:auto;border-radius:0;box-shadow:none}
+.frame canvas,.frame video{object-fit:cover;object-position:50% 45%;background:#0f1012}
+.stage::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 24%,rgba(0,0,0,0) 72%,rgba(0,0,0,.5) 100%)}
+body.is-making .stage::after{display:none}
+.live{display:none}
+.transport{z-index:4;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
