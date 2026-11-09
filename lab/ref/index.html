@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<base href="/test/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0d">
+<title>Her Hours Shorts</title>
+<!-- 11-09 영샘: 레퍼런스(주유·차 앱) 레이아웃+느낌 · 금색 · 아이폰 리퀴드 글래스 디자인에 기존 기능 전부.
+     엔진·ui.js 는 그대로 — 같은 id 를 새 자리에 놓고 옷만 바꾼다(ui-ref.css · ref.js). 시안: design_ref_20261109\index.html -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="HH Shorts">
+<script src="./version.js"></script>
+<script src="./i18n.js"></script>
+<link rel="stylesheet" href="./ui.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&family=Jua&family=Inter+Tight:wght@200;300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="/lab/ref/ui-ref.css">
+<script type="importmap">{"imports":{"mediabunny":"./vendor/mediabunny.min.mjs"}}</script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="refDefs">
+<symbol id="i-photo" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v8.2l4.2-4.2 3.3 3.3L16 11l3 3V7H5zm3.2 1.3a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4v10.5a3.5 3.5 0 1 1-2-3.16V7.3l-8 1.6v8.6a3.5 3.5 0 1 1-2-3.16V6.2l12-2.2z"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h12v2.4H9.9V19H8.1V7.4H3V5zm11.4 5H21v2h-2.4v7h-1.8v-7H14.4v-2z"/></symbol>
+<symbol id="i-look" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v4.5H3V4zm0 5.75h18v4.5H3v-4.5zM3 15.5h18V20H3v-4.5z"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></symbol>
+<symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l5 5-1.4 1.4L13 6.3V15h-2V6.3L8.4 8.9 7 7.5l5-5zM4 13h2v6h12v-6h2v8H4v-8z"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v8.2l2.6-2.6L17 10l-5 5-5-5 1.4-1.4L11 11.2V3zM4 18h16v3H4z"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm-1 6h2v7h-2v-7zm0-3h2v2h-2V7z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 4l-8 8 8 8"/></symbol>
+</defs></svg>
+
+<div class="inapp" id="inapp" hidden>
+  <p id="inappMsg"></p>
+  <div class="two"><button class="pill" id="inappGo"></button><button class="again" id="inappX">닫기</button></div>
+</div>
+
+<header class="top">
+  <button class="lnk gbtn" data-open="made" aria-label="내 영상"><svg width="20" height="20"><use href="#i-list"/></svg></button>
+  <div class="mark">Her Hours</div>
+  <button class="lnk gbtn" data-open="info" aria-label="정보"><svg width="20" height="20"><use href="#i-info"/></svg></button>
+  <button class="gbtn refx" aria-label="닫기"><svg width="18" height="18"><use href="#i-x"/></svg></button>
+</header>
+
+<div class="stage">
+  <div class="frame">
+    <canvas id="stage" width="1080" height="1920"></canvas>
+    <video id="out" playsinline loop controls></video>
+    <div class="live"><b></b>미리보기</div>
+    <div class="boot" aria-live="polite"><i></i><span>불러오는 중…</span></div>
+    <button class="tap" id="tap" aria-label="재생 / 멈춤">
+      <span class="playbtn" id="play">
+        <svg class="go" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+        <svg class="pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+      </span>
+    </button>
+    <div class="making">
+      <b id="pct">0%</b>
+      <div id="status"></div>
+      <div class="bar"><i id="fill"></i></div>
+      <div id="eta"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="rail">
+  <button data-open="look">
+    <span class="b"><svg width="26" height="26"><use href="#i-look"/></svg></span><span class="l">스타일</span>
+  </button>
+  <button data-open="photo" data-chip="photo">
+    <span class="b"><svg width="26" height="26"><use href="#i-photo"/></svg></span><span class="l">사진</span>
+  </button>
+  <button data-open="song" data-chip="song">
+    <span class="b"><svg width="26" height="26"><use href="#i-music"/></svg></span><span class="l">노래</span>
+  </button>
+  <button data-open="text">
+    <span class="b"><svg width="26" height="26"><use href="#i-type"/></svg></span><span class="l">글자</span>
+  </button>
+  <button data-open="made" class="mine-list">
+    <span class="b"><svg width="26" height="26"><use href="#i-list"/></svg></span><span class="l">내 영상</span>
+  </button>
+  <button id="railInstall" hidden>
+    <span class="b"><svg width="26" height="26"><use href="#i-save"/></svg></span><span class="l">앱 설치</span>
+  </button>
+  <button id="railInfo" data-open="info">
+    <span class="b"><svg width="26" height="26"><use href="#i-info"/></svg></span><span class="l">정보</span>
+  </button>
+</nav>
+
+<div class="transport">
+  <span class="t" id="tnow">0:00</span>
+  <input id="seek" type="range" min="0" max="959" value="120" step="1" aria-label="구간 이동">
+  <span class="t" id="tdur">0:32</span>
+</div>
+
+<div class="dock">
+  <div class="makebox">
+    <p class="failmsg" id="failMsg" role="alert"></p>
+    <p class="makesum" id="makeSum" hidden></p>
+    <button class="pill" id="make">쇼츠 만들기</button>
+  </div>
+  <div class="donebox">
+    <p class="done-meta" id="doneMeta"></p>
+    <p class="done-credit" id="credit"></p>
+    <button class="pill" id="share"><svg width="22" height="22"><use href="#i-share"/></svg>인스타에 올리기</button>
+    <div class="two">
+      <a class="pill ghost" id="save"><svg width="20" height="20"><use href="#i-save"/></svg>저장</a>
+      <button class="again" id="again">다시 만들기</button>
+    </div>
+    <div class="donelinks"><button class="fbopen" id="fbOpen" hidden>💬 의견 보내기</button><button data-open="made">내 영상</button><span aria-hidden="true">·</span><button data-open="info">정보</button></div>
+  </div>
+</div>
+
+<div class="scrim" data-close></div>
+<section class="panel" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <button class="x" data-close aria-label="닫기">✕</button>
+
+  <div class="pane pane-look">
+    <h2>① 스타일</h2>
+    <div class="looks" id="looks"></div>
+    <div class="lookinfo" id="lookInfo"></div>
+    <p class="hint">옆으로 밀어서 골라요. 고르는 즉시 위 영상이 바뀌어요.</p>
+    <button class="pill done" data-next="photo">다음 · 사진</button>
+  </div>
+
+  <div class="pane pane-photo">
+    <h2>② 사진 · 영상</h2>
+    <div class="two">
+      <label class="pill ghost" for="photos">사진·영상 고르기</label>
+      <button class="pill ghost" id="useDemo">예시로</button>
+    </div>
+    <input type="file" id="photos" accept="image/*,image/heic,image/heif,video/*" multiple>
+    <div class="thumbs" id="thumbs"></div>
+    <p class="hint" id="phint">고르면 바로 위 화면에 나와요.</p>
+    <p class="hint" id="focusTip" hidden>✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.</p>
+    <p class="hint" id="iosTip" hidden>아이폰: 오래된 사진은 iCloud에서 원본을 받아 오느라 몇 초 걸려요. 방금 찍은 사진은 바로 들어가요. 빠르게 하려면 설정 → 사진 → 「다운로드 및 원본 유지」(저장 공간을 더 써요).</p>
+    <p class="hint" id="padv"></p>
+    <div class="gain" id="clipGainRow" hidden>
+      <label for="clipGain">영상 소리</label>
+      <input type="range" id="clipGain" min="0" max="100" value="35" step="5">
+      <b id="clipGainV">35%</b>
+    </div>
+    <p class="hint" id="clipGainHint" style="margin-top:2px">영상이 화면에 나올 때만 노래 밑에 깔려요.</p>
+    <div class="two stepnav"><button class="pill ghost" data-prev="look">← 스타일</button><button class="pill done" data-next="song">다음 · 노래</button></div>
+  </div>
+
+  <div class="pane pane-focus">
+    <h2>보일 부분 고르기</h2>
+    <div class="focusbox" id="focusBox"><canvas id="focusCv"></canvas><i class="ring" id="focusRing"></i></div>
+    <p class="hint" id="focusHint">보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.</p>
+    <div class="two">
+      <button class="pill ghost" id="focusReset">처음대로</button>
+      <button class="pill" id="focusDone">다 됐어요</button>
+    </div>
+  </div>
+
+  <div class="pane pane-song">
+    <h2>③ 노래</h2>
+    <div id="ourSongs" class="songs"></div>
+    <label class="opt" for="audio">
+      <svg width="22" height="22"><use href="#i-music"/></svg>
+      <span class="t"><b>내 음악 파일</b><span id="shint">내 노래 파일을 골라요. 길이와 시작점은 아래에서.</span></span>
+    </label>
+    <input type="file" id="audio" accept="audio/*">
+    <div class="cut">
+      <div class="cutrow"><span class="cl">길이</span>
+        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="32" class="on">32초</button><button data-len="60">60초</button><button data-len="90">90초</button><button data-len="180">3분</button></div>
+      </div>
+      <div class="cutrow"><span class="cl">어디부터</span><b id="offV">0:00</b><span class="cdim" id="offTo"></span></div>
+      <input type="range" id="offset" min="0" max="0" step="0.5" value="0" aria-label="시작점">
+      <div class="two"><button class="pill ghost" id="offStart">처음부터</button><button class="pill ghost" id="offChorus">후렴부터</button></div>
+      <p class="hint" id="cutHint"></p>
+    </div>
+    <button class="opt lyr" id="lyricsBtn" data-open="lyrics">
+      <svg width="22" height="22"><use href="#i-type"/></svg>
+      <span class="t"><b>글 넣기 · 가사나 한마디</b><span id="lyricsBtnSub">붙여넣고 톡톡 눌러 맞춰요</span></span>
+    </button>
+    <div class="two stepnav"><button class="pill ghost" data-prev="photo">← 사진</button><button class="pill done" data-next="text">다음 · 글자</button></div>
+  </div>
+
+  <div class="pane pane-lyrics">
+    <h2>글 · 가사나 한마디</h2>
+    <div class="tapbox">
+      <div class="tapcount" id="tapCount"></div>
+      <div class="tapnow" id="tapNow"></div>
+      <div class="tapnext" id="tapNext"></div>
+      <button class="tapbtn" id="tapBtn">톡 — 지금 이 줄</button>
+      <div class="two"><button class="pill ghost" id="tapUndo">한 줄 뒤로</button><button class="pill ghost" id="tapStop">끝</button></div>
+    </div>
+    <div class="lyredit">
+      <textarea id="lyrics" rows="6" placeholder="한 줄에 한 마디씩 써요&#10;가사도 좋고, 그날의 한마디도 좋아요&#10;예) 첫 눈 / 첫 활강 / 오늘은 우리 둘이"></textarea>
+      <p class="hint" id="lhint">「눌러서 맞추기」를 누르면 고른 시작점부터 노래가 나와요. 그 줄이 떠야 할 때 큰 버튼을 톡. 컴퓨터에선 스페이스바(한 줄 뒤로는 백스페이스).</p>
+      <button class="pill" id="tapStart">눌러서 맞추기</button>
+      <button class="pill ghost done" data-next="song">확인</button>
+    </div>
+  </div>
+
+  <div class="pane pane-text">
+    <h2>④ 글자</h2>
+    <div class="row"><label id="brandLbl">이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"><span class="cnt" data-for="brand"></span></div>
+    <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"><span class="cnt" data-for="t1"></span></div>
+    <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"><span class="cnt" data-for="t2"></span></div>
+    <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
+    <div class="row" id="showTitleRow" hidden><label for="showTitle">제목</label><input type="checkbox" id="showTitle" checked><span class="hint" style="margin:0">끄면 영상에 제목이 안 나와요</span></div>
+    <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
+    <p class="hint" id="blankHint" hidden>비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.</p>
+    <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">도움말</button></div>
+    <div class="two stepnav"><button class="pill ghost" data-prev="song">← 노래</button><button class="pill done" data-finish>다 됐어요</button></div>
+  </div>
+
+  <div class="pane pane-info">
+    <h2>도움말</h2>
+    <div class="two">
+      <button class="pill ghost" data-open="welcome">사용법</button>
+      <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
+    </div>
+    <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
+    <p class="hint" id="installHint" hidden></p>
+    <ul class="helps">
+      <li><b>저장은 어디로?</b><span>완성 화면 「저장」 → 이름 정하기. 안드로이드는 다운로드 폴더, 아이폰은 「파일」 앱에 들어가요.</span></li>
+      <li><b>아이폰 사진첩에 넣으려면</b><span>완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.</span></li>
+      <li id="helpInApp" hidden><b>카톡에서 열었나요?</b><span>앱 안 브라우저에서는 인스타로 바로 보내기가 안 될 수 있어요. 크롬·사파리로 열면 돼요.</span></li>
+      <li><b>멈춘 것 같을 때</b><span>처음 열 때 노래·글꼴을 받느라 몇 초 걸려요. 「다시 불러오기」가 보이면 눌러 주세요.</span></li>
+    </ul>
+    <details class="diag"><summary>기기 진단 펼치기</summary><div id="caps"></div></details>
+    <p class="hint" id="ver"></p>
+    <button class="pill ghost done" data-close>닫기</button>
+  </div>
+
+  <div class="pane pane-welcome">
+    <h2 class="wtitle">사진 + 노래 하나 → 쇼츠</h2>
+    <ol class="steps">
+      <li><span class="b"><svg width="24" height="24"><use href="#i-look"/></svg></span><span><b>스타일</b>영상 모양을 골라요</span></li>
+      <li><span class="b"><svg width="24" height="24"><use href="#i-photo"/></svg></span><span><b>사진</b>내 사진이나 영상을 넣어요</span></li>
+      <li><span class="b"><svg width="24" height="24"><use href="#i-music"/></svg></span><span><b>노래</b>내 노래를 고르고, 후렴부터 시작할 수도 있어요</span></li>
+    </ol>
+    <p class="wgo">그다음 「쇼츠 만들기」. 폰 안에서 바로 만들어져요.</p>
+    <p class="hint">사진과 노래는 이 폰 밖으로 나가지 않아요.</p>
+    <p class="hint" id="testnote" hidden>시험판이라 사용 기록(기종·단계·오류)을 모아요.</p>
+    <button class="pill done" data-next="look">시작하기</button>
+  </div>
+
+  <div class="pane pane-resume">
+    <h2>만들던 게 있어요</h2>
+    <p class="resume-info" id="resumeInfo"></p>
+    <button class="pill" id="resumeGo">이어서 만들기</button>
+    <button class="again" id="resumeNew" style="margin-top:10px">새로 시작</button>
+  </div>
+
+  <div class="pane pane-fb">
+    <h2>어땠어요?</h2>
+    <div class="fbemo" id="fbEmo">
+      <button data-emo="😍">😍</button><button data-emo="😀">😀</button><button data-emo="🙂">🙂</button><button data-emo="😐">😐</button><button data-emo="😢">😢</button>
+    </div>
+    <input type="text" id="fbText" maxlength="80" autocomplete="off" placeholder="한 줄 의견 (이름은 쓰지 말아 주세요)">
+    <p class="hint" id="fbHint">이모지만 눌러도 돼요. 이름이나 사진은 보내지 않아요.</p>
+    <button class="pill done" id="fbSend">보내기</button>
+  </div>
+
+  <div class="pane pane-fname">
+    <h2>파일 이름</h2>
+    <div class="fname"><input type="text" id="fname" maxlength="40" autocomplete="off" enterkeyhint="done"><span>.mp4</span></div>
+    <p class="hint" id="fnameHint">이 이름으로 저장돼요. 그대로 둬도 돼요.</p>
+    <div class="two stepnav"><button class="pill ghost" data-close>취소</button><button class="pill done" id="fnameGo">저장하기</button></div>
+  </div>
+
+  <div class="pane pane-made">
+    <h2>내 영상</h2>
+    <div id="madeList"></div>
+    <p class="hint">이 폰에만 남아요 · 최근 8개. 영상 파일은 만든 뒤 「저장」해야 폰에 남아요. 「다시 열기」는 그때 고른 스타일·사진·노래로 돌아가요.</p>
+    <button class="pill ghost done" data-close>닫기</button>
+  </div>
+</section>
+
+<button class="toast" id="updToast" hidden>새 버전이 나왔어요 · 눌러서 새로 고침</button>
+<audio id="pv" preload="auto" playsinline></audio>
+<script>
+  window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); document.querySelector('.panel').scrollTop = 0; };
+  window.hhClose = () => document.body.classList.remove('panel-open');
+  new ResizeObserver(([e]) => document.body.style.setProperty('--sheet-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
+    .observe(document.querySelector('.panel'));
+  new ResizeObserver(([e]) => document.body.style.setProperty('--dock-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
+    .observe(document.querySelector('.dock'));
+  document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
+  if (false && 'serviceWorker' in navigator) {   // lab: the tester app's service worker stays the tester app's
+    let had = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+      addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) document.getElementById('updToast').hidden = false; had = true; });
+    document.getElementById('updToast').onclick = () => location.reload();
+  }
+  try { if (!localStorage.getItem('hh-welcomed')) { hhOpen('welcome'); localStorage.setItem('hh-welcomed', '1'); } } catch (e) { hhOpen('welcome'); }
+</script>
+<script src="/lab/ref/ref.js"></script>
+<script type="module" src="./ui.js"></script>
+</body>
+</html>
