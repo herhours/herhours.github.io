@@ -299,3 +299,92 @@ body.is-tapping .tapbtn{min-height:84px}
 body.is-making .stage::after{display:none}
 .live{display:none}
 .transport{z-index:4;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+
+/* ══ 11-09 영샘 "시안(design_ref) 비율이랑 모든 게 좋아" — 단계 화면을 시안 모양으로 ══ */
+:root{--ui:"Inter Tight","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+
+/* ② 사진: 빈 칸 10개 격자 · 큰 숫자 · 예시는 글 한 줄 */
+body[data-pane="photo"] .pane-photo{display:flex;flex-direction:column}
+.pane-photo > .rhead{order:0}
+.pane-photo > .thumbs{order:1}
+.pane-photo > .rcount{order:2}
+.pane-photo > .two:not(.stepnav){order:3}
+.pane-photo > .hint,.pane-photo > .rmore{order:4}
+.pane-photo > .gain{order:5}
+.pane-photo > .gain + .hint{order:6}
+.pane-photo > .stepnav{order:9;margin-top:auto}
+.pane-photo > .two:not(.stepnav){display:block;text-align:center;margin-top:8px}
+.pane-photo > .two:not(.stepnav) label.pill{display:none}
+#useDemo{all:unset;cursor:pointer;display:inline-block;padding:10px 8px;color:var(--accent);font-size:13.5px;scale:1!important}
+#thumbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:2px 0 0;overflow:visible}
+#thumbs .tw,#thumbs .rslot,#thumbs > .ph{position:relative;width:auto;aspect-ratio:3/4;border-radius:14px;overflow:hidden;margin:0}
+#thumbs .tw{display:block;background:#000;box-shadow:inset 0 0 0 1px var(--line)}
+#thumbs .tw.must{box-shadow:0 0 0 1.5px var(--accent)}
+#thumbs .tw > .th,#thumbs .tw > video,#thumbs .tw > img,#thumbs .tw > canvas{position:absolute;inset:0;width:100%!important;height:100%!important;border-radius:0;object-fit:cover;outline:0}
+#thumbs .tw .no{display:none}
+#thumbs .tw .rm{top:4px;right:4px;width:20px;height:20px;font-size:10px;line-height:20px;border-radius:10px;z-index:2}
+#thumbs .tw .mv{position:absolute;z-index:2;left:3px;right:3px;bottom:3px;justify-content:space-between;gap:2px}
+#thumbs .tw .mv button{width:20px;height:20px;border-radius:7px;font-size:10px;background:rgba(0,0,0,.5)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)!important}
+#thumbs .tw .mv button:disabled{opacity:0}
+#thumbs .rslot{display:grid;place-items:center;cursor:pointer;background:var(--tilebg);box-shadow:inset 0 0 0 1px var(--line);transition:transform .12s}
+#thumbs .rslot:active{transform:scale(.95)}
+#thumbs .rslot span{font-weight:200;font-size:22px;color:var(--faint)}
+#thumbs .rslot.must{box-shadow:inset 0 0 0 1.5px var(--accent)}
+#thumbs .rslot.must span{color:var(--accent)}
+.rcount{display:flex;align-items:baseline;justify-content:center;gap:6px;margin:16px 0 0}
+.rcount b{font-weight:200;font-size:54px;letter-spacing:-.03em;line-height:1;color:var(--cream)}
+.rcount span{color:var(--dim);font-size:14px}
+.pane-photo > .hint{text-align:center;margin-top:6px}
+.pane-photo > .hint:empty{display:none}
+.rmore{margin-top:8px;font-size:13px;color:var(--dim);text-align:center}
+.rmore summary{cursor:pointer;padding:6px 0;list-style:none}
+.rmore summary::-webkit-details-marker{display:none}
+.rmore:has(#iosTip[hidden]){display:none}
+
+/* ① 스타일 칸: 이름 왼쪽 위 · 큰 번호 오른쪽 위 · 그림은 은은하게 (시안의 글자 칸처럼) */
+.looks .tile{height:108px}
+.looks .tile .lkimg{opacity:.38;object-position:50% 30%}
+.looks .tile.on .lkimg{opacity:.62}
+.looks .tile::after{background:linear-gradient(180deg,rgba(20,21,23,.85) 0%,rgba(20,21,23,.25) 60%,rgba(20,21,23,.55))}
+.looks .tile span{top:13px;bottom:auto;left:14px;right:auto;max-width:62%;font-size:15px;font-weight:500;color:var(--dim)}
+.looks .tile::before{top:6px;right:13px;font-size:40px;color:var(--faint)}
+.looks .tile.on{background:var(--tile-on);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 10px 30px rgba(0,0,0,.4)}
+.looks .tile.on span{color:var(--cream)}
+.looks .tile.on::before{color:var(--cream)}
+
+/* ③ 노래 칸: 이름 · 오른쪽 위 작은 표지 · 아래 알약(누가 부르나) · 고르면 흰 알약 */
+#ourSongs .opt{min-height:108px;padding:14px 14px 13px}
+#ourSongs .opt .cov{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;font-size:13px}
+#ourSongs .opt .t{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+#ourSongs .opt .t b{max-width:calc(100% - 38px);font-size:15px}
+#ourSongs .opt .t span{align-self:flex-start;max-width:calc(100% - 44px);padding:5px 11px;border-radius:14px;font-size:12.5px;color:var(--dim);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+#ourSongs .opt.on .t span{background:#fff;color:#111;box-shadow:none;font-weight:600}
+#ourSongs .opt .sbars{top:auto;bottom:16px;right:14px;width:30px;height:16px}
+
+/* ⑤ 만드는 중: 위 카드 = 진짜 화면, 아래 판 = 큰 숫자 % · 얇은 금 선 · 지금 하는 일 칸 */
+body.is-making{--hero:46%}
+body.is-making .stage{border-radius:0 0 38px 38px;padding:0}
+.making{position:absolute;z-index:5;left:0;right:0;top:var(--hero);bottom:0;justify-content:flex-start;align-items:stretch;
+  padding:26px 20px calc(20px + var(--safe-b));background:var(--bg)}
+.making #pct{text-align:center;font-weight:200;font-size:92px;letter-spacing:-.05em;line-height:.95;color:var(--cream)}
+.making .bar{width:100%;margin:18px 0 0;height:3px}
+body.is-making .making #status{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;border-radius:16px;
+  background:var(--tilebg);box-shadow:inset 0 0 0 1px var(--line);font-size:15px;color:var(--cream);text-align:left}
+.making #eta{margin:14px auto 0;font-size:13px;color:var(--dim);text-align:center;max-width:300px;line-height:1.5}
+
+/* 완성: 저장·다시 만들기 = 칸 두 개, 맨 아래 금색 큰 버튼 하나 */
+.donebox .done-meta{order:0}.donebox .done-credit{order:1}.donebox .two{order:2}.donebox .donelinks{order:3}.donebox #share{order:4}
+.donebox .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.donebox .two > *{position:relative;min-height:96px;margin:0;padding:14px;border-radius:20px;display:flex;align-items:flex-end;justify-content:flex-start;
+  font-size:15px;font-weight:500;color:var(--cream);background:var(--tilebg);box-shadow:inset 0 0 0 1px var(--line);text-align:left}
+.donebox .two > * svg{position:absolute;right:14px;top:12px;width:24px;height:24px;color:var(--accent)}
+.donebox #save{background:var(--tile-on);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 10px 30px rgba(0,0,0,.4)}
+.donebox #again{color:var(--dim)}
+
+/* 내 영상: 두 줄 카드 */
+#madeList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#madeList > .hint{grid-column:1/-1}
+#madeList .made{flex-direction:column;align-items:stretch;gap:8px;padding:8px 8px 10px;margin:0}
+#madeList .made img,#madeList .made .noimg{width:100%;aspect-ratio:9/13;border-radius:14px}
+#madeList .made .t{padding:0 4px}
+#madeList .made .acts{flex-direction:column;gap:6px}

@@ -21,6 +21,32 @@
   });
   $('.refx').onclick = () => window.hhClose();
 
+  // ⑤ 사진 칸 = 시안처럼 빈 칸 10개 격자(앞 3칸 금테). ui.js 가 #thumbs 를 다시 그릴 때마다 남은 자리에 빈 칸(누르면 사진첩)을 채운다.
+  const th = $('#thumbs');
+  const cnt = document.createElement('div'); cnt.className = 'rcount';
+  cnt.innerHTML = `<b>0</b><span>${T2('/ 10장 · 금테 3칸 먼저', '/ 10 · gold ones first')}</span>`; th.after(cnt);
+  const mo = new MutationObserver(() => requestAnimationFrame(fill));
+  function fill() {
+    mo.disconnect();
+    $$('.rslot', th).forEach((e) => e.remove());
+    const tw = $$('.tw', th), n = tw.length, used = n + $$(':scope > .ph', th).length;
+    const total = Math.max(10, used + (used >= 10 ? 1 : 0));
+    for (let i = used; i < total; i++) {
+      const l = document.createElement('label'); l.className = 'rslot' + (i < 3 ? ' must' : ''); l.htmlFor = 'photos';
+      l.innerHTML = `<span>${i + 1}</span>`; th.appendChild(l);
+    }
+    tw.forEach((w, i) => w.classList.toggle('must', i < 3));
+    cnt.querySelector('b').textContent = n;
+    mo.takeRecords(); mo.observe(th, { childList: true });
+  }
+  fill();
+  // 아이폰 iCloud 안내는 접어 둔다(아이폰에서만 보임)
+  const ios = $('#iosTip');
+  if (ios) { const d = document.createElement('details'); d.className = 'rmore'; d.innerHTML = `<summary>${T2('아이폰에서 사진이 늦게 들어올 때', 'iPhone: photos slow to come in?')}</summary>`; ios.before(d); d.append(ios); }
+
+  // ⑥ 만드는 중: 위 카드엔 진짜 화면, 아래 판에 큰 숫자 % (시안처럼). 같은 id 를 옮기기만 한다
+  document.body.appendChild($('.making'));
+
   // ② 집 네 칸: 큰 숫자 + 지금 값 알약
   const rail = $$('.rail [data-open="look"], .rail [data-open="photo"], .rail [data-open="song"], .rail [data-open="text"]');
   rail.forEach((b, i) => { b.insertAdjacentHTML('beforeend', `<span class="rpill">…</span><span class="rnum">0${i + 1}</span>`); });
