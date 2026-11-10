@@ -84,7 +84,8 @@ body.is-making .transport,body.is-done .transport{display:none}
 .rail button.lit .l,.rail button.lit .rnum{color:var(--cream)}
 .rail button.lit .rpill{background:#fff;color:#111;box-shadow:none;font-weight:600}
 .rail button.lit .b{color:var(--accent)}
-.rail .mine-list,#railInfo{display:none!important}
+.rail .mine-list,#railInfo,.rail .arcline{display:none!important}
+.rail > button{translate:none!important}
 #railInstall{grid-column:1/-1;min-height:48px;flex-direction:row;align-items:center;justify-content:center;gap:8px}
 #railInstall .b{position:static;color:var(--accent)}
 #railInstall .l{color:var(--accent)}

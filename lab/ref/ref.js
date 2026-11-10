@@ -4,6 +4,11 @@
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const T2 = (ko, en) => (typeof T === 'function' ? T(ko, en) : ko);
 
+  // 11-10 영샘 갤럭시: 10월 시안 고르기(localStorage hh-ui=b)가 같은 주소라 여기까지 따라와, B 아치 레일의 곡선이 네 칸 격자 한 칸을 먹고 끝없이 자랐다.
+  // 이 화면은 옛 시안 A·B·C 를 쓰지 않는다 — 켜지는 즉시 끈다(ui.js 의 아치 레일은 ui-b 가 없으면 스스로 곡선을 치운다).
+  const noDirs = () => { const c = document.body.classList; if (c.contains('ui-a') || c.contains('ui-b') || c.contains('ui-c')) c.remove('ui-a', 'ui-b', 'ui-c'); };
+  noDirs(); new MutationObserver(noDirs).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
   // ① 단계 머리 — 점은 스타일·사진·노래·글자·만들기 다섯, 뒤로는 그 단계의 앞(없으면 집으로)
   const STEP = { look: 0, photo: 1, focus: 1, song: 2, lyrics: 2, text: 3 };
   const BACK = { photo: 'look', focus: 'photo', song: 'photo', lyrics: 'song', text: 'song', welcome: null, look: null };
