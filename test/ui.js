@@ -1041,7 +1041,7 @@ async function make() {
     rebuild();
     status(T('글꼴 준비 중… 멈춘 게 아니에요', 'Loading fonts… it hasn’t stopped'));
     // the class templates' Halloween poster face is sliced by Google like Gaegu - fetch the syllables this short uses
-    const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${S.look.id === 'paper-world' ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
+    const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${/^paper-/.test(S.look.id) ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
     await within(Promise.all([hangulReady(), kidsFont, S.look.ready?.(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
     // a look that can say which clips each frame shows needs no dry run, and decodes only those
     const known = S.look.clipsAt && live ? Array.from({ length: N }, (_, f) => S.look.clipsAt(f, N, S.d)) : null;
