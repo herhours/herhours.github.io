@@ -29,22 +29,33 @@
   // ⑤ 사진 칸 = 시안처럼 빈 칸 10개 격자(앞 3칸 금테). ui.js 가 #thumbs 를 다시 그릴 때마다 남은 자리에 빈 칸(누르면 사진첩)을 채운다.
   const th = $('#thumbs');
   const cnt = document.createElement('div'); cnt.className = 'rcount';
-  cnt.innerHTML = `<b>0</b><span>${T2('/ 10장 · 금테 3칸 먼저', '/ 10 · gold ones first')}</span>`; th.after(cnt);
+  cnt.innerHTML = `<b>0</b><span></span>`; th.after(cnt);
   const mo = new MutationObserver(() => requestAnimationFrame(fill));
+  // 11-11 영샘 "맞춰 줘": 금테 칸 수와 「/ N장」은 지금 스타일이 권하는 장수를 따른다(전엔 늘 10장·금테 3칸 — 스키 스타일은 10~12장부터 권한다).
+  // ui.js 가 #padv 에 쓰는 「사진 N장 이상 추천 · M장까지 다 쓰여요 (· 지금 K장)」을 읽는다 — 노래 길이에 따라 달라지는 값이라 여기서 따로 세지 않는다.
+  const want = () => {
+    const s = $('#padv')?.textContent || '', m = /(\d+)\s*장 이상 추천\s*·\s*(\d+)\s*장까지|(\d+)\+ photos recommended\s*·\s*up to (\d+)/.exec(s), k = /지금 (\d+)장|· (\d+) now/.exec(s);
+    return { min: m ? +(m[1] || m[3]) : 3, cap: m ? +(m[2] || m[4]) : 10, now: k ? +(k[1] || k[2]) : null };
+  };
   function fill() {
     mo.disconnect();
     $$('.rslot', th).forEach((e) => e.remove());
     const tw = $$('.tw', th), n = tw.length, used = n + $$(':scope > .ph', th).length;
-    const total = Math.max(10, used + (used >= 10 ? 1 : 0));
+    const { min, cap, now } = want(), gold = Math.min(min, cap);
+    // 칸은 다섯 칸 줄 단위로: 금테가 다 들어가는 줄 수(적어도 두 줄)에서 시작해, 차면 한 칸씩 늘어난다(미리보기 그림은 24장까지)
+    const base = Math.min(cap, Math.max(10, Math.ceil(gold / 5) * 5));
+    const total = Math.max(base, Math.min(24, used + 1));
     for (let i = used; i < total; i++) {
-      const l = document.createElement('label'); l.className = 'rslot' + (i < 3 ? ' must' : ''); l.htmlFor = 'photos';
+      const l = document.createElement('label'); l.className = 'rslot' + (i < gold ? ' must' : ''); l.htmlFor = 'photos';
       l.innerHTML = `<span>${i + 1}</span>`; th.appendChild(l);
     }
-    tw.forEach((w, i) => w.classList.toggle('must', i < 3));
-    cnt.querySelector('b').textContent = n;
+    tw.forEach((w, i) => w.classList.toggle('must', i < gold));
+    cnt.querySelector('b').textContent = now ?? n;
+    cnt.querySelector('span').textContent = T2(`/ ${cap}장 · 금테 ${gold}칸 먼저`, `/ ${cap} · gold ones first`);
     mo.takeRecords(); mo.observe(th, { childList: true });
   }
   fill();
+  new MutationObserver(() => requestAnimationFrame(fill)).observe($('#padv'), { childList: true, characterData: true, subtree: true });
   // 아이폰 iCloud 안내는 접어 둔다(아이폰에서만 보임)
   const ios = $('#iosTip');
   if (ios) { const d = document.createElement('details'); d.className = 'rmore'; d.innerHTML = `<summary>${T2('아이폰에서 사진이 늦게 들어올 때', 'iPhone: photos slow to come in?')}</summary>`; ios.before(d); d.append(ios); }
