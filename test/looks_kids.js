@@ -362,14 +362,16 @@ const WORDS = () => [T('와~!', 'Wow!'), T('슝~!', 'Whee!'), T('최고!', 'Yes!
 
 function buildPaperDiary(base, beat) {
   const N = base.N ?? 960, g = gridOf(beat, N), sec = N / FPS, per = Math.max(8, bf(g, 5) - bf(g, 4));
-  const name = base.brand && base.brand !== 'HER HOURS' ? `${base.brand}`.trim() : '';
-  // The title boxes start out holding the song's own title ("Green Light on the Window") - on a child's diary that reads
-  // as nonsense, so a title that is only the song's name counts as no title and the diary names itself after the child.
+  // The name and title boxes start out holding the song's own ("VIOLET", "Green Light on the Window") - on a child's diary
+  // that reads as nonsense, so a name that is only the singer's counts as no name, a title that is only the song's as no
+  // title, and the diary names itself after the child.
   const plain = (s) => `${s || ''}`.toUpperCase().replace(/[^0-9A-Z가-힣]/g, '');
+  const nobody = ['', 'HERHOURS', base.useOurs ? plain(`${base.label || ''}`.split('·')[0]) : ''];   // our songs' label opens with the singer
+  const name = nobody.includes(plain(base.brand)) ? '' : `${base.brand}`.trim();
   const typed = [base.title1, base.title2].map((s) => `${s || ''}`.trim()).filter(Boolean).join(' ');
   const songs = [base.useOurs ? plain(base.tag) : '', 'MYSONGONMYPHONE'];   // with an own song the tag is made from the title itself
   const title = typed && !songs.includes(plain(typed)) ? typed : '';
-  try { document.fonts?.load?.('80px "Jua"', `${name} ${title} 오늘의 주인공 참 잘했어요 넘어져도 괜찮아 다시 일어나면 돼 신난다 와 슝 최고 야호 멋져 짱 0123456789.`).catch(() => {}); } catch { /* the look still draws in the next font down */ }
+  try { document.fonts?.load?.('80px "Jua"', `${name} ${title} ${(base.cheer || []).join(' ')} 오늘의 주인공 참 잘했어요 넘어져도 괜찮아 다시 일어나면 돼 신난다 와 슝 최고 야호 멋져 짱 0123456789.`).catch(() => {}); } catch { /* the look still draws in the next font down */ }
 
   const end = snap(g, N - clamp(N * 0.14, 60, 110));
   const intro = snap(g, clamp(N * 0.13, 50, 84));
@@ -403,7 +405,14 @@ function buildPaperDiary(base, beat) {
   segs.push({ type: 'burst', f0: hit, f1: burstEnd, cuts: bc, wordFor: Math.min(burstEnd - hit, 48) });
   // the cheer, with the child's name on it
   const call = name ? [{ t: callOf(name), name: true }] : [];
-  const lines = [[{ t: T('넘어져도', 'Fall down?') }, { t: T('괜찮아!', "That's okay!") }], [{ t: T('다시', 'Get up,') }, { t: T('일어나면 돼!', 'go again!') }]];
+  // the two cheers can be the user's own words (the 응원 boxes); a long one breaks into two lines near its middle
+  const own = (s) => {
+    s = `${s || ''}`.trim(); if (!s) return null;
+    const ws = s.split(/\s+/); if (ws.length < 2 || [...s].length <= 7) return [{ t: s }];
+    let cut = 1, best = 1e9; for (let i = 1; i < ws.length; i++) { const a = ws.slice(0, i).join(' ').length, gap = Math.abs(a - (s.length - a)); if (gap < best) { best = gap; cut = i; } }
+    return [{ t: ws.slice(0, cut).join(' ') }, { t: ws.slice(cut).join(' ') }];
+  };
+  const lines = [own(base.cheer?.[0]) || [{ t: T('넘어져도', 'Fall down?') }, { t: T('괜찮아!', "That's okay!") }], own(base.cheer?.[1]) || [{ t: T('다시', 'Get up,') }, { t: T('일어나면 돼!', 'go again!') }]];
   if (long && cheerEnd - burstEnd > 150) lines.push([{ t: T('넌 최고야!', "You're the best!") }]);
   const span = (cheerEnd - burstEnd) / lines.length, says = lines.map((ls, i) => ({ f0: Math.round(burstEnd + span * i), f1: Math.round(burstEnd + span * (i + 1)), lines: i === 0 || ls.length === 1 ? [...call, ...ls] : ls, img: img++ }));
   segs.push({ type: 'cheer', f0: burstEnd, f1: cheerEnd, says });
@@ -433,6 +442,6 @@ function onScreen(f, N, d) {
 }
 
 export const KIDS_LOOKS = [
-  { id: 'paper-diary', lab: true, kfont: true, name: T('종이 일기', 'Paper Diary'), sub: T('색종이에 붙인 사진 · 스티커와 깃발 · 이름이 들어간 응원 · 끝은 상장', 'photos stuck on coloured paper · stickers and flags · a cheer with your name · an award at the end'),
+  { id: 'paper-diary', lab: true, kfont: true, cheer: true, name: T('종이 일기', 'Paper Diary'), sub: T('색종이에 붙인 사진 · 스티커와 깃발 · 이름이 들어간 응원 · 끝은 상장', 'photos stuck on coloured paper · stickers and flags · a cheer with your name · an award at the end'),
     draw: drawPaperDiary, build: buildPaperDiary, clipsAt: onScreen, photo: { min: 8, shape: 'tall', slots: (d) => d.slotCount } },
 ];

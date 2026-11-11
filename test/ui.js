@@ -61,6 +61,10 @@ function rebuild() {
   // 11-07 '음악만': either kind of words can be switched off; the class link keeps its own rule (empty field = nothing)
   if (!KIDS && !S.songLyrics) base.phrases = [];
   if (!KIDS && !S.showTitle) { base.title1 = ''; base.title2 = ''; base.tag = ''; }
+  // 11-11 (영샘 "넣어 줘"): a look that cheers (종이 일기) takes the two cheer lines from their own boxes - only pages that have the
+  // boxes show them, and an empty box keeps the look's own line
+  base.cheer = [$('cheer1')?.value || '', $('cheer2')?.value || ''];
+  if ($('cheerRows')) $('cheerRows').hidden = !S.look.cheer;
   // our own song's lyrics are timed from 0; a later start moves them with it
   if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
   S.d = S.look.build(base, S.beat);
@@ -678,6 +682,7 @@ $('lyrics').addEventListener('input', () => { if (S.userPhrases.length) { S.user
 $('clipGain').addEventListener('input', (e) => { S.clipGain = e.target.value / 100; $('clipGainV').textContent = `${e.target.value}%`; });
 
 for (const id of ['brand', 't1', 't2']) $(id).addEventListener('input', () => { rebuild(); chips(); });
+for (const id of ['cheer1', 'cheer2']) $(id)?.addEventListener('input', () => rebuild());
 // 10-20 class link: the class words become faint examples in the empty boxes, never text in the video
 function kidsExamples(txt) { $('brand').placeholder = txt.brand; $('t1').placeholder = txt.t1; $('t2').placeholder = txt.t2; }
 $('songLyrics').addEventListener('change', (e) => { S.songLyrics = e.target.checked; rlog(`song lyrics ${S.songLyrics ? 'on' : 'off'}`); rebuild(); });
@@ -754,7 +759,7 @@ function snapshot() {
     v: 1, at: Date.now(), look: S.look.id,
     song: S.useOurs ? S.song.id : null, audio: S.useOurs ? null : S.audioFile,
     len: S.len, offset: S.offset,
-    brand: $('brand').value, t1: $('t1').value, t2: $('t2').value,
+    brand: $('brand').value, t1: $('t1').value, t2: $('t2').value, cheer1: $('cheer1')?.value || '', cheer2: $('cheer2')?.value || '',
     lyrics: $('lyrics').value, phrases: S.userPhrases, songLyrics: S.songLyrics, showTitle: S.showTitle,
     photos: S.photoBlobs, clips: S.photoFiles.filter(isVideoFile).length,
     aligns: S.images.filter((x) => !x.live).map((x) => x.hhAlign || null),   // same order as photos (shrinkAll of the non-clips)
@@ -784,6 +789,7 @@ async function restore(w) {
     if (S.fullBuf) S.chorusAt = findChorus(S.fullBuf, Math.min(S.len, S.songDur));
     applyCut();
     $('brand').value = w.brand ?? $('brand').value; $('t1').value = w.t1 ?? $('t1').value; $('t2').value = w.t2 ?? $('t2').value;
+    if ($('cheer1')) { $('cheer1').value = w.cheer1 || ''; $('cheer2').value = w.cheer2 || ''; }
     $('lyrics').value = w.lyrics || ''; S.userPhrases = w.phrases || []; lyricHint();
     if (typeof w.songLyrics === 'boolean') { S.songLyrics = w.songLyrics; $('songLyrics').checked = w.songLyrics; }
     if (typeof w.showTitle === 'boolean') { S.showTitle = w.showTitle; $('showTitle').checked = w.showTitle; }
@@ -1041,7 +1047,7 @@ async function make() {
     rebuild();
     status(T('글꼴 준비 중… 멈춘 게 아니에요', 'Loading fonts… it hasn’t stopped'));
     // the class templates' Halloween poster face is sliced by Google like Gaegu - fetch the syllables this short uses
-    const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${/^paper-/.test(S.look.id) ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
+    const kidsFont = S.look.kids || S.look.kfont ? document.fonts.load(`80px "${/^paper-/.test(S.look.id) ? 'Jua' : 'Black Han Sans'}"`, [$('brand').value, $('t1').value, $('t2').value, $('cheer1')?.value || '', $('cheer2')?.value || '', '참 잘했어요', ...S.d.phrases.map((p) => p.text)].join(' ')).catch(() => {}) : null;
     await within(Promise.all([hangulReady(), kidsFont, S.look.ready?.(), ensureLyricFont([...S.d.phrases.map((p) => p.text), S.d.boxText, $('brand').value, $('t1').value, $('t2').value].filter(Boolean).join(' '))]), 8000);
     // a look that can say which clips each frame shows needs no dry run, and decodes only those
     const known = S.look.clipsAt && live ? Array.from({ length: N }, (_, f) => S.look.clipsAt(f, N, S.d)) : null;

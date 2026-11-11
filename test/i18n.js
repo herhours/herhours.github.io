@@ -85,6 +85,7 @@
     '← 스타일': '← Style', '← 사진': '← Photos', '← 노래': '← Song', '파일 이름': 'File name',
     '이 이름으로 저장돼요. 그대로 둬도 돼요.': 'Your video is saved under this name. You can leave it as it is.', '저장하기': 'Save', '취소': 'Cancel',
     '가사 자막': 'Lyrics', '제목': 'Title', '끄면 영상에 제목이 안 나와요': 'Off: no title on the video', '노래 가사를 영상 위에 띄워요': 'Show the song’s lyrics on the video', '비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.': 'Empty boxes stay off the video. The faint text is only an example.',
+    '응원 1': 'Cheer 1', '응원 2': 'Cheer 2', '넘어져도 괜찮아!': "Fall down? That's okay!", '다시 일어나면 돼!': 'Get up, go again!',
     '보일 부분 고르기': 'Choose what shows', '처음대로': 'Reset',
     '보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.': 'Tap or drag onto the part you want in view. The video above follows.',
     '✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.': '✋ Tap a photo to choose the part that stays in view (a face, say).',
