@@ -17,7 +17,7 @@
     const h2 = $('h2', pane); if (!name || !h2) return;
     const head = document.createElement('div'); head.className = 'rhead';
     if (name in STEP) head.innerHTML = `<div class="rdots">${[0, 1, 2, 3, 4].map((i) => `<i class="${i <= STEP[name] ? 'on' : ''}${i === STEP[name] ? ' now' : ''}"></i>`).join('')}</div>`;
-    const back = document.createElement('button'); back.className = 'rback'; back.type = 'button'; back.setAttribute('aria-label', '뒤로');
+    const back = document.createElement('button'); back.className = 'rback'; back.type = 'button'; back.setAttribute('aria-label', T2('뒤로', 'Back'));
     back.innerHTML = '<svg width="20" height="20"><use href="#i-back"/></svg>';
     back.onclick = () => { const to = BACK[name]; to ? window.hhOpen(to) : window.hhClose(); };
     h2.before(head); head.append(back, h2);
@@ -69,6 +69,8 @@
     rail.forEach((b) => b.classList.toggle('lit', !!lit[b.dataset.open]));
   };
   setInterval(tick, 600); addEventListener('load', tick);
+  // 11-11: 짧은 화면·「앱 설치」 줄·실패 글이 있을 때 네 칸이 아래 큰 버튼과 겹쳤다 — 위 카드가 남는 높이만 쓰도록 네 칸 높이를 알려 준다(ui-ref.css --hero)
+  new ResizeObserver(([e]) => document.body.style.setProperty('--rail-h', `${Math.round(e.target.offsetHeight)}px`)).observe($('.rail'));
 
   // ③ 리퀴드 글래스 — 크롬 계열만 backdrop-filter 안 SVG 필터를 그린다. 사파리(아이폰)·파이어폭스는 젖빛.
   const ua = navigator.userAgent, root = document.documentElement;

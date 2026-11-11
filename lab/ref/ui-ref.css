@@ -389,3 +389,55 @@ body.is-making .making #status{display:flex;align-items:center;justify-content:s
 #madeList .made img,#madeList .made .noimg{width:100%;aspect-ratio:9/13;border-radius:14px}
 #madeList .made .t{padding:0 4px}
 #madeList .made .acts{flex-direction:column;gap:6px}
+
+/* ══ 11-11 여러 폰 크기 실측 점검(384×854·384×726·390×844·375×667·320×780·320×568·673×841)에서 나온 것 ══ */
+/* ① 집: 네 칸·「앱 설치」 줄·실패 글이 아래 큰 버튼과 겹쳤다(아이폰 사파리 주소창이 있을 때 667, 갤럭시 크롬 726 + 설치 줄, 320×568 은 늘).
+   위 카드는 남는 높이만 쓴다 — 네 칸(--rail-h, ref.js)과 아래 버튼 묶음(--dock-h) 높이를 뺀 만큼. 단계·완성·만드는 중은 제 값 그대로. */
+body{--hero:min(54%,calc(100% - var(--dock-h,120px) - var(--rail-h,196px) - 24px))}
+@media (max-height:720px){
+  body{--hero:min(48%,calc(100% - var(--dock-h,120px) - var(--rail-h,172px) - 24px))}
+  .rail button{min-height:80px}
+  #railInstall{min-height:44px}
+}
+/* 폰을 눕혔을 때(높이 384쯤): 네 칸을 한 줄로 — 두 줄이면 위 카드가 70px 만 남는다 */
+@media (max-height:480px){
+  .rail{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .rail button{min-height:62px;padding:9px 10px}
+  .rail .rnum,.rail .b{display:none}
+  .rail .rpill{max-width:100%}
+  #railInstall{grid-column:1/-1;min-height:40px}
+}
+/* 긴 제목(영어 첫 화면)이 뒤로 화살표 밑으로 들어갔다 */
+.rhead h2{padding:0 34px}
+/* ② 파일 이름: 「취소」가 「저장하기」보다 16px 위에 떠 있었다(.done 의 위 여백이 한쪽에만) */
+.pane-fname .two .done{margin-top:0}
+/* ③ 노래 칸 알약이 전부 「가사가 박자…」로 잘렸다 — 소리 막대를 표지 위로 올리고 알약은 칸 폭을 다 쓴다 */
+#ourSongs .opt .t span{max-width:100%;padding:5px 10px}
+#ourSongs .opt.on .cov{filter:brightness(.4)}
+#ourSongs .opt .sbars{top:19px;bottom:auto;right:12px;width:30px;height:16px;z-index:1}
+/* ④ 사진 칸의 ✕·◀▶ 는 20px 그대로 두고 눌리는 자리만 넓힌다(칸 62px 안에서 서로 안 겹치게) */
+#thumbs .tw .rm::before{inset:-4px -4px -14px -14px}
+#thumbs .tw .mv button{position:relative}
+#thumbs .tw .mv button::before{content:"";position:absolute;inset:-12px -7px -3px -3px}
+#thumbs .tw .mv button:last-child::before{inset:-12px -3px -3px -7px}
+/* ⑤ 「내 음악 파일」·「글 넣기」 아래 설명이 한 줄에서 잘렸다 — 두 줄로 */
+.pane-song label.opt[for="audio"],#lyricsBtn{padding-top:11px;padding-bottom:11px}
+.pane-song label.opt[for="audio"] .t span,#lyricsBtn .t span{white-space:normal}
+/* ⑥ 좁은 화면(접는 폰 접은 쪽 320): 길이 버튼 글자가 두 줄로 꺾이고, 스타일 이름과 큰 번호가 겹치고, 집 알약이 두세 글자만 남았다 */
+.seg button{white-space:nowrap;padding:0}
+@media (max-width:380px){
+  .rail .rnum{font-size:26px}
+  .rail .rpill{max-width:calc(100% - 36px)}
+  .looks .tile::before{font-size:34px;top:8px}
+  #ourSongs .opt .t span{font-size:12px}
+}
+@media (max-width:350px){
+  .seg{gap:4px}
+  .seg button{font-size:12px}
+  .cutrow .cl{min-width:0}
+  .looks .tile::before{font-size:30px;top:9px}
+  .looks .tile span{max-width:64%;font-size:14px}
+  .rail .rnum{font-size:22px}
+  .rail .rpill{max-width:calc(100% - 30px);padding:4px 8px}
+  #ourSongs .opt .t span{font-size:11px;padding:5px 7px}
+}
