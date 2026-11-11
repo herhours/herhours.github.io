@@ -294,7 +294,9 @@ $('photos').onchange = (e) => {
   const all = [...e.target.files];
   rlog(`pick ${all.length}: ${all.slice(0, 6).map((f) => `${f.type || '(no type)'} ${(f.size / 1048576).toFixed(1)}MB`).join(', ')}`);
   const files = all.filter((f) => f.type.startsWith('image/') || isVideoFile(f) || (!f.type && IMG_EXT.test(f.name)));
-  if (files.length) usePhotos(files);
+  // 11-11 (lab/ref 의 빈 칸 격자): a page whose picker is marked data-add adds the pick after the photos already in -
+  // an empty numbered slot reads as "one more", and picking there used to replace everything. Other pages pick the set anew.
+  if (files.length) usePhotos(files, e.target.dataset.add != null && S.images.length > 0);
   else if (all.length) $('phint').textContent = T(`이 파일은 못 넣어요 (${all[0].type || all[0].name}). 사진 앱에서 다른 사진으로 골라 주세요.`, `Can’t use this file (${all[0].type || all[0].name}). Pick another photo.`);
 };
 
@@ -328,12 +330,13 @@ async function shrinkAll(imgs) {
   return out;
 }
 
-async function usePhotos(files) {
+async function usePhotos(files, add = false) {
   pausePreview(S.images);
-  S.photoFiles = files; S.photoBlobs = [];
-  const th = $('thumbs'); th.innerHTML = '';
+  const had = add ? S.images.length : 0;
+  if (add) S.photoFiles = [...S.photoFiles, ...files]; else { S.photoFiles = files; S.photoBlobs = []; }
+  const th = $('thumbs'); if (!add) th.innerHTML = '';
   const slots = files.map((f, i) => {
-    if (i >= 24) return null;
+    if (had + i >= 24) return null;
     if (isVideoFile(f)) {
       const el = document.createElement('video');
       el.muted = true; el.playsInline = true; el.preload = 'metadata'; el.className = 'vid';   // src only after the one read (below)
@@ -385,16 +388,24 @@ async function usePhotos(files) {
   // 10-19 영샘 S20+: several videos failed in ~0.1s and nothing said why - log the reason (type, size, codec) and show it
   r.forEach((x, i) => { if (x.status === 'rejected') rlog(`photo fail ${i + 1}/${files.length} ${files[i].type || '?'} ${(files[i].size / 1048576).toFixed(1)}MB ${x.reason?.message || x.reason}`); });
   const bad = r.map((x, i) => (x.status === 'rejected' ? `${files[i].name}${x.reason?.message ? ` (${x.reason.message})` : ''}` : null)).filter(Boolean);
-  if (ok.length) { S.images = ok; S.demoChosen = false; renderOrder(); setMake(); rebuild(); renderLooks(); }
-  $('focusTip').hidden = !ok.length;
-  $('clipGainRow').hidden = !ok.some((x) => x.live);
+  if (add) {
+    // the ones that could not be read leave the count; the rest go after whatever is in now (one may have been taken out while these were read)
+    S.photoFiles = S.photoFiles.filter((f) => !files.includes(f) || ok.some((v) => v.hhFile === f));
+    if (ok.length) S.images = [...S.images, ...ok];
+    S.demoChosen = false; renderOrder(); setMake(); rebuild(); renderLooks(); chips();
+  } else if (ok.length) { S.images = ok; S.demoChosen = false; renderOrder(); setMake(); rebuild(); renderLooks(); }
+  const all = add ? S.images : ok;
+  $('focusTip').hidden = !all.length;
+  $('clipGainRow').hidden = !all.some((x) => x.live);
   ok.filter((x) => x.live).forEach((c) => clipAudio(c));   // measure each clip's loudness now, not at export
-  $('phint').textContent = bad.length
+  $('phint').textContent = add && !bad.length
+    ? T(`${ok.length}개 더 넣었어요. 모두 ${all.length}개예요.`, `${ok.length} more added — ${all.length} in all.`)
+    : bad.length
     ? T(`${ok.length}개 넣었어요. 못 불러온 파일: ${bad.join(', ')} (HEIC면 갤러리에서 JPG로 저장해 주세요)`,
         `${ok.length} added. Couldn’t read: ${bad.join(', ')} (if HEIC, save it as JPG from your gallery)`)
     : T(`${ok.length}개 넣었어요${ok.some((x) => x.live) ? ` (영상 ${ok.filter((x) => x.live).length}개 — 앞 12초까지 반복해서 써요)` : ''}. 위 미리보기에서 바로 돌아가요.`,
         `${ok.length} added${ok.some((x) => x.live) ? ` (${ok.filter((x) => x.live).length} videos — the first 12s loop)` : ''}. They’re playing in the preview above.`);
-  S.photoBlobs = await shrinkAll(ok.filter((x) => !x.live));
+  S.photoBlobs = await shrinkAll(all.filter((x) => !x.live));
   saveSoon();
 }
 

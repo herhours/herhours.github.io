@@ -50,7 +50,8 @@
       l.innerHTML = `<span>${i + 1}</span>`; th.appendChild(l);
     }
     tw.forEach((w, i) => w.classList.toggle('must', i < gold));
-    cnt.querySelector('b').textContent = now ?? n;
+    // 세는 건 칸 그림 수. 그림은 24장까지만 그리니 그보다 많을 때만 ui.js 가 적은 「지금 K장」을 쓴다(그 글은 사진을 뺄 때 바로 안 바뀐다)
+    cnt.querySelector('b').textContent = n >= 24 && now > n ? now : n;
     cnt.querySelector('span').textContent = T2(`/ ${cap}장 · 금테 ${gold}칸 먼저`, `/ ${cap} · gold ones first`);
     mo.takeRecords(); mo.observe(th, { childList: true });
   }
