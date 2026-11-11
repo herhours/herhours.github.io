@@ -125,8 +125,8 @@ const bubbleSp = () => sprite('bubble', 1000, 760, (x) => {
 });
 const medalSp = () => sprite('medal', 1000, 1560, (x) => {
   x.translate(500, 480); sh(x, 20, 12, 0.28);
-  x.fillStyle = CORAL; x.beginPath(); x.moveTo(-170, 290); x.lineTo(-250, 990); x.lineTo(-130, 910); x.lineTo(-40, 1010); x.lineTo(0, 340); x.closePath(); x.fill();
-  x.fillStyle = LILAC; x.beginPath(); x.moveTo(170, 290); x.lineTo(250, 990); x.lineTo(130, 910); x.lineTo(40, 1010); x.lineTo(0, 340); x.closePath(); x.fill(); noSh(x);
+  x.fillStyle = CORAL; x.beginPath(); x.moveTo(-170, 290); x.lineTo(-250, 900); x.lineTo(-130, 820); x.lineTo(-40, 920); x.lineTo(0, 340); x.closePath(); x.fill();
+  x.fillStyle = LILAC; x.beginPath(); x.moveTo(170, 290); x.lineTo(250, 900); x.lineTo(130, 820); x.lineTo(40, 920); x.lineTo(0, 340); x.closePath(); x.fill(); noSh(x);
   scallop(x, 0, 0, 400, 22, CORAL); scallop(x, 0, 0, 340, 22, SUN); x.fillStyle = CREAM; x.beginPath(); x.arc(0, 0, 300, 0, 7); x.fill();
 });
 
@@ -174,7 +174,7 @@ function stamp(ctx, c, x, y, k = 1, rot = 0, a = 1) {
 }
 
 // ---------- the world behind everything ----------
-function world(ctx, f, k, sun) {
+function world(ctx, f, k, sun, cloudsAt = 'all') {
   const pal = PALS[k % PALS.length], t = f / FPS;
   const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, pal[0]); g.addColorStop(0.55, pal[1]); g.addColorStop(1, pal[2]);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -184,13 +184,13 @@ function world(ctx, f, k, sun) {
   for (let i = 0; i < 14; i++) { const a = i * 2 * Math.PI / 14, w = Math.PI / 14 * 0.52; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a - w) * 2600, Math.sin(a - w) * 2600); ctx.lineTo(Math.cos(a + w) * 2600, Math.sin(a + w) * 2600); ctx.closePath(); ctx.fill(); }
   ctx.restore();
   if (sun) stamp(ctx, sunSp(), sx, sy, (sun.r ?? 150) / 200);
-  clouds(ctx, t);
+  clouds(ctx, t, cloudsAt);
   ground(ctx, t);
 }
-function clouds(ctx, t, top = false) {
+function clouds(ctx, t, at = 'all') {
   const c = cloudSp(), drift = (i) => Math.sin(t * 0.35 + i * 1.7) * 26;
-  stamp(ctx, c, 190 + drift(0), 250, 1.05); stamp(ctx, c, 900 + drift(1), 185, 0.9);
-  if (!top) { stamp(ctx, c, 60 + drift(2), 700, 0.8); stamp(ctx, c, 980 + drift(3), 620, 0.7); }
+  if (at !== 'low') { stamp(ctx, c, 190 + drift(0), 250, 1.05); stamp(ctx, c, 900 + drift(1), 185, 0.9); }
+  stamp(ctx, c, 60 + drift(2), 700, 0.8); stamp(ctx, c, 980 + drift(3), 620, 0.7);
 }
 function ground(ctx, t, far = true) {
   if (far) ctx.drawImage(farSp(), -80 + Math.sin(t * 0.3) * 14, 1350);
@@ -222,11 +222,23 @@ function drawPhoto(ctx, img, l, t, w, h, z, fx = 0.5, fy = 0.4) {
   const [ax, ay] = AL(img, fx, fy), s = Math.max(w / img.width, h / img.height) * z, dw = img.width * s, dh = img.height * s;
   ctx.drawImage(img, l + (w - dw) * ax, t + (h - dh) * ay, dw, dh);
 }
+// The two sheets of paper under a photo, with their shadows, kept at 0.6 size (flat colour scales up cleanly) -
+// drawing those shadows every frame was the heaviest thing in the look. Only a handful are kept at a time.
+const CARDS = new Map(), CS = 0.6;
+function cardSp(w, h, mat, backRot) {
+  const key = `${w}|${h}|${mat}|${backRot}`; let c = CARDS.get(key); if (c) return c;
+  c = document.createElement('canvas'); c.width = Math.ceil((w + 220) * CS); c.height = Math.ceil((h + 220) * CS); const x = c.getContext('2d');
+  x.scale(CS, CS); x.translate((w + 220) / 2, (h + 220) / 2);
+  x.save(); x.rotate(backRot); sh(x, 30 * CS, 16 * CS, 0.3); x.fillStyle = mat; rr(x, -w / 2 - 26, -h / 2 - 26, w + 52, h + 52, 44); x.fill(); x.restore();
+  sh(x, 26 * CS, 14 * CS, 0.3); x.fillStyle = CREAM; rr(x, -w / 2, -h / 2, w, h, 36); x.fill();
+  CARDS.set(key, c); if (CARDS.size > 14) CARDS.delete(CARDS.keys().next().value);
+  return c;
+}
+const isWide = (img) => img.width > img.height * 1.15;
 function card(ctx, img, cx, cy, w, h, rot, mat, tapes, z, k = 1, backRot = 0.05) {
   if (k <= 0) return;
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(k, k);
-  ctx.save(); ctx.rotate(backRot); sh(ctx, 30, 16, 0.3); ctx.fillStyle = mat; rr(ctx, -w / 2 - 26, -h / 2 - 26, w + 52, h + 52, 44); ctx.fill(); ctx.restore();
-  sh(ctx, 26, 14, 0.3); ctx.fillStyle = CREAM; rr(ctx, -w / 2, -h / 2, w, h, 36); ctx.fill(); noSh(ctx);
+  ctx.drawImage(cardSp(w, h, mat, backRot), -(w + 220) / 2, -(h + 220) / 2, w + 220, h + 220);
   const b = 30;
   ctx.save(); rr(ctx, -w / 2 + b, -h / 2 + b, w - b * 2, h - b * 2, 20); ctx.clip(); drawPhoto(ctx, img, -w / 2 + b, -h / 2 + b, w - b * 2, h - b * 2, z); ctx.restore();
   stamp(ctx, tapeSp(tapes[0]), -w / 2 + 70, -h / 2 + 6, 1, -0.5); stamp(ctx, tapeSp(tapes[1]), w / 2 - 70, -h / 2 + 6, 1, 0.5);
@@ -257,10 +269,13 @@ function drawPaperDiary(ctx, f, N, d) {
 function drawIntro(ctx, f, s, d) {
   const t = f / FPS, img = pic(d, s.img), L = landing(f, 0);
   world(ctx, f, 0, { x: 540, y: 760, r: 210 }); bunting(ctx, t);
-  card(ctx, img, 540, 980, 800, 1060, -0.035 + L.rot, CORAL, TAPES[0], 1.04 + 0.05 * (f / s.f1), L.k);
+  // a sideways photo gets a sideways sheet - in the tall one a person shrank to a dot
+  const wide = isWide(img);
+  if (wide) card(ctx, img, 540, 940, 920, 700, -0.03 + L.rot, CORAL, TAPES[0], 1.03 + 0.05 * (f / s.f1), L.k);
+  else card(ctx, img, 540, 980, 800, 1060, -0.035 + L.rot, CORAL, TAPES[0], 1.04 + 0.05 * (f / s.f1), L.k);
   const drop = pop((f - 4) / FPS);
-  stamp(ctx, ribbonSp(d.tHero, 560, 104, INK, SUN), 540, 300 - 80 * (1 - Math.min(1, drop)), drop > 0 ? 1 : 0, -0.03);
-  drawLetters(ctx, letters(d.big, 300, RAINBOW, { seed: 5, wob: 0.2, jump: 0.1, sw: 0.17, maxW: 900 }), 540, 1560, f, 12, 4);
+  stamp(ctx, ribbonSp(d.tHero, 560, 104, INK, SUN), 540, (wide ? 400 : 300) - 80 * (1 - Math.min(1, drop)), drop > 0 ? 1 : 0, -0.03);
+  drawLetters(ctx, letters(d.big, 300, RAINBOW, { seed: 5, wob: 0.2, jump: 0.1, sw: 0.17, maxW: 900 }), 540, wide ? 1500 : 1560, f, 12, 4);
   deco(ctx, f, 18, [['star', 170, 470, 120, SUN, -0.3], ['star', 930, 430, 90, PINK, 0.4], ['star', 960, 1330, 110, MINT, 0.2], ['heart', 140, 1330, 150, PINK, -0.2]]);
 }
 function drawCards(ctx, f, s, d) {
@@ -272,10 +287,18 @@ function drawCards(ctx, f, s, d) {
     card(ctx, pic(d, c.img + 1), 660, 1330, 640, 600, 0.05 - L2.rot, MATS[(c.i + 2) % MATS.length], TAPES[(c.i + 2) % TAPES.length], z, L2.k, -0.04);
     stamp(ctx, badgeSp(c.word, MINT, INK), 180, 1390, pop((f - c.f0 - 8) / FPS) * 0.86, -0.14);
     deco(ctx, f, c.f0 + 6, [['star', 930, 980, 90, CREAM, 0.3], ['heart', 160, 1680, 110, PINK, 0.2], ['star', 900, 600, 100, SUN, -0.2]]);
+  } else if (c.lay === 3) {
+    // two sideways photos, one above the other - a sideways photo alone leaves half the screen empty
+    const L2 = landing(f, c.f0 + 4), flip = c.i % 2 ? 1 : -1;
+    card(ctx, pic(d, c.img), 530, 700, 900, 610, 0.025 * flip + L.rot, c.mat, c.tapes, z, L.k, 0.04 * flip);
+    card(ctx, pic(d, c.img + 1), 550, 1310, 900, 610, -0.03 * flip - L2.rot, MATS[(c.i + 2) % MATS.length], TAPES[(c.i + 2) % TAPES.length], z, L2.k, -0.04 * flip);
+    stamp(ctx, badgeSp(c.word, c.i % 2 ? SUN : CORAL, c.i % 2 ? INK : CORAL), flip > 0 ? 200 : 880, 1005, pop((f - c.f0 - 8) / FPS) * 0.9, 0.14 * flip);
+    deco(ctx, f, c.f0 + 6, [['star', flip > 0 ? 940 : 140, 1010, 96, SUN, 0.3], ['heart', 150, 1640, 110, PINK, 0.2], ['flake', 940, 1650, 84, '#fff', 0.2]]);
   } else {
-    const left = c.lay === 1;
-    card(ctx, pic(d, c.img), left ? 520 : 550, 910, 840, 1100, (left ? 0.03 : -0.03) + L.rot, c.mat, c.tapes, z, L.k, left ? -0.05 : 0.05);
-    stamp(ctx, badgeSp(c.word, c.i % 2 ? SUN : CORAL, c.i % 2 ? INK : CORAL), left ? 880 : 200, 1430, pop((f - c.f0 - 6) / FPS), left ? -0.16 : 0.14);
+    const left = c.lay === 1 || (c.lay === 4 && c.i % 2 === 1), im = pic(d, c.img), wide = c.lay === 4;
+    if (wide) card(ctx, im, 540, 900, 930, 720, (left ? 0.025 : -0.025) + L.rot, c.mat, c.tapes, z, L.k, left ? -0.04 : 0.04);
+    else card(ctx, im, left ? 520 : 550, 910, 840, 1100, (left ? 0.03 : -0.03) + L.rot, c.mat, c.tapes, z, L.k, left ? -0.05 : 0.05);
+    stamp(ctx, badgeSp(c.word, c.i % 2 ? SUN : CORAL, c.i % 2 ? INK : CORAL), left ? 850 : 230, wide ? 1390 : 1430, pop((f - c.f0 - 6) / FPS) * (wide ? 1.2 : 1), left ? -0.16 : 0.14);
     deco(ctx, f, c.f0 + 5, left
       ? [['flake', 950, 620, 110, '#fff', 0.3], ['star', 150, 560, 84, SUN, 0.5], ['star', 930, 1700, 96, LILAC, -0.2], ['flake', 110, 1250, 80, '#fff', 0.1]]
       : [['star', 930, 560, 96, MINT, -0.3], ['heart', 930, 1290, 130, PINK, 0.2], ['star', 140, 380, 80, CREAM, 0.3], ['flake', 150, 1700, 84, '#fff', 0.2]]);
@@ -296,7 +319,7 @@ function drawBurst(ctx, f, s, d) {
 }
 function drawCheer(ctx, f, s, d) {
   const t = f / FPS, q = cutAt(s.says, f), L = landing(f, q.f0);
-  world(ctx, f, 3, { x: 190, y: 240, r: 100 });
+  world(ctx, f, 3, { x: 150, y: 150, r: 90 }, 'low');   // no clouds up here: cream on cream, they read as lumps on the bubble
   stamp(ctx, bubbleSp(), 540, 572, 0.86 + 0.14 * pop((f - q.f0) / FPS * 1.3));
   const edge = '#ffe3c9'; let y = q.lines.length > 2 ? 400 : 470;
   q.lines.forEach((ln, i) => {
@@ -304,7 +327,8 @@ function drawCheer(ctx, f, s, d) {
     drawLetters(ctx, letters(ln.t, size, ln.name ? [CORAL] : big ? [LILAC, CORAL, GRASS, AMBER] : [INK], { seed: 2 + i * 2, edge, sw: 0.15, wob: big ? 0.2 : 0.12, maxW: 800 }), 540, y, f, q.f0 + 3 + i * 7, 2);
     y += ln.name ? 160 : 180;
   });
-  card(ctx, pic(d, q.img), 600, 1330, 640, 760, 0.045 + L.rot, SUN, [MINT, PINK], 1.1 + 0.06 * (f - q.f0) / (q.f1 - q.f0), L.k);
+  const im = pic(d, q.img), wide = isWide(im);
+  card(ctx, im, wide ? 560 : 600, wide ? 1300 : 1330, wide ? 800 : 640, wide ? 580 : 760, (wide ? 0.03 : 0.045) + L.rot, SUN, [MINT, PINK], 1.06 + 0.06 * (f - q.f0) / (q.f1 - q.f0), L.k);
   deco(ctx, f, q.f0 + 6, [['heart', 170, 1050, 170, PINK, -0.25], ['star', 150, 1500, 100, SUN, 0.2], ['star', 960, 960, 80, MINT, 0.4], ['flake', 960, 1700, 90, '#fff', 0.2]]);
 }
 function drawAward(ctx, f, s, d, N) {
@@ -339,7 +363,12 @@ const WORDS = () => [T('와~!', 'Wow!'), T('슝~!', 'Whee!'), T('최고!', 'Yes!
 function buildPaperDiary(base, beat) {
   const N = base.N ?? 960, g = gridOf(beat, N), sec = N / FPS, per = Math.max(8, bf(g, 5) - bf(g, 4));
   const name = base.brand && base.brand !== 'HER HOURS' ? `${base.brand}`.trim() : '';
-  const title = [base.title1, base.title2].map((s) => `${s || ''}`.trim()).filter(Boolean).join(' ');
+  // The title boxes start out holding the song's own title ("Green Light on the Window") - on a child's diary that reads
+  // as nonsense, so a title that is only the song's name counts as no title and the diary names itself after the child.
+  const plain = (s) => `${s || ''}`.toUpperCase().replace(/[^0-9A-Z가-힣]/g, '');
+  const typed = [base.title1, base.title2].map((s) => `${s || ''}`.trim()).filter(Boolean).join(' ');
+  const songs = [base.useOurs ? plain(base.tag) : '', 'MYSONGONMYPHONE'];   // with an own song the tag is made from the title itself
+  const title = typed && !songs.includes(plain(typed)) ? typed : '';
   try { document.fonts?.load?.('80px "Jua"', `${name} ${title} 오늘의 주인공 참 잘했어요 넘어져도 괜찮아 다시 일어나면 돼 신난다 와 슝 최고 야호 멋져 짱 0123456789.`).catch(() => {}); } catch { /* the look still draws in the next font down */ }
 
   const end = snap(g, N - clamp(N * 0.14, 60, 110));
@@ -349,6 +378,7 @@ function buildPaperDiary(base, beat) {
   const long = sec >= 24;
   const cheerEnd = long ? Math.min(end, snap(g, burstEnd + clamp(N * 0.2, 110, 210))) : end;
 
+  const wideAt = (i) => { const im = base.images?.length ? base.images[i % base.images.length] : null; return !!im && isWide(im); };
   let img = 0; const words = WORDS(), segs = [];
   const heroImg = img++;
   segs.push({ type: 'intro', f0: 0, f1: intro, img: heroImg });
@@ -358,9 +388,11 @@ function buildPaperDiary(base, beat) {
     const cuts = []; let k = beatIndex(g, from), f0 = from, i = i0;
     while (f0 < to) {
       let f1 = Math.min(to, Math.round(bf(g, k + every))); if (to - f1 < 20) f1 = to;
-      const lay = collage && i % 3 === 2 ? 2 : i % 2;
+      // 0·1 = one tall photo (leaning either way) · 2 = two overlapping · 3 = two sideways photos stacked · 4 = one sideways photo
+      let lay = collage && i % 3 === 2 ? 2 : i % 2;
+      if (wideAt(img)) lay = wideAt(img + 1) ? 3 : 4;
       cuts.push({ f0, f1, i, img, lay, pal: (i + 1) % PALS.length, mat: MATS[(i + 1) % MATS.length], tapes: TAPES[(i + 1) % TAPES.length], word: words[i % words.length] });
-      img += lay === 2 ? 2 : 1; k += every; i++; f0 = Math.max(f1, f0 + 1);
+      img += lay === 2 || lay === 3 ? 2 : 1; k += every; i++; f0 = Math.max(f1, f0 + 1);
     }
     return cuts;
   };
@@ -383,7 +415,7 @@ function buildPaperDiary(base, beat) {
     ...base, g, segs, slotCount: img, name,
     big: name || T('야호!', 'Yay!'),
     tHero: T('오늘의 주인공', "Today's star"),
-    tTop: name && title ? T(`${name}의 ${title}`, `${name} · ${title}`) : title || name,
+    tTop: name && title ? T(`${name}의 ${title}`, `${name} · ${title}`) : title || (name ? T(`${name}의 하루`, `${name}'s day`) : ''),
     tBurst: T('신난다!', 'So fun!'),
     tAward: T('참 잘했어요!', 'Well done!'),
     tFoot: title ? `${title} · ${date}` : date,
@@ -394,7 +426,7 @@ function buildPaperDiary(base, beat) {
 function onScreen(f, N, d) {
   const s = segAt(d, f), out = new Set(), add = (i) => { const im = d.images[i % d.images.length]; if (im?.live) out.add(im); };
   if (s.type === 'intro' || s.type === 'award') add(s.img);
-  else if (s.type === 'cards') { const c = cutAt(s.cuts, f); add(c.img); if (c.lay === 2) add(c.img + 1); }
+  else if (s.type === 'cards') { const c = cutAt(s.cuts, f); add(c.img); if (c.lay === 2 || c.lay === 3) add(c.img + 1); }
   else if (s.type === 'burst') add(cutAt(s.cuts, f).img);
   else add(cutAt(s.says, f).img);
   return out;
