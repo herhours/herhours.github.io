@@ -109,6 +109,12 @@ function bottomShade(ctx, from = 1180, a = 0.72) {
   g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${a})`);
   ctx.fillStyle = g; ctx.fillRect(0, from, W, H - from);
 }
+// white type over snow or sky needs something under it
+function topShade(ctx, to = 760, a = 0.5) {
+  const g = ctx.createLinearGradient(0, 0, 0, to);
+  g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, to);
+}
 function snow(ctx, f, n, alpha, long = 0) {
   ctx.strokeStyle = '#fff'; ctx.lineCap = 'round';
   for (let i = 0; i < n; i++) {
@@ -119,6 +125,17 @@ function snow(ctx, f, n, alpha, long = 0) {
     ctx.lineWidth = sz; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (long ? sp * 0.8 : 0.1), y - (long ? sp * 2.6 : 0.1)); ctx.stroke();
   }
   ctx.globalAlpha = 1;
+}
+// A soft, dark copy of the picture behind a strip or a card, so the frame around it is not dead black.
+// Small canvases do the blur (down to 16 px across, then back up doubling each time - bigger jumps leave squares) - a real blur filter is too dear on a phone.
+let soft;
+function softBack(ctx, img, a) {
+  if (a <= 0) return;
+  soft ??= [[90, 160], [16, 28], [32, 56], [64, 112], [128, 224], [256, 448]].map(([w, h]) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; });
+  const k = Math.max(90 / img.width, 160 / img.height);
+  soft[0].getContext('2d').drawImage(img, (90 - img.width * k) / 2, (160 - img.height * k) / 2, img.width * k, img.height * k);
+  for (let i = 1; i < soft.length; i++) soft[i].getContext('2d').drawImage(soft[i - 1], 0, 0, soft[i].width, soft[i].height);
+  ctx.globalAlpha = a; ctx.drawImage(soft[5], -60, -106, W + 120, H + 212); ctx.globalAlpha = 1;
 }
 // a live clip that is graded through WebGL is not drawn on this ctx; a 1px draw off screen tells the sound mix it is on screen
 const mark = (ctx, src) => { if (src?.live) ctx.drawImage(src, -4, -4, 1, 1); };
@@ -197,18 +214,20 @@ function drawRedRun(ctx, f, N, d) {
     // RUN strip: one long take in a wide band, a timer that starts at zero
     const src = images[run.img % images.length], p = (f - run.f0) / (run.f1 - run.f0);
     const img = redPicture(ctx, src);
-    ctx.save(); ctx.beginPath(); ctx.rect(0, 610, W, 640); ctx.clip();
+    // the band takes 44% of the frame (it was a third, two thirds black) and the same picture sits soft and dark behind it
+    softBack(ctx, img, 0.22);   // no more than this: over snow it turns the black to grey
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 560, W, 840); ctx.clip();
     // a still has to walk: it drifts along whichever side the wide band leaves room on, and creeps in
-    cover(ctx, img, 0, 610, W, 640, 1.16 + 0.34 * p, 150 - 300 * p, 240 - 480 * p, 0.5, 0.5);
+    cover(ctx, img, 0, 560, W, 840, 1.16 + 0.34 * p, 150 - 300 * p, 240 - 480 * p, 0.5, 0.5);
     ctx.restore(); ctx.filter = 'none';
     const inA = easeOut((f - run.f0) / 7);
     ctx.globalAlpha = inA;
-    skewText(ctx, `RUN ${String(run.i + 1).padStart(2, '0')}`, 80, 540, 104, '#fff', { shadow: false });
-    ctx.fillStyle = RED; ctx.fillRect(72, 568, 936 * inA, 6);
+    skewText(ctx, `RUN ${String(run.i + 1).padStart(2, '0')}`, 80, 500, 150, '#fff', { shadow: false });
+    ctx.fillStyle = RED; ctx.fillRect(72, 526, 936 * inA, 8);
     const t = (f - run.f0) / FPS, ss = Math.floor(t), cc = Math.floor((t - ss) * 100);
-    skewText(ctx, `00:${String(ss).padStart(2, '0')}.${String(cc).padStart(2, '0')}`, 80, 1370, 84, '#fff', { shadow: false });
-    ctx.font = `30px ${F_SANS}`; ctx.letterSpacing = '6px'; ctx.fillStyle = 'rgba(255,255,255,.72)';
-    ctx.fillText(d.brand, 80, 1440); ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
+    skewText(ctx, `00:${String(ss).padStart(2, '0')}.${String(cc).padStart(2, '0')}`, 80, 1536, 124, '#fff', { shadow: false });
+    ctx.font = `40px ${F_SANS}`; ctx.letterSpacing = '7px'; ctx.fillStyle = 'rgba(255,255,255,.8)';
+    ctx.fillText(d.brand, 82, 1612); ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
     flash(ctx, 1 - (f - run.f0) / 6);
     flash(ctx, 1 - (run.f1 - f) / 8);
     grain(ctx, f, 0.05);
@@ -224,27 +243,28 @@ function drawRedRun(ctx, f, N, d) {
   ctx.filter = 'none';
   snow(ctx, f, 26, 0.5, 1);
 
-  // the opening words, one at a time, in a quiet serif
+  // the opening words, one at a time, in a quiet serif - the first one is already there on frame 0
   if (f < open) {
+    topShade(ctx, 820, 0.55 * clamp((open - f) / 10));
     const lines = [d.t1, d.t2].filter(Boolean); let n = 0;
     lines.forEach((ln, li) => {
-      const size = fitSize(ctx, ln, li ? 136 : 96, F_SERIF, 900);
+      const size = fitSize(ctx, ln, li ? 176 : 128, F_SERIF, 900);
       ctx.font = `${size}px ${F_SERIF}`; ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
       ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 22;
-      let x = 90; const y = 340 + li * 146;
+      let x = 90; const y = 370 + li * Math.max(150, size * 1.12);
       for (const w of ln.split(/\s+/)) {
-        const u = (f - 8 - n * 9) / 12; n++;
+        const u = (f + 8 - n * 7) / 10; n++;
         if (u > 0) { ctx.globalAlpha = easeOut(u); ctx.fillText(w, x, y + (1 - easeOut(u)) * 14); }
         x += ctx.measureText(w + ' ').width;
       }
-      if (li === lines.length - 1 && f - 8 - n * 9 > 6) { ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(x - ctx.measureText(' ').width + 14, y - 3, 8, 0, 7); ctx.fill(); }
+      if (li === lines.length - 1 && f + 8 - n * 7 > 6) { ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(x - ctx.measureText(' ').width + size * 0.1, y - 4, Math.max(8, size * 0.06), 0, 7); ctx.fill(); }
     });
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.globalAlpha = 1;
   } else if ((f - open) % 150 < 90) {
-    // the name, small, while the run is on
-    ctx.fillStyle = RED; ctx.fillRect(72, 1642, 8, 30);
-    ctx.font = `30px ${F_SANS}`; ctx.letterSpacing = '5px'; ctx.fillStyle = '#fff';
-    ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 10; ctx.fillText(d.brand, 94, 1668);
+    // the name while the run is on
+    ctx.fillStyle = RED; ctx.fillRect(72, 1634, 10, 40);
+    ctx.font = `40px ${F_SANS}`; ctx.letterSpacing = '6px'; ctx.fillStyle = '#fff';
+    ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 10; ctx.fillText(d.brand, 100, 1668);
     ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.letterSpacing = '0px';
   }
 
@@ -269,21 +289,24 @@ function drawRedEnd(ctx, f, N, d) {
   const u = f - d.end;
   const src = d.images[d.lastImg % d.images.length];
   const img = redPicture(ctx, src);
-  ctx.globalAlpha = easeOut(u / 10);
-  ctx.save(); ctx.beginPath(); ctx.rect(0, 760, W, 480); ctx.clip();
-  cover(ctx, img, 0, 760, W, 480, 1.12 + 0.1 * (u / (N - d.end)), 0, 0, 0.5, 0.55);
+  // the card fills the frame: the picture band is 680 tall (it was 480), the name and the title a size up, the same picture soft behind
+  const inA = easeOut(u / 6);
+  softBack(ctx, img, 0.2 * inA);
+  ctx.globalAlpha = inA;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 700, W, 680); ctx.clip();
+  cover(ctx, img, 0, 700, W, 680, 1.12 + 0.1 * (u / (N - d.end)), 0, 0, 0.5, 0.55);
   ctx.restore(); ctx.filter = 'none'; ctx.globalAlpha = 1;
   const parts = d.brand.split(/\s+/), big = parts.pop(), small = parts.join(' ');
-  const rise = (from, y) => { const k = easeOut((u - from) / 12, 4); ctx.globalAlpha = k; return y + (1 - k) * 34; };
-  if (small) skewText(ctx, small, 96, rise(6, 590), 78, '#fff', { shadow: false });
-  const sz = fitSize(ctx, big || d.brand, 190, F_ANTON, 860);
-  skewText(ctx, big || d.brand, 96, rise(10, 730), sz, '#fff', { shadow: false });
-  ctx.globalAlpha = easeOut((u - 14) / 10);
-  ctx.fillStyle = RED; ctx.fillRect(72, 1262, 936 * easeOut((u - 14) / 14), 6);
+  const rise = (from, y) => { const k = easeOut((u - from) / 10, 4); ctx.globalAlpha = k; return y + (1 - k) * 34; };
+  if (small) skewText(ctx, small, 96, rise(2, 500), 86, '#fff', { shadow: false });
+  const sz = fitSize(ctx, big || d.brand, 220, F_ANTON, 880);
+  skewText(ctx, big || d.brand, 96, rise(4, 672), sz, '#fff', { shadow: false });
+  ctx.globalAlpha = easeOut((u - 8) / 10);
+  ctx.fillStyle = RED; ctx.fillRect(72, 1404, 936 * easeOut((u - 8) / 14), 8);
   ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-  if (d.t1) { fitSize(ctx, d.t1, 52, F_SERIF, 900); ctx.fillText(d.t1, 80, 1340); }
-  if (d.t2) { fitSize(ctx, d.t2, 52, F_SERIF, 900); ctx.fillText(d.t2, 80, 1404); }
-  ctx.font = `24px ${F_SANS}`; ctx.letterSpacing = '6px'; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText('MADE WITH HER HOURS', 80, 1500);
+  if (d.t1) { fitSize(ctx, d.t1, 80, F_SERIF, 920); ctx.fillText(d.t1, 80, 1506); }
+  if (d.t2) { fitSize(ctx, d.t2, 80, F_SERIF, 920); ctx.fillText(d.t2, 80, 1600); }
+  ctx.font = `30px ${F_SANS}`; ctx.letterSpacing = '7px'; ctx.fillStyle = 'rgba(255,255,255,.66)'; ctx.fillText('MADE WITH HER HOURS', 82, 1692);
   ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
   grain(ctx, f, 0.05);
 }
@@ -334,10 +357,12 @@ function metal(ctx, text, cx, y, size, stops, light, family = F_BHS) {
 }
 const SILVER = [[0, '#f4f6f8'], [0.45, '#aab2ba'], [0.55, '#dfe4e8'], [1, '#8a929a']];
 const GOLD = [[0, '#ffe7a8'], [0.45, '#c9963c'], [0.55, '#f6d27a'], [1, '#a9782a']];
-function lockup(ctx, d, cx, y, k, light) {
+// `left`: both lines start at that x instead of sitting centred on cx
+function lockup(ctx, d, cx, y, k, light, left = null) {
+  const at = (t) => (left === null ? cx : left + ctx.measureText(t).width / 2);
   const size1 = fitSize(ctx, d.brand, 190 * k, F_BHS, 860 * k);
-  metal(ctx, d.brand, cx, y, size1, SILVER, light);
-  if (d.t1) { const size2 = fitSize(ctx, d.t1, 150 * k, F_BHS, 760 * k); metal(ctx, d.t1, cx, y + size2 * 1.2, size2, GOLD, light); }
+  metal(ctx, d.brand, at(d.brand), y, size1, SILVER, light);
+  if (d.t1) { const size2 = fitSize(ctx, d.t1, 150 * k, F_BHS, 760 * k); metal(ctx, d.t1, at(d.t1), y + size2 * 1.2, size2, GOLD, light); }
 }
 function beatWave(ctx, d, f) {
   if (!d.spec) return;
@@ -355,16 +380,20 @@ function drawBeatTurns(ctx, f, N, d) {
   const { images, g, open, end, cuts, bursts, stamps, phrases, count0 } = d;
 
   if (f < open) {
-    // black, the name in metal, then the frame opens
-    const c0 = cuts[0];
+    // the first picture is there from frame 0, held dark, with the name in metal landing on it; then the frame opens
+    // (it was two seconds of black before any picture)
+    const c0 = cuts[0], im0 = images[c0.img % images.length];
+    camera(ctx, im0, c0.mv, 0, 0, 0, W, H, 1.07 - 0.07 * (f / open)); mark(ctx, im0);
+    ctx.globalAlpha = 0.6; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
     if (f >= open - 12) {
       const u = easeOut((f - (open - 12)) / 12);
       ctx.save(); ctx.beginPath(); ctx.rect(0, H / 2 - (H / 2) * u, W, H * u); ctx.clip();
-      camera(ctx, images[c0.img % images.length], c0.mv, 0); ctx.restore();
-      mark(ctx, images[c0.img % images.length]);
+      camera(ctx, im0, c0.mv, 0); ctx.restore();
     }
-    const a = clamp((f - 4) / 10) * (f >= open - 12 ? 1 - (f - (open - 12)) / 12 : 1);
-    ctx.globalAlpha = a; lockup(ctx, d, W / 2, 900, 1, (f - 8) / 34); ctx.globalAlpha = 1;
+    const pop = 1 + 0.18 * (1 - easeOut(f / 7, 4));   // no more: a name fitted to the full width must not leave the frame
+    ctx.globalAlpha = f >= open - 12 ? 1 - (f - (open - 12)) / 12 : 1;
+    ctx.save(); ctx.translate(W / 2, 960); ctx.scale(pop, pop); ctx.translate(-W / 2, -960);
+    lockup(ctx, d, W / 2, 900, 1, (f - 6) / 34); ctx.restore(); ctx.globalAlpha = 1;
     return;
   }
 
@@ -383,29 +412,31 @@ function drawBeatTurns(ctx, f, N, d) {
     ctx.globalAlpha = clamp(u / 16) * 0.62; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
     ctx.globalAlpha = easeOut(u / 12);
     lockup(ctx, d, W / 2, 900, 1, (u - 6) / 30);
-    if (d.t2) { ctx.font = `46px ${F_ITALIC}`; ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; fitSize(ctx, d.t2, 46, F_ITALIC, 860); ctx.fillText(d.t2, W / 2, 1160); }
-    ctx.font = `24px ${F_SANS}`; ctx.letterSpacing = '6px'; ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.fillText('MADE WITH HER HOURS', W / 2, 1240); ctx.letterSpacing = '0px';
+    if (d.t2) { ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; fitSize(ctx, d.t2, 68, F_ITALIC, 900); ctx.fillText(d.t2, W / 2, 1196); }
+    ctx.font = `30px ${F_SANS}`; ctx.letterSpacing = '7px'; ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText('MADE WITH HER HOURS', W / 2, 1286); ctx.letterSpacing = '0px';
     ctx.globalAlpha = 1;
     return;
   }
 
-  // small name and a counter, top left - counted on every other beat, like the original's turns
-  ctx.save(); lockup(ctx, d, 236, 262, 0.4, null); ctx.restore();
-  const count = Math.max(1, Math.floor((k - count0) / 2) + 1);
+  // the name and a counter, top left - counted on every other beat, like the original's turns
+  topShade(ctx, 680, 0.4);
+  ctx.save(); lockup(ctx, d, 0, 276, 0.52, null, 72); ctx.restore();
+  const count = Math.max(1, Math.floor((k - count0) / 2) + 1), cs = String(count).padStart(3, '0');
   ctx.textAlign = 'left'; ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 10;
-  ctx.font = `92px ${F_ANTON}`; ctx.fillStyle = '#fff'; ctx.fillText(String(count).padStart(3, '0'), 72, 440);
-  ctx.font = `26px ${F_SANS}`; ctx.letterSpacing = '4px'; ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillText('BEATS', 232, 440); ctx.letterSpacing = '0px';
+  ctx.font = `116px ${F_ANTON}`; ctx.fillStyle = '#fff'; ctx.fillText(cs, 72, 506);
+  const cw = ctx.measureText(cs).width;
+  ctx.font = `34px ${F_SANS}`; ctx.letterSpacing = '5px'; ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fillText('BEATS', 72 + cw + 20, 506); ctx.letterSpacing = '0px';
 
-  // words sung one by one, small; the one being sung in gold
+  // words sung one by one; the one being sung in gold
   const line = phrases.find((q) => f >= q.start && f < q.end);
   if (line) {
     const words = line.words?.length ? line.words : line.text.split(/\s+/).map((w) => ({ t: line.start, w }));
-    ctx.font = `64px ${F_ITALIC}`;
-    let x = 72, y = 1500; const gap = 16;
+    ctx.font = `90px ${F_ITALIC}`;
+    let x = 72, y = 1466; const gap = 22;
     words.forEach((w, i) => {
       if (f < w.t) return;
       const ww = ctx.measureText(w.w).width;
-      if (x + ww > 1008) { x = 72; y += 76; }
+      if (x + ww > 1008) { x = 72; y += 100; }
       const now = i === words.length - 1 || f < words[i + 1].t;
       ctx.fillStyle = now ? '#f6d27a' : '#fff'; ctx.globalAlpha = easeOut((f - w.t) / 4);
       ctx.fillText(w.w, x, y); x += ww + gap;
@@ -427,7 +458,7 @@ function drawBeatTurns(ctx, f, N, d) {
   }
 
   beatWave(ctx, d, f);
-  if (burst) flash(ctx, 0.75 - (f - c.f0) / 3);   // a shutter on every still
+  if (burst && c.fl) flash(ctx, 0.5 * (1 - (f - c.f0) / 3));   // a shutter on the stills that land on a beat
   const hit = d.hits.find((h) => f >= h && f < h + 8);
   if (hit !== undefined) { const a = 1 - (f - hit) / 8; rgbHit(ctx, 18 * a, 0.55 * a); }
 }
@@ -442,8 +473,10 @@ function buildBeatTurns(base, beat) {
     const b0 = snap(g, N * 0.5), k = beatIndex(g, b0);
     const per = (bf(g, k + 1) - bf(g, k));
     const cs = []; let f0 = b0, i = 0;
-    for (let j = 0; j < 8; j++, i++) { const f1 = Math.round(f0 + per / 2); cs.push({ f0, f1, img: i }); f0 = f1; }
-    for (let j = 0; j < 8; j++, i++) { const f1 = Math.round(f0 + per / 4); cs.push({ f0, f1, img: i }); f0 = f1; }
+    // fl: the shutter flash - only on the stills that land on a beat. A white flash on every still was 4 to 8 a second,
+    // past the three-a-second line that flashing video is held to.
+    for (let j = 0; j < 8; j++, i++) { const f1 = Math.round(f0 + per / 2); cs.push({ f0, f1, img: i, fl: j % 2 === 0 }); f0 = f1; }
+    for (let j = 0; j < 8; j++, i++) { const f1 = Math.round(f0 + per / 4); cs.push({ f0, f1, img: i, fl: j % 4 === 0 }); f0 = f1; }
     bursts.push({ f0: b0, f1: f0, cuts: cs });
   }
   const cuts = []; let img = 0, from = open;
@@ -646,7 +679,7 @@ function redClips(f, N, d) {
   return liveSet(d, r ? r.img : atCut(d.cuts, f).img);
 }
 function beatClips(f, N, d) {
-  if (f < d.open) return f >= d.open - 12 ? liveSet(d, d.cuts[0].img) : new Set();
+  if (f < d.open) return liveSet(d, d.cuts[0].img);
   const b = d.bursts.find((q) => f >= q.f0 && f < q.f1);
   return liveSet(d, atCut(b ? b.cuts : d.cuts, f).img);
 }
