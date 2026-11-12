@@ -1,17 +1,16 @@
-// Her Hours Shorts — three looks carried over from the 현준샘 ski videos (11-06), redrawn for the phone canvas.
+// Her Hours Shorts — looks carried over from the 현준샘 ski videos (11-06), redrawn for the phone canvas.
 //   Red Run     = v11: black and white with the reds kept, RUN strips with a timer, GO stamps, a name card at the end
 //   Beat Turns  = v12: own colours, the camera kicks on the beat, metal name, big stamps, burst stills
-//   Paper World = v13: a paper picture stage, the person in a small window that opens to the whole frame on the hit
+//   (Paper World = v13, the paper stage, was here until 11-12: 종이 일기 in looks_kids.js took its place)
 // Everything is cut on the song's beat grid (beats.js), so the same look works on any song and any length.
 // The originals are one-off Python renders (D:\_research\ski_promo_clo\tools\mv11_edit.py, mv12_short.py, mv13_kids.py).
 // What did not come over: optical-flow slow motion - a phone cannot afford it.
-import { W, H, grainPattern, loadImage } from './core.js';
+import { W, H, grainPattern } from './core.js';
 
 const FPS = 30;
 const KR = '"HHKrSans","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR"';
 const F_ANTON = `"HHDisplay",${KR},sans-serif`;
 const F_BHS = `"Black Han Sans","HHDisplay",${KR},sans-serif`;
-const F_JUA = `"Jua","Black Han Sans",${KR},sans-serif`;
 const F_SANS = `"HHSans",${KR},sans-serif`;
 const F_SERIF = `"HHSerif","HHKr",${KR},serif`;
 const F_ITALIC = `"HHItalic","HHKr",${KR},serif`;
@@ -339,7 +338,7 @@ function buildRedRun(base, beat) {
   const stacks = hits.map(stack);
   const rf = snap(g, N * 0.84);
   if (rf < end - 60 && !runs.some((r) => rf > r.f0 - 40 && rf < r.f1)) {
-    stacks.push({ f0: rf, f1: Math.min(end, rf + 90), words: [{ t: 'READY', f: rf, size: 210, x: 540, y: 1180, col: '#fff' }, { t: 'TO RUN AGAIN?', f: rf + 10, size: 62, x: 540, y: 1262, col: '#fff' }] });
+    stacks.push({ f0: rf, f1: Math.min(end, rf + 90), words: [{ t: 'READY', f: rf, size: 210, x: 540, y: 1180, col: '#fff' }, { t: 'TO RUN AGAIN?', f: rf + 10, size: 88, x: 540, y: 1290, col: '#fff' }] });
   }
   return { ...base, g, open, end, runs, hits, cuts, stacks, lastImg, t1: `${base.title1}`.trim(), t2: `${base.title2}`.trim(), brand: base.brand };
 }
@@ -464,7 +463,7 @@ function drawBeatTurns(ctx, f, N, d) {
 }
 function buildBeatTurns(base, beat) {
   const N = base.N ?? 960, g = gridOf(beat, N), sec = N / FPS;
-  const open = snap(g, Math.min(84, N * 0.07));
+  const open = snap(g, Math.min(54, N * 0.07));   // the name holds under two seconds (it was up to 2.8)
   const end = snap(g, N - clamp(N * 0.1, 80, 150));
   const moves = ['R', 'IN', 'U', 'L', 'OUT', 'D', 'IN', 'L', 'U', 'R'];
   // stills near the middle: half a beat each, then a quarter
@@ -510,167 +509,6 @@ function buildBeatTurns(base, beat) {
   return { ...base, g, open, end, cuts, bursts, stamps, hits, count0, spec: beat?.spec ?? null, t1: `${base.title1}`.trim(), t2: `${base.title2}`.trim() };
 }
 
-// ---------- Paper World ----------
-const PAPER = ['k1_boat_top', 'k2_stars_village', 'k3_jump_clouds', 'k4_star_sky'];
-let paperImgs = null, paperLoad = null;
-const paperReady = () => (paperLoad ??= Promise.all(PAPER.map((n) => loadImage(`assets/paper/${n}.jpg`))).then((a) => { paperImgs = a; }).catch(() => { paperLoad = null; }));
-const STAR_COLS = ['#ffd278', '#ff96aa', '#ffbe5a', '#ffffff', '#ffe196'];
-const starSprites = [];
-function starSprite(i) {
-  if (starSprites[i]) return starSprites[i];
-  const S = 96, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d'), m = S / 2, pts = [];
-  for (let k = 0; k < 10; k++) { const r = S * (k % 2 ? 0.2 : 0.46), a = -Math.PI / 2 + k * Math.PI / 5; pts.push([m + r * Math.cos(a), m + r * Math.sin(a)]); }
-  g.fillStyle = STAR_COLS[i]; g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fill();
-  g.fillStyle = 'rgba(0,0,0,.14)';   // the folded faces
-  for (let k = 0; k < 10; k += 2) { const a = pts[k], b = pts[(k + 1) % 10]; g.beginPath(); g.moveTo(m, m); g.lineTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.closePath(); g.fill(); }
-  return (starSprites[i] = c);
-}
-function putStar(ctx, i, x, y, size, rot, a = 1) {
-  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.rotate(rot);
-  ctx.shadowColor = 'rgba(60,20,60,.3)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 6;
-  ctx.drawImage(starSprite(i % STAR_COLS.length), -size / 2, -size / 2, size, size); ctx.restore();
-}
-function fallingStars(ctx, f, n = 34) {
-  for (let i = 0; i < n; i++) {
-    const t = f / FPS, y = ((hash(i, 1) * (H + 400) + (60 + hash(i, 2) * 130) * t) % (H + 400)) - 200;
-    const x = hash(i, 3) * W + (10 + hash(i, 4) * 40) * Math.sin(t * 1.3 + hash(i, 5) * 6.28);
-    putStar(ctx, i, x, y, 26 + hash(i, 6) * 66, hash(i, 7) * 6.28 + (hash(i, 8) - 0.5) * 2.8 * t);
-  }
-}
-function starBurst(ctx, f, f0, n = 40, power = 1) {
-  const u = (f - f0) / FPS;
-  if (u < 0 || u > 1.3) return;
-  for (let i = 0; i < n; i++) {
-    const a = hash(i, f0) * 6.28, sp = (500 + hash(i, f0 + 1) * 1200) * power, r = sp * (1 - Math.exp(-2.6 * u)) / 2.6;
-    putStar(ctx, i, W / 2 + Math.cos(a) * r, H * 0.55 + Math.sin(a) * r + 260 * u * u, 30 + hash(i, f0 + 2) * 80, hash(i, f0 + 3) * 6.28 + 5 * u, Math.min(1, (1.3 - u) * 2));
-  }
-}
-const PIP = { x: 672, y: 1120, w: 356, h: 633 };
-// Letters drop in one at a time and bounce; rounded type with a dark paper edge.
-function bounceText(ctx, lines, f, f0, f1, col, startY = 600) {
-  const out = clamp((f1 - f) / 6);
-  let size = 220;
-  ctx.font = `${size}px ${F_JUA}`;
-  const widest = Math.max(...lines.map((l) => ctx.measureText(l).width));
-  if (widest > 940) size = Math.floor(size * 940 / widest);
-  ctx.font = `${size}px ${F_JUA}`; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
-  const total = lines.reduce((s, l) => s + [...l.replace(/\s/g, '')].length, 0);
-  const each = Math.min(5, 50 / Math.max(1, total)); let n = 0;
-  lines.forEach((ln, li) => {
-    const tw = ctx.measureText(ln).width; let x = (W - tw) / 2; const y0 = startY + li * size * 1.22;
-    for (const ch of ln) {
-      const adv = ctx.measureText(ch).width;
-      if (ch !== ' ') {
-        const u = (f - f0 - n * each) / FPS; n++;
-        if (u >= 0) {
-          const s = 1 + 0.55 * Math.exp(-7 * u) * Math.cos(16 * u), cx = x + adv / 2, y = y0 + 22 * Math.sin((f / FPS) * 2.2 + n);
-          ctx.save(); ctx.globalAlpha = out; ctx.translate(cx, y); ctx.scale(s, s);
-          ctx.lineWidth = Math.max(12, size * 0.14); ctx.strokeStyle = '#2a1a50'; ctx.strokeText(ch, 0, 0);
-          ctx.fillStyle = col; ctx.fillText(ch, 0, 0); ctx.restore();
-        }
-      }
-      x += adv;
-    }
-  });
-  ctx.textAlign = 'left'; ctx.globalAlpha = 1;
-}
-function drawPaperWorld(ctx, f, N, d) {
-  resetCtx(ctx);
-  const { images, g, swaps, stage, hero, cheers, end } = d;
-  // 0 = the small window, 1 = the whole frame
-  let open = 0;
-  for (const s of swaps) { const u = (f - s.f + 1) / 10; if (u > 0) { const e = easeOut(u); open = s.open ? e : 1 - e; } }
-
-  const c = atCut(hero, Math.min(f, end - 1)), src = images[c.img % images.length];
-  const p = c.slow ? (f - c.f0) / (c.f1 - c.f0) : kickProgress(g, c, f);
-
-  if (open < 0.999) {
-    const st = atCut(stage, f), u = (f - st.f0) / (st.f1 - st.f0), a = st.a, b = st.b;
-    if (paperImgs) {
-      const im = paperImgs[st.img];
-      const z = a[2] + (b[2] - a[2]) * u, s = Math.max(W / im.width, H / im.height) * z;
-      const dw = im.width * s, dh = im.height * s;
-      const cx = im.width * s * (a[0] + (b[0] - a[0]) * u), cy = im.height * s * (a[1] + (b[1] - a[1]) * u);
-      ctx.drawImage(im, clamp(W / 2 - cx, W - dw, 0), clamp(H / 2 - cy, H - dh, 0), dw, dh);
-    } else { ctx.fillStyle = '#3a2a6a'; ctx.fillRect(0, 0, W, H); }
-    fallingStars(ctx, f);
-    const x = PIP.x * (1 - open), y = PIP.y * (1 - open), w = PIP.w + (W - PIP.w) * open, h = PIP.h + (H - PIP.h) * open, bd = 14 * (1 - open);
-    ctx.fillStyle = 'rgba(40,20,60,.28)'; ctx.fillRect(x + 12, y + 14, w + bd, h + bd);
-    ctx.fillStyle = '#fbfaf5'; ctx.fillRect(x - bd, y - bd, w + bd * 2, h + bd * 2);
-    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-    camera(ctx, src, c.mv, p, x, y, w, h);
-    ctx.restore();
-  } else {
-    camera(ctx, src, c.mv, p);
-  }
-  for (const s of swaps) if (s.open) {
-    starBurst(ctx, f, s.f);
-    const dd = f - s.f; if (dd >= 0 && dd < 5) flash(ctx, 0.55 * (1 - dd / 5));
-  }
-  if (open < 0.5) {
-    if (d.titleTo && f < d.titleTo && d.titleLines.length) bounceText(ctx, d.titleLines, f, 2, d.titleTo, '#fff', 860);
-    for (const q of cheers) if (f >= q.f0 && f < q.f1) bounceText(ctx, q.lines, f, q.f0, q.f1, q.col);
-  }
-  // the end is not a fade to black: light gathers, then the whole frame goes off
-  const u = f - end;
-  if (u >= -14) {
-    if (u < 0) {
-      const k = (u + 14) / 14, gr = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, 1100);
-      gr.addColorStop(0, `rgba(255,250,235,${0.9 * k * k})`); gr.addColorStop(1, 'rgba(255,250,235,0)');
-      ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
-    } else {
-      const r = easeOut(u / 8) * 1700, gr = ctx.createRadialGradient(W / 2, H / 2, r * 0.7, W / 2, H / 2, Math.max(1, r));
-      gr.addColorStop(0, '#fffaf0'); gr.addColorStop(1, 'rgba(255,250,240,0)');
-      ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
-      starBurst(ctx, f, end, 60, 1.2);
-      flash(ctx, (u - 8) / 18, '#fffdf8');
-      if (u > 12 && d.brandShown) {
-        ctx.globalAlpha = easeOut((u - 12) / 10); ctx.textAlign = 'center';
-        const sz = fitSize(ctx, d.brandShown, 120, F_JUA, 900); ctx.font = `${sz}px ${F_JUA}`; ctx.fillStyle = '#4a2a70'; ctx.fillText(d.brandShown, W / 2, H / 2);
-        ctx.font = `24px ${F_SANS}`; ctx.letterSpacing = '6px'; ctx.fillStyle = 'rgba(74,42,112,.7)'; ctx.fillText('MADE WITH HER HOURS', W / 2, H / 2 + 80); ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
-      }
-    }
-  }
-}
-function buildPaperWorld(base, beat) {
-  paperReady();
-  document.fonts?.load?.('80px "Jua"', `${base.brand} ${base.title1} ${base.title2} 넘어져도 괜찮아 다시 일어나면 돼 넌 최고야`).catch(() => {});
-  const N = base.N ?? 960, g = gridOf(beat, N), sec = N / FPS;
-  const end = snap(g, N - Math.min(66, N * 0.08));
-  const firstHit = (beat?.hits ?? []).find((h) => h > N * 0.1 && h < N * 0.45) ?? snap(g, N * 0.2);
-  const long = sec >= 28;
-  const closeF = long ? snap(g, N * 0.55) : N + 1, reopen = long ? snap(g, N * 0.77) : N + 1;
-  const swaps = [{ f: firstHit, open: true }];
-  if (long) swaps.push({ f: closeF, open: false }, { f: reopen, open: true });
-  const stage = [
-    { f0: 0, f1: Math.round(firstHit / 2), img: 0, a: [0.5, 0.22, 1.35], b: [0.5, 0.62, 1.12] },
-    { f0: Math.round(firstHit / 2), f1: firstHit, img: 2, a: [0.5, 0.55, 1.0], b: [0.5, 0.42, 1.5] },
-    { f0: firstHit, f1: closeF, img: 2, a: [0.5, 0.42, 1.5], b: [0.5, 0.42, 1.55] },
-  ];
-  if (long) {
-    const mid = Math.round((closeF + reopen) / 2);
-    stage.push({ f0: closeF, f1: mid, img: 1, a: [0.5, 0.3, 1.5], b: [0.5, 0.62, 1.08] }, { f0: mid, f1: N + 1, img: 3, a: [0.5, 0.78, 1.45], b: [0.5, 0.45, 1.02] });
-  }
-  const moves = ['IN', 'L', 'U', 'OUT', 'R', 'IN', 'D'];
-  const hero = []; let img = 0;
-  const add = (from, to, every, mv, slow) => cutList(g, from, to, every, mv).forEach((c) => { c.img = img++; c.slow = slow; hero.push(c); });
-  add(0, firstHit, 8, ['SLOW'], true);
-  add(firstHit, Math.min(closeF, end), 2, moves);
-  if (long) { add(closeF, reopen, 8, ['SLOW'], true); add(reopen, end, 2, moves); }
-  hero.push({ f0: end, f1: N + 1, k: beatIndex(g, end), n: 1, img: img++, mv: 'SLOW', slow: true });
-  const cheers = [];
-  if (long) {
-    const span = reopen - closeF, say = [[T('넘어져도', 'Fall down?'), T('괜찮아!', "That's okay!")], [T('다시', 'Get up'), T('일어나면 돼', 'and go again')], [T('넌 최고야!', "You're the best!")]];
-    say.forEach((lines, i) => cheers.push({ f0: closeF + 10 + Math.round((span * i) / 3), f1: closeF + Math.round((span * (i + 1)) / 3), lines, col: i === 2 ? '#ffd278' : '#fff' }));
-  }
-  const hasBrand = base.brand && base.brand !== 'HER HOURS';
-  return {
-    ...base, g, end, swaps, stage, hero, cheers,
-    titleTo: firstHit, titleLines: [base.title1, base.title2].map((s) => `${s}`.trim()).filter(Boolean),
-    brandShown: hasBrand ? base.brand : `${base.title1}`.trim(),
-  };
-}
-
 // Which clips are on screen in a frame, without drawing it - the export decodes only these.
 const liveSet = (d, ...idx) => { const s = new Set(); for (const i of idx) { const im = d.images[i % d.images.length]; if (im?.live) s.add(im); } return s; };
 function redClips(f, N, d) {
@@ -683,15 +521,12 @@ function beatClips(f, N, d) {
   const b = d.bursts.find((q) => f >= q.f0 && f < q.f1);
   return liveSet(d, atCut(b ? b.cuts : d.cuts, f).img);
 }
-const paperClips = (f, N, d) => liveSet(d, atCut(d.hero, Math.min(f, d.end - 1)).img);
 
-const slotsOf = (d) => { let m = 0; for (const c of d.cuts || d.hero) m = Math.max(m, c.img + 1); return m; };
+const slotsOf = (d) => { let m = 0; for (const c of d.cuts) m = Math.max(m, c.img + 1); return m; };
 
 export const HJ_LOOKS = [
   { id: 'red-run', lab: true, name: 'Red Run', sub: T('흑백에 빨강만 · RUN 띠와 초시계 · GO 도장 · 끝에 이름 카드', 'black and white, the reds kept · RUN strips with a timer · GO stamps · a name card'),
     draw: drawRedRun, build: buildRedRun, clipsAt: redClips, photo: { min: 10, shape: 'tall', slots: slotsOf } },
   { id: 'beat-turns', lab: true, kfont: true, name: 'Beat Turns', sub: T('박자마다 튀는 카메라 · 금속 이름 · 큰 글자 도장 · 연사 스틸', 'the camera kicks on the beat · a metal name · big stamps · burst stills'),
     draw: drawBeatTurns, build: buildBeatTurns, clipsAt: beatClips, photo: { min: 12, shape: 'tall', slots: slotsOf } },
-  { id: 'paper-world', lab: true, kfont: true, name: T('종이 세계', 'Paper World'), sub: T('종이 그림 무대 · 작은 화면이 터짐에 전체로 · 응원 문구 · 끝은 빛 폭발', 'a paper stage · a small window opens on the hit · cheers · a burst of light'),
-    draw: drawPaperWorld, build: buildPaperWorld, clipsAt: paperClips, ready: paperReady, photo: { min: 10, shape: 'tall', slots: slotsOf } },
 ];

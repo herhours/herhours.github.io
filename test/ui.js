@@ -499,10 +499,11 @@ $('useDemo').onclick = () => {
   rebuild(); chips(); renderLooks();
 };
 
+// 11-12: October is over - the Halloween shelf moved from the top to below our other sung songs
 const SONG_GROUPS = [
-  ['halloween', () => T('🎃 핼러윈 · Her Hours 캐릭터가 불러요', '🎃 Halloween · sung by Her Hours characters')],
   ['lyrics', () => T('가사가 나오는 곡', 'Songs with lyrics')],
   ['vocal', () => T('Her Hours 노래 · 캐릭터가 불러요', 'Her Hours songs · sung by our characters')],
+  ['halloween', () => T('🎃 핼러윈 · Her Hours 캐릭터가 불러요', '🎃 Halloween · sung by Her Hours characters')],
   ['upbeat', () => T('신나는', 'Upbeat')],
   ['bright', () => T('밝은', 'Bright')],
   ['tension', () => T('긴장감', 'Tension')],
@@ -715,6 +716,12 @@ window.hhOpen = (name) => {
     nx.dataset.next = toLook ? 'look' : 'song'; nx.textContent = toLook ? T('다음 · 스타일', 'Next · Style') : T('다음 · 노래', 'Next · Song');
   }
   shellOpen(name);
+  // 11-11 check: the song sheet opened at the top of the list with the picked song below the fold - it opens on that song now
+  if (name === 'song') requestAnimationFrame(() => {
+    const on = document.querySelector('#ourSongs .opt.on'); let box = on?.parentElement;
+    while (box && !(box.scrollHeight > box.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(box).overflowY))) box = box.parentElement;   // whichever box scrolls on this page
+    if (on && box) { const a = on.getBoundingClientRect(), b = box.getBoundingClientRect(); if (a.top < b.top || a.bottom > b.bottom) box.scrollTop += a.top - b.top - (b.height - a.height) / 2; }
+  });
   if (STEPS.includes(name)) { seenSteps.add(name); if (seenSteps.size === STEPS.length) flowDone(); }
 };
 // The phone's back button (and the installed app's) steps back one sheet instead of leaving the page: one history

@@ -2248,28 +2248,9 @@ function minjeongLook(id, name, sub, theme) {
 }
 
 export const LOOKS = [
-  {
-    id: 'halloween', name: 'Halloween', sub: T('아치 창문 · 박쥐와 불티 · 줄마다 다른 가사', 'a gothic arch window · bats and embers · every line sung differently'),
-    draw: drawHalloween,
-    build: (base, beat) => {
-      const N = base.N ?? 960;
-      const name = base.singer || '';   // only our character songs name a singer
-      const title = `${base.title1} ${base.title2}`.trim();
-      return {
-        ...base,
-        phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, N),
-        c1: '#FFB04A', c2: base.accent && base.accent.toUpperCase() !== '#FFB04A' ? base.accent : '#7FE0D8', frame: '#C9A15A',
-        step: beatStep(beat, 90), spec: beat?.spec ?? null, bands: 128,
-        intro: Math.min(66, Math.round(N * 0.08)), fold: Math.min(86, Math.round(N * 0.1)), outro: Math.min(66, Math.round(N * 0.08)),
-        title: title.toUpperCase(),
-        role: name ? `sung by ${name}` : base.brand,
-        sign: name ? `HALLOWEEN SPECIAL  ·  ${name.toUpperCase()}` : 'HALLOWEEN SPECIAL',
-        promise: title.toLowerCase(),
-        end1: base.useOurs ? 'The full song —' : `♪ ${title}`,
-        end2: base.useOurs ? `ON ${base.brand}` : base.footL.toUpperCase(),
-      };
-    },
-  },
+  // the first look is what a new visitor sees: big type from frame 0, a cut every second, no season
+  clockface('clockface-day', T('Clockface · 하루', 'Clockface · Day'), T('영상 한 편에 하루 · 시간 따라 색이 바뀜 · 큰 시계', 'a whole day in one video · colour follows the hour · big clock'),
+    { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
   {
     id: 'windowband', name: 'Window Band', sub: T('창문 띠 · 가사가 박자에 켜짐', 'window band · lyrics light on the beat'),
     draw: drawWindowBand,
@@ -2312,8 +2293,6 @@ export const LOOKS = [
       step: beatStep(beat, 122), spec: beat?.spec ?? null, bands: 128,
     }),
   },
-  clockface('clockface-day', T('Clockface · 하루', 'Clockface · Day'), T('영상 한 편에 하루 · 시간 따라 색이 바뀜 · 큰 시계', 'a whole day in one video · colour follows the hour · big clock'),
-    { shot: 24, startMinute: 300, spanMinutes: 1380, night: false }),
   clockface('clockface-night', T('Clockface · 밤', 'Clockface · Night'), T('밤 열 시간 · 가사가 시계 자리에 · 다음 장면이 작은 창으로', 'ten hours of night · lyrics where the clock was · the next scene in a small window'),
     { shot: 57, startMinute: 1200, spanMinutes: 600, night: true }),
   {
@@ -2348,6 +2327,29 @@ export const LOOKS = [
         lines.unshift(...intro);
       }
       return { ...base, outroLen, title: `${base.title1} ${base.title2}`.trim(), lines, period: beatStep(beat, 60) };   // ~2s, on the beat
+    },
+  },
+  // 11-12: October is over - Halloween moved from first to last of the open looks (it was the default since 10-14)
+  {
+    id: 'halloween', name: 'Halloween', sub: T('아치 창문 · 박쥐와 불티 · 줄마다 다른 가사', 'a gothic arch window · bats and embers · every line sung differently'),
+    draw: drawHalloween,
+    build: (base, beat) => {
+      const N = base.N ?? 960;
+      const name = base.singer || '';   // only our character songs name a singer
+      const title = `${base.title1} ${base.title2}`.trim();
+      return {
+        ...base,
+        phrases: base.phrases.length ? base.phrases : titleAsLyrics(base, N),
+        c1: '#FFB04A', c2: base.accent && base.accent.toUpperCase() !== '#FFB04A' ? base.accent : '#7FE0D8', frame: '#C9A15A',
+        step: beatStep(beat, 90), spec: beat?.spec ?? null, bands: 128,
+        intro: Math.min(66, Math.round(N * 0.08)), fold: Math.min(86, Math.round(N * 0.1)), outro: Math.min(66, Math.round(N * 0.08)),
+        title: title.toUpperCase(),
+        role: name ? `sung by ${name}` : base.brand,
+        sign: name ? `HALLOWEEN SPECIAL  ·  ${name.toUpperCase()}` : 'HALLOWEEN SPECIAL',
+        promise: title.toLowerCase(),
+        end1: base.useOurs ? 'The full song —' : `♪ ${title}`,
+        end2: base.useOurs ? `ON ${base.brand}` : base.footL.toUpperCase(),
+      };
     },
   },
   // shown only through the class link (?class=kids) — ui.js puts these first there and leaves them out elsewhere
