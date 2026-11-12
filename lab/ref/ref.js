@@ -144,4 +144,69 @@
   const all = () => $$(SEL).forEach(press);
   let q = 0;
   all(); new MutationObserver(() => { if (!q) q = requestAnimationFrame(() => { q = 0; all(); }); }).observe(document.body, { childList: true, subtree: true });
+
+  // ══ 11-12 영샘 폰 피드백 셋 ══
+  // ⑦ "스타일 고를 때 예시 영상의 위아래가 잘려서 불편 — 전체 화면으로 볼 수 있게": 「전체 보기」를 누르면 영상 전체(9:16)가 화면에 가득,
+  //    「돌아가기」(또는 폰의 뒤로)로 고르던 자리 그대로 돌아온다. 위 카드가 가득 찬 평소 모습(11-09 영샘)은 그대로 둔다.
+  {
+    const body = document.body, stage = $('.stage');
+    const open = document.createElement('button'); open.type = 'button'; open.className = 'rfull';
+    open.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>${T2('전체 보기', 'Full view')}</span>`;
+    const back = document.createElement('button'); back.type = 'button'; back.className = 'rfullx';
+    back.innerHTML = `<svg width="18" height="18"><use href="#i-back"/></svg><span>${T2('돌아가기', 'Back')}</span>`;
+    body.append(open, back);   // 시트가 열리면 위 카드를 가림막(scrim)이 덮는다 - 단추는 그 위에 있어야 눌린다
+    let on = false;
+    const leave = () => { if (!on) return; on = false; body.classList.remove('ref-full'); };
+    open.onclick = (e) => {
+      e.stopPropagation(); on = true; body.classList.add('ref-full');
+      history.pushState({ hhFull: 1 }, '');
+      if (!body.classList.contains('is-playing')) $('#tap')?.click();   // 들어가면 바로 재생
+    };
+    back.onclick = () => { if (on) history.back(); };
+    // 이 파일은 ui.js(모듈)보다 먼저 돈다 — 여기서 먼저 받아, 전체 보기 중의 '뒤로'가 단계 시트까지 닫지 않게 한다
+    addEventListener('popstate', (e) => { if (on) { leave(); e.stopImmediatePropagation(); } });
+    // 만들기를 시작하면 전체 보기는 저절로 끝난다
+    new MutationObserver(() => { if (on && (body.classList.contains('is-making') || body.classList.contains('is-done'))) back.click(); }).observe(body, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ⑧ "스타일 고를 때 사진 개수가 잘 안 보임 — 고르는 칸에 표시": 칸마다 「사진 N장+」, 고른 스타일 설명·추천 장수는 칸들 위에 붙여 둔다
+  {
+    const box = $('#looks'), info = $('#lookInfo');
+    // 위에 붙어 다니는 줄은 이름 + 추천 장수만(짧게), 스타일 설명은 칸들 아래로
+    const top = document.createElement('div'); top.className = 'rinfo'; const sub = document.createElement('p'); sub.className = 'rsub';
+    if (box && info) { box.before(top); box.after(sub); }
+    const sync = () => {
+      top.textContent = ''; const b = document.createElement('b'); b.textContent = $('b', info)?.textContent || ''; top.append(b);
+      $$('.adv', info).forEach((a) => { const s = document.createElement('span'); s.className = a.className; s.textContent = a.textContent; top.append(s); });
+      sub.textContent = [...info.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join('').replace(/^\s*·\s*/, '').trim();
+    };
+    if (info) { new MutationObserver(sync).observe(info, { childList: true, characterData: true, subtree: true }); sync(); }
+    const tag = () => $$('.tile', box).forEach((t) => {
+      if (!t.dataset.min || $('.rneed', t)) return;
+      const e = document.createElement('em'); e.className = 'rneed'; e.textContent = T2(`사진 ${t.dataset.min}장+`, `${t.dataset.min}+ photos`); t.append(e);
+    });
+    if (box) { new MutationObserver(tag).observe(box, { childList: true }); tag(); }
+  }
+
+  // ⑨ "사진 올릴 때 추천 개수가 먼저, 그 아래에 올리는 칸" + "영상도 함께 올릴 수 있다는 게 눈에 들어오게":
+  //    사진 화면 맨 위에 추천 장수, 바로 아래 「사진 · 영상 넣기」 큰 단추(영상 그림 + 한 줄), 그 아래 칸들
+  {
+    const pane = $('.pane-photo'), head = $('.rhead', pane), pa = $('#padv');
+    const need = document.createElement('div'); need.className = 'rneedbox'; need.innerHTML = '<b></b><span></span><i></i>';
+    const up = document.createElement('label'); up.className = 'rupload'; up.htmlFor = 'photos';
+    up.innerHTML = `<span class="ic"><svg width="24" height="24"><use href="#i-photo"/></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.4v5.2l4.6-2.6z" fill="currentColor" stroke="none"/></svg></span>`
+      + `<span class="tx"><b>${T2('사진 · 영상 넣기', 'Add photos · videos')}</b><small>${T2('영상도 돼요 · 섞어서 골라도 돼요', 'Videos work too · pick them together')}</small></span><span class="plus">＋</span>`;
+    head.after(need, up);
+    const show = () => {
+      const { min, cap } = want(), s = pa?.textContent || '';
+      const shape = /(가로|세로) 사진이 잘 맞아요|(landscape|portrait) photos fit best/.exec(s)?.[0] || '';
+      const now = /지금 \d+장 — [^·]+(?:· [^·]+)?|\d+ now — [^·]+/.exec(s)?.[0]?.trim() || '';
+      need.children[0].textContent = T2(`사진 ${Math.min(min, cap)}장 이상 추천`, `${Math.min(min, cap)}+ photos recommended`);
+      need.children[1].textContent = [T2(`${cap}장까지 다 쓰여요`, `up to ${cap} are used`), shape].filter(Boolean).join(' · ');
+      need.children[2].textContent = now; need.children[2].hidden = !now;
+    };
+    show(); if (pa) new MutationObserver(show).observe(pa, { childList: true, characterData: true, subtree: true });
+    // 집 네 칸의 「사진」도 영상이 된다는 걸 말한다
+    const l = $('.rail [data-open="photo"] .l'); if (l) l.textContent = T2('사진 · 영상', 'Photos · clips');
+  }
 })();

@@ -135,6 +135,7 @@ function renderLooks() {
   for (const l of shown) {
     const b = document.createElement('button');
     b.className = 'tile' + (l.id === S.look.id ? ' on' : '');
+    if (l.photo?.min) b.dataset.min = l.photo.min;   // 11-12: a page may show "N photos+" on the tile (lab/ref does)
     // a real frame of the look, not a colour swatch — the choice is judged by what the video will look like (10-11)
     b.innerHTML = `<img class="lkimg" src="assets/looks/${l.id}.jpg" alt="" loading="lazy" decoding="async"><span>${l.name.replace(' · ', '<br>')}</span>`;
     b.onclick = () => {

@@ -452,3 +452,52 @@ body.is-making .stage::before{display:none}
   -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
   background:linear-gradient(0deg,rgba(10,11,12,.5),rgba(10,11,12,.15) 70%,rgba(10,11,12,0));
   -webkit-mask-image:linear-gradient(0deg,#000 60%,transparent);mask-image:linear-gradient(0deg,#000 60%,transparent)}
+
+/* ══ 11-12 영샘 폰 피드백 셋 ══ */
+/* ⑦ 전체 보기 — 평소엔 위 카드가 가득 차게 잘라 보이고(11-09), 이 단추를 누르면 영상 전체(9:16)가 화면에 가득 */
+.rfull{position:absolute;z-index:11;right:14px;top:calc(var(--hero) - 98px);transition:top .55s var(--ease);display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px 0 11px;border:0;border-radius:99px;cursor:pointer;
+  font:600 13.5px/1 var(--ui);color:#fff;background:rgba(18,19,22,.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 6px 18px rgba(0,0,0,.35);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);-webkit-tap-highlight-color:transparent}
+.rfull:active{transform:scale(.96)}
+body.is-making .rfull,body.is-done .rfull{display:none}
+.rfullx{display:none}
+body.ref-full{--hero:100% !important}
+body.ref-full .stage{z-index:20;border-radius:0;background:#000}
+body.ref-full .stage{padding:env(safe-area-inset-top,0px) 0 0 !important}
+body.ref-full .frame canvas,body.ref-full .frame video{object-fit:contain;object-position:50% 0;background:#000}   /* 위에 붙여, 긴 폰에서는 재생 막대와 돌아가기가 영상 아래 빈 곳에 온다 */
+body.ref-full .stage::before,body.ref-full .stage::after,body.ref-full .transport::before{display:none}
+body.ref-full .top,body.ref-full .rfull{display:none}
+body.ref-full .transport{z-index:21;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 84px)}
+body.ref-full .rfullx{display:inline-flex;align-items:center;gap:8px;position:absolute;z-index:22;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);
+  min-height:52px;padding:0 26px 0 18px;border:0;border-radius:99px;cursor:pointer;font:600 16px/1 var(--ui);color:#1a1408;background:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+body.ref-full .rfullx svg{color:#1a1408}
+
+/* ⑧ 스타일 칸마다 「사진 N장+」, 고른 스타일의 설명·추천 장수는 칸들 위에 붙어 다닌다 */
+.looks .tile .rneed{position:absolute;z-index:1;left:12px;bottom:10px;font-style:normal;font:600 12.5px/1 var(--ui);letter-spacing:0;color:var(--cream);
+  padding:6px 9px;border-radius:99px;background:rgba(10,11,12,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.looks .tile.on .rneed{color:#1a1408;background:var(--accent);box-shadow:none}
+.pane-look #lookInfo{display:none}
+.rinfo{position:sticky;top:-2px;z-index:3;margin:0 -4px 12px;padding:11px 14px;border-radius:16px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line-2),0 10px 18px -8px rgba(0,0,0,.7);line-height:1.4}
+.rinfo b{display:block;font-size:15px;font-weight:600;color:var(--cream)}
+.rinfo .adv{display:block;margin-top:3px;font-size:14.5px;font-weight:600;color:var(--accent)}
+.rinfo .adv.warn{color:#FFC27A}
+.rsub{margin:14px 2px 0;font-size:13.5px;line-height:1.45;color:var(--dim)}
+.rsub:empty{display:none}
+
+/* ⑨ 사진 화면: 추천 장수 먼저 → 「사진 · 영상 넣기」 → 칸들 */
+.pane-photo > .rneedbox,.pane-photo > .rupload{order:0}
+.rneedbox{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 0 12px;text-align:center}
+.rneedbox b{font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--accent)}
+.rneedbox span{font-size:14px;color:var(--cream)}
+.rneedbox i{font-style:normal;font-size:13.5px;color:#FFC27A}
+.rupload{display:flex;align-items:center;gap:12px;min-height:68px;padding:10px 16px;border-radius:20px;cursor:pointer;background:var(--tile-on);box-shadow:inset 0 0 0 1.5px var(--accent);
+  color:var(--cream);-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.rupload:active{transform:scale(.98)}
+.rupload .ic{display:inline-flex;gap:7px;color:var(--accent)}
+.rupload .ic svg{width:26px;height:26px}
+.rupload .tx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.rupload .tx b{font-size:16.5px;font-weight:600}
+.rupload .tx small{font-size:13px;color:var(--dim)}
+.rupload .plus{font-size:26px;font-weight:200;color:var(--accent);line-height:1}
+.pane-photo #padv{display:none}
+.pane-photo > .thumbs{order:1}
