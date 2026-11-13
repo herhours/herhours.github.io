@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#06070B">
+<meta name="theme-color" content="#0b0c0d">
 <title>Her Hours Shorts</title>
+<!-- 11-09 영샘: 레퍼런스(주유·차 앱) 레이아웃+느낌 · 금색 · 아이폰 리퀴드 글래스 디자인에 기존 기능 전부.
+     엔진·ui.js 는 그대로 — 같은 id 를 새 자리에 놓고 옷만 바꾼다(ui-ref.css · ref.js). 시안: design_ref_20261109\index.html -->
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
@@ -16,199 +18,14 @@
 <link rel="stylesheet" href="./ui.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&family=Jua&family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Black+Han+Sans&family=Jua&family=Nanum+Pen+Script&family=Inter+Tight:wght@200;300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="./ui-ref.css">
 <script type="importmap">{"imports":{"mediabunny":"./vendor/mediabunny.min.mjs"}}</script>
-<style>
-/* ---- Design B: 무대 + 도구줄 (stage & rail) — the reel fills the screen, tools float on it ---- */
-body{position:fixed;inset:0}
-.stage{position:absolute;inset:0;padding:0;z-index:0}
-.frame{border-radius:0;border:0;box-shadow:none}
-.top{position:absolute;top:0;left:0;right:0;z-index:3;
-  background:linear-gradient(to bottom,rgba(0,0,0,.65),rgba(0,0,0,0))}
-/* 11-13 시험자 의견: 위 줄과 오른쪽 도구줄에 「내 영상」·「정보」가 두 번 — 도구줄은 늘 보이니 위 줄은 이름만 */
-.top .lnks{display:none}
-/* The video is letterboxed by `contain`, so its drawn height is min(screen, width*16/9).
-   The look's photo band sits at 600..1140 of 1920 - centre 45.3%, i.e. 4.7% above the video's
-   own centre. Anchoring the rail there keeps it off the lyric line (1210) at every size. */
-.rail{--vidh:min(100dvh, 177.78vw);
-  position:absolute;right:8px;top:calc(50% - var(--vidh) * 0.047);transform:translateY(-50%);
-  z-index:3;display:flex;flex-direction:column;gap:14px}
-.rail button{display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;padding:0}
-.rail .b{width:42px;height:42px;border-radius:50%;background:rgba(10,12,18,.55);backdrop-filter:blur(10px);
-  border:1.5px solid rgba(255,255,255,.34);display:grid;place-items:center;color:#fff}
-.rail .b svg{width:21px;height:21px}
-.rail .l{font-size:13px;line-height:1;font-weight:700;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.95)}
-.rail button.mine .b{border-color:var(--accent);color:var(--accent)}
-.rail button.mine .l{color:var(--accent)}
-.transport{position:absolute;left:0;right:0;bottom:calc(78px + var(--safe-b));z-index:3;
-  padding:0 16px;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
-.dock{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:10px 16px calc(14px + var(--safe-b));
-  background:linear-gradient(to top,rgba(0,0,0,.82) 46%,rgba(0,0,0,.45) 72%,rgba(0,0,0,0))}
-/* A phone barely taller than the 9:16 video has no letterbox worth using, so there is no letterbox to put
-   app chrome in. Rather than sit on the artwork, the top bar leaves - 기기 정보 stays reachable
-   from the 글자 sheet. */
-@media (min-aspect-ratio: 52 / 100){
-  .top{display:none}
-  .live{display:none}
-}
-/* On a short phone the video reaches the bottom edge, so the controls give back some height. */
-@media (max-height:700px){
-  .rail{gap:8px}
-  .rail .b{width:34px;height:34px}
-  .rail .b svg{width:17px;height:17px}
-  .rail .l{font-size:12px}
-  .dock{padding:6px 14px calc(10px + var(--safe-b))}
-  .dock .pill{min-height:52px;font-size:var(--t-m)}
-  .transport{bottom:calc(66px + var(--safe-b))}
-}
-.makebox{display:flex;flex-direction:column;gap:8px}
-.donebox{display:none;flex-direction:column;gap:10px}
-body.is-done .makebox,body.is-done .rail{display:none}
-body.is-done .donebox{display:flex}
-body.is-making .rail,body.is-making .dock,body.is-making .transport{display:none}
-/* 10-20 PT 리뷰 4: 「쇼츠 만들기」 위 한 줄 요약 - the dock grows by one line, so the time bar rides on its measured height */
-.makesum{margin:0;font-size:15px;line-height:1.35;color:#fff;text-align:center;text-wrap:balance;text-shadow:0 1px 5px rgba(0,0,0,.95)}
-.makesum button{all:unset;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
-/* 10-21 PT 리뷰: the four summary words were 20px tall to a finger - the padding widens the touch, the equal negative
-   margin keeps the line where it was */
-.makesum button{display:inline-block;padding:11px 4px;margin:-11px -4px;touch-action:manipulation}
-.makesum button.demo{color:var(--accent)}
-/* 10-20 PT 리뷰 5: 도움말 */
-.helps{list-style:none;margin:14px 0 4px;padding:0;display:flex;flex-direction:column;gap:12px}
-.helps li{display:flex;flex-direction:column;gap:2px;font-size:var(--t-s);line-height:1.45}
-.helps li[hidden]{display:none}
-.helps b{font-size:var(--t-m)}
-.diag{margin-top:14px;font-size:var(--t-s);color:var(--dim)}
-.diag summary{cursor:pointer;padding:6px 0}
-.diag #caps{white-space:pre-wrap;word-break:break-all}
-body.has-sum:not(.is-done) .transport{bottom:var(--dock-h)}
-body.is-done .done-meta{color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.9)}
-/* 10-20 영샘 아이폰 완성 화면: the buttons sat on the video's last lines (MADE WITH HER HOURS under 「다시 만들기」) -
-   the finished video now ends above the dock, and the done screen keeps a door to 내 영상 / 정보 */
-body.is-done .stage{bottom:var(--dock-h,0px)}
-body.is-done .dock{background:var(--ink)}
-.donelinks{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 8px;font-size:var(--t-xs);color:var(--dim)}
-.donelinks button:not(.fbopen){min-height:40px;padding:0 8px;color:var(--dim);text-decoration:underline;text-underline-offset:3px}
-.donelinks .fbopen{margin:0 6px 0 0;min-height:40px;padding:6px 14px;font-size:var(--t-xs)}
-#railInfo[hidden]{display:none}
-/* 10-20 시험자 의견: 글자 제한이 몇 자인지 보이게 - 0/14 beside each box, gold when full */
-.row .cnt{flex:0 0 auto;font-size:14px;color:var(--dim);font-variant-numeric:tabular-nums}
-.row .cnt.full{color:#ffc27a;font-weight:700}
-.live{left:auto;right:12px;bottom:auto;top:56px}
-body[data-pane="look"] .pane-look{display:block}
-/* Looks are a strip you swipe sideways: seven stacked cards filled the sheet and hid the video
-   the choice is meant to be judged on (영샘 10-03). Details show once, for the chosen look. */
-.looks{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 10px;margin:0 -18px;padding-left:18px;padding-right:18px;
-  scroll-padding-left:18px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
-.tile{flex:0 0 112px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:5px 5px 8px;border-radius:16px;
-  border:2px solid var(--line);background:rgba(255,255,255,.03);color:var(--cream);scroll-snap-align:start;
-  font-size:15px;font-weight:700;line-height:1.2;text-align:center}
-.tile .lkimg{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:11px;background:#111;display:block}
-.tile.on{border-color:var(--accent);background:rgba(140,255,176,.08);color:var(--accent)}
-.cut{margin:4px 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
-.cutrow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:var(--t-xs)}
-.cutrow .cl{color:var(--dim);font-weight:700;min-width:62px}
-.cutrow b{color:var(--accent);font-size:var(--t-m)}
-.cutrow .cdim{color:var(--dim)}
-.seg{display:flex;flex:1;gap:6px}
-.seg button{flex:1;min-height:44px;border-radius:12px;border:2px solid var(--line);background:none;color:var(--cream);font:inherit;font-size:var(--t-s);font-weight:800}
-.seg button.on{border-color:var(--accent);color:var(--accent);background:rgba(140,255,176,.08)}
-.seg button:disabled,.cut .pill:disabled{opacity:.35}
-#offset{width:100%;accent-color:var(--accent);margin:0 0 10px}
-#offset:disabled{opacity:.35}
-.cut .hint{margin-top:8px}
-.lookinfo{min-height:4.2em;font-size:14px;line-height:1.45;color:var(--dim);margin-top:4px}
-.lookinfo b{color:var(--cream);font-size:var(--t-xs)}
-.lookinfo .adv{display:block;color:var(--cream)}
-.lookinfo .adv.warn{color:#FFC27A}
-.pane-photo #padv{color:var(--cream)}
-body[data-pane="lyrics"] .pane-lyrics{display:block}
-body:not(.mine-song) #lyricsBtn{display:none}
-#lyrics{width:100%;box-sizing:border-box;min-height:150px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.22);
-  background:rgba(0,0,0,.35);color:var(--cream);font:inherit;font-size:var(--t-s);line-height:1.5;resize:vertical;margin-bottom:8px}
-.pane-lyrics .tapbox{display:none;flex-direction:column;gap:10px}
-body.is-tapping .pane-lyrics .tapbox{display:flex}
-body.is-tapping .pane-lyrics .lyredit{display:none}
-.tapcount{font-size:var(--t-xs);color:var(--dim);font-weight:700}
-.tapnow{font-size:24px;font-weight:800;line-height:1.3;color:var(--cream);min-height:2.6em}
-.tapnext{font-size:var(--t-s);color:var(--dim);min-height:1.4em}
-.tapbtn{min-height:120px;border-radius:22px;border:0;background:var(--accent);color:var(--accent-ink);font-size:24px;font-weight:800;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.tapbtn:active{transform:scale(.97)}
-.tapbtn:disabled{opacity:.35}
-/* While tapping the sheet stays low, so the lyric landing in the video above stays in sight. */
-body.is-tapping .pane-lyrics h2{display:none}
-body.is-tapping .tapnow{font-size:20px;min-height:1.3em}
-body.is-tapping .tapnext{display:none}
-body.is-tapping .tapbtn{min-height:84px;font-size:22px}
-body.is-tapping .pane-lyrics .two .pill{min-height:46px}
-body.is-tapping .pane-lyrics .tapbox{gap:8px}
-.gain{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:var(--t-s);font-weight:700}
-.gain input{flex:1;accent-color:var(--accent)}
-.gain b{min-width:44px;text-align:right;color:var(--accent)}
-.gain[hidden],.gain[hidden]+#clipGainHint{display:none}
-.thumbs video{flex:0 0 auto;width:74px;height:74px;object-fit:cover;border-radius:10px;background:#000;outline:2px solid var(--accent);outline-offset:-2px}
-.sw{width:40px;height:40px;border-radius:10px;flex:none;border:1px solid rgba(255,255,255,.25)}
-.sw-windowband{background:linear-gradient(#0b1a17 0 30%,#3d6b5d 30% 58%,#0b1a17 58%)}
-.sw-blackcut-room{background:linear-gradient(90deg,#6b4a30 0 44%,#000 44% 56%,#8a6a48 56%)}
-.sw-blackcut-road{background:linear-gradient(90deg,#3a4a66 0 44%,#000 44% 56%,#c9a46a 56%)}
-.sw-pulse{background:radial-gradient(circle at 50% 50%,#04040a 0 30%,#7ad7ff 31% 37%,#ffd58a 38% 41%,#1a2236 42%)}
-.sw-triptych{background:linear-gradient(#5a2a12 0 33%,#0b0a0c 33% 35%,#b0602a 35% 66%,#0b0a0c 66% 68%,#ffb063 68%)}
-.sw-clockface-day{background:linear-gradient(#1b2a5e,#a8742e 30%,#cfd6dc 50%,#d1622a 72%,#141c36)}
-.sw-lyricbloom{background:linear-gradient(135deg,#7a1338 0 45%,#0d1230 45%);box-shadow:inset 0 0 0 3px #ffd58a}
-.sw-clockface-night{background:linear-gradient(#5b3b78,#2b3b6b 40%,#141c36 75%,#1d1430);box-shadow:inset 0 -6px 0 #ffc78a}
-/* ---- 10-20 영샘: "스마트폰을 가로로 볼 때 화면 사이즈에 맞춰지도록" ----
-   A phone on its side is wider than 600px, so the desktop rule penned it into a 430px column and the sheet rose over
-   a thumbnail-sized video. Low and wide: the video fills the height on the left, the tools take the right-hand column,
-   and a sheet slides in from the right beside the video instead of squeezing it. */
-@media (orientation: landscape) and (max-height: 540px){
-  body{--side:min(54vw, 470px);max-width:none;margin:0;box-shadow:none}
-  .stage{inset:0 var(--side) 0 0;padding:6px 0 6px env(safe-area-inset-left,0px)}
-  body.panel-open .stage{top:0;bottom:0}
-  .frame{border-radius:14px}
-  .rail{--vidh:auto;top:10px;left:auto;right:calc(env(safe-area-inset-right,0px) + 12px);width:calc(var(--side) - 24px);
-    transform:none;flex-direction:row;flex-wrap:nowrap;justify-content:space-between;gap:2px}
-  .rail button,.rail .mine-list{flex:1 1 0;width:auto;min-width:0;margin:0}
-  .rail .b{width:38px;height:38px}
-  .rail .b svg{width:19px;height:19px}
-  .rail .l{font-size:12px}
-  .transport{left:auto;right:0;width:var(--side);bottom:calc(84px + var(--safe-b));padding:0 calc(env(safe-area-inset-right,0px) + 18px) 0 18px}
-  .dock{left:auto;right:0;width:var(--side);padding:8px calc(env(safe-area-inset-right,0px) + 16px) calc(10px + var(--safe-b)) 16px;background:none}
-  .dock .pill{min-height:54px;font-size:var(--t-m)}
-  .panel,.scrim{max-width:none}
-  .scrim{left:0;transform:none}
-  .panel{left:auto;right:0;top:0;bottom:0;width:var(--side);max-height:none;border-top:0;border-left:1px solid var(--line);
-    border-radius:22px 0 0 22px;padding:8px calc(env(safe-area-inset-right,0px) + 18px) calc(16px + var(--safe-b)) 18px;
-    transform:translateX(101%)}
-  body.panel-open .panel{transform:translateX(0)}
-  .panel .grab{display:none}
-  #focusCv{max-height:62vh}
-}
-/* 10-22 영샘 "눌리는 모든 버튼을 이런 느낌 + 모두 입체감": every key in the app is one family with the main button -
-   light from above, a dark lip underneath, and the press pushes the face down into the lip. Lives here, after the
-   page's own rules, so it wins over their `background:none`. The stage tap, the toast and plain word-links stay flat. */
-.opt,.tile,.chip,.seg button,.again,.top .lnk,.panel .x,.fbopen,.thumbs .mv button,[data-emo],.rail .b{
-  --lip:3px;--lip-c:rgba(0,0,0,.55);
-  background-image:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 62%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 var(--lip) 0 var(--lip-c);
-  transition:transform 380ms cubic-bezier(.22,1,.36,1),box-shadow 380ms cubic-bezier(.22,1,.36,1),
-    filter 380ms cubic-bezier(.22,1,.36,1),background-color 380ms cubic-bezier(.22,1,.36,1)}
-.panel .x{background-color:rgba(255,255,255,.06)}
-.tile{margin-bottom:3px}
-:is(.opt,.tile,.chip,.seg button,.again,.top .lnk,.panel .x,.fbopen,.thumbs .mv button,[data-emo]):is(.press,:active){
-  transform:translateY(2px) scale(.97);filter:brightness(1.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 var(--lip-c);
-  transition-duration:110ms;transition-timing-function:cubic-bezier(.3,.7,.4,1)}
-.rail button:is(.press,:active) .b{transform:translateY(2px) scale(.9);filter:brightness(1.35);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 var(--lip-c)}
-.makesum button,.donelinks button:not(.fbopen),.toast{transition:opacity 380ms cubic-bezier(.22,1,.36,1)}
-:is(.makesum button,.donelinks button:not(.fbopen),.toast):is(.press,:active){opacity:.55;transition-duration:110ms}
-</style>
-<link rel="stylesheet" href="./ui-dirs.css">
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="refDefs">
 <symbol id="i-photo" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v8.2l4.2-4.2 3.3 3.3L16 11l3 3V7H5zm3.2 1.3a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/></symbol>
 <symbol id="i-music" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4v10.5a3.5 3.5 0 1 1-2-3.16V7.3l-8 1.6v8.6a3.5 3.5 0 1 1-2-3.16V6.2l12-2.2z"/></symbol>
 <symbol id="i-type" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h12v2.4H9.9V19H8.1V7.4H3V5zm11.4 5H21v2h-2.4v7h-1.8v-7H14.4v-2z"/></symbol>
@@ -218,6 +35,8 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l5 5-1.4 1.4L13 6.3V15h-2V6.3L8.4 8.9 7 7.5l5-5zM4 13h2v6h12v-6h2v8H4v-8z"/></symbol>
 <symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v8.2l2.6-2.6L17 10l-5 5-5-5 1.4-1.4L11 11.2V3zM4 18h16v3H4z"/></symbol>
 <symbol id="i-info" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm-1 6h2v7h-2v-7zm0-3h2v2h-2V7z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 4l-8 8 8 8"/></symbol>
 </defs></svg>
 
 <div class="inapp" id="inapp" hidden>
@@ -226,8 +45,10 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 </div>
 
 <header class="top">
-  <div class="mark">HER HOURS<i>.</i></div>
-  <div class="lnks"><button class="lnk" data-open="made">내 영상</button><button class="lnk" data-open="info">정보</button></div>
+  <button class="lnk gbtn" data-open="made" aria-label="내 영상"><svg width="20" height="20"><use href="#i-list"/></svg></button>
+  <div class="mark">Her Hours</div>
+  <button class="lnk gbtn" data-open="info" aria-label="정보"><svg width="20" height="20"><use href="#i-info"/></svg></button>
+  <button class="gbtn refx" aria-label="닫기"><svg width="18" height="18"><use href="#i-x"/></svg></button>
 </header>
 
 <div class="stage">
@@ -264,17 +85,12 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
   <button data-open="text">
     <span class="b"><svg width="26" height="26"><use href="#i-type"/></svg></span><span class="l">글자</span>
   </button>
-  <!-- the top bar hides on most phones (browser bars make the screen short), so the list lives on the rail too -->
   <button data-open="made" class="mine-list">
     <span class="b"><svg width="26" height="26"><use href="#i-list"/></svg></span><span class="l">내 영상</span>
   </button>
-  <!-- 10-19 영샘 S20+: the 「정보」 link sits in the top bar, which phones hide - so install lives on the rail too,
-       shown only when this browser can install (or on an iPhone not yet added to the home screen) -->
   <button id="railInstall" hidden>
     <span class="b"><svg width="26" height="26"><use href="#i-save"/></svg></span><span class="l">앱 설치</span>
   </button>
-  <!-- 10-20 영샘 아이폰: the top bar (내 영상 · 정보) hides on phones, so 정보 had no door - it takes the install
-       button's place whenever that one is not showing -->
   <button id="railInfo" data-open="info">
     <span class="b"><svg width="26" height="26"><use href="#i-info"/></svg></span><span class="l">정보</span>
   </button>
@@ -323,7 +139,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
       <label class="pill ghost" for="photos">사진·영상 고르기</label>
       <button class="pill ghost" id="useDemo">예시로</button>
     </div>
-    <input type="file" id="photos" accept="image/*,image/heic,image/heif,video/*" multiple>
+    <input type="file" id="photos" data-add accept="image/*,image/heic,image/heif,video/*" multiple>
     <div class="thumbs" id="thumbs"></div>
     <p class="hint" id="phint">고르면 바로 위 화면에 나와요.</p>
     <p class="hint" id="focusTip" hidden>✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고르고, 꾹 눌러 끌면 순서를 바꿔요.</p>
@@ -338,7 +154,6 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="two stepnav"><button class="pill ghost" data-prev="look">← 스타일</button><button class="pill done" data-next="song">다음 · 노래</button></div>
   </div>
 
-  <!-- 10-19 테스터 의견: 사진 프레임 안에서 보이고 싶은 부분이 보이게 — the whole photo, one ring on the part to keep in view -->
   <div class="pane pane-focus">
     <h2>보일 부분 고르기</h2>
     <div class="focusbox" id="focusBox"><canvas id="focusCv"></canvas><i class="ring" id="focusRing"></i></div>
@@ -395,24 +210,24 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div class="row"><label id="brandLbl">이름</label><input type="text" id="brand" maxlength="14" autocomplete="off"><span class="cnt" data-for="brand"></span></div>
     <div class="row"><label>제목 1</label><input type="text" id="t1" maxlength="14" autocomplete="off"><span class="cnt" data-for="t1"></span></div>
     <div class="row"><label>제목 2</label><input type="text" id="t2" maxlength="18" autocomplete="off"><span class="cnt" data-for="t2"></span></div>
-    <!-- 10-20 class link: our song's lyric captions only when asked for -->
-    <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics" style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
-    <!-- 11-07 (10-17 시험자 의견 '음악만'): 제목·가사를 끌 수 있게 - 가족 영상처럼 글자 없이 음악만 깔고 싶은 사람 -->
-    <div class="row" id="showTitleRow" hidden><label for="showTitle">제목</label><input type="checkbox" id="showTitle" checked style="flex:0 0 auto;width:26px;height:26px;accent-color:#8fffb0"><span class="hint" style="margin:0">끄면 영상에 제목이 안 나와요</span></div>
+    <div id="cheerRows" hidden>
+      <div class="row"><label>응원 1</label><input type="text" id="cheer1" maxlength="16" autocomplete="off" placeholder="넘어져도 괜찮아!"><span class="cnt" data-for="cheer1"></span></div>
+      <div class="row"><label>응원 2</label><input type="text" id="cheer2" maxlength="16" autocomplete="off" placeholder="다시 일어나면 돼!"><span class="cnt" data-for="cheer2"></span></div>
+    </div>
+    <div class="row" id="songLyricsRow" hidden><label for="songLyrics">가사 자막</label><input type="checkbox" id="songLyrics"><span class="hint" style="margin:0">노래 가사를 영상 위에 띄워요</span></div>
+    <div class="row" id="showTitleRow" hidden><label for="showTitle">제목</label><input type="checkbox" id="showTitle" checked><span class="hint" style="margin:0">끄면 영상에 제목이 안 나와요</span></div>
     <p class="hint">치는 대로 위 영상에 바로 반영돼요.</p>
     <p class="hint" id="blankHint" hidden>비워 둔 칸은 영상에 안 나와요. 흐린 글씨는 예시예요.</p>
     <div class="two" style="margin-top:12px"><button class="again" data-open="made">내 영상</button><button class="again" data-open="info">도움말</button></div>
     <div class="two stepnav"><button class="pill ghost" data-prev="song">← 노래</button><button class="pill done" data-finish>다 됐어요</button></div>
   </div>
 
-  <!-- 10-20 PT 리뷰 5: a guest's ways out first - the device readout (for us, when something breaks) folds away below -->
   <div class="pane pane-info">
     <h2>도움말</h2>
     <div class="two">
       <button class="pill ghost" data-open="welcome">사용법</button>
       <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
     </div>
-    <!-- 10-21 PT 리뷰: at the bottom it sat 21px under the sticky 「닫기」 - up here it is seen before anything scrolls -->
     <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
     <p class="hint" id="installHint" hidden></p>
     <ul class="helps">
@@ -456,7 +271,6 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <button class="pill done" id="fbSend">보내기</button>
   </div>
 
-  <!-- 10-19 영샘: "파일 이름 칸이 잘 안 보여 — 저장 누를 때 이름 정하는 창" -->
   <div class="pane pane-fname">
     <h2>파일 이름</h2>
     <div class="fname"><input type="text" id="fname" maxlength="40" autocomplete="off" enterkeyhint="done"><span>.mp4</span></div>
@@ -477,27 +291,22 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
 <script>
   window.hhOpen = (name) => { document.body.dataset.pane = name; document.body.classList.add('panel-open'); document.querySelector('.panel').scrollTop = 0; };
   window.hhClose = () => document.body.classList.remove('panel-open');
-  // the video moves up into the space above the sheet, so a choice is seen as it is made (여자친구 10-04:
-  // the sheets hid the video). The sheet's height follows its content.
   new ResizeObserver(([e]) => document.body.style.setProperty('--sheet-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
     .observe(document.querySelector('.panel'));
-  // 10-20: on the done screen the finished video stops above the buttons instead of running under them
   new ResizeObserver(([e]) => document.body.style.setProperty('--dock-h', `${Math.round(e.borderBoxSize?.[0]?.blockSize ?? e.target.offsetHeight)}px`))
     .observe(document.querySelector('.dock'));
   document.getElementById('ver').textContent = T('버전 ', 'Version ') + self.HH_VERSION;
-  // 10-19 PWA: a phone that keeps the installed app open for days never reloads, so look for a new release each time the
-  // app comes back to the front, and when one takes over say so - reloading on our own could throw away a video being made.
   if ('serviceWorker' in navigator) {
-    let had = !!navigator.serviceWorker.controller;   // first visit: the first take-over is the install itself, not a new release
-    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {   // version.js inside sw.js too, not from the 10-minute cache
+    let had = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
       addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
     }).catch(() => {});
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (had) document.getElementById('updToast').hidden = false; had = true; });
     document.getElementById('updToast').onclick = () => location.reload();
   }
-  // First visit only: three steps over the already-playing preview. Storage can be blocked - then it just shows again.
   try { if (!localStorage.getItem('hh-welcomed')) { hhOpen('welcome'); localStorage.setItem('hh-welcomed', '1'); } } catch (e) { hhOpen('welcome'); }
 </script>
+<script src="./ref.js"></script>
 <script type="module" src="./ui.js"></script>
 </body>
 </html>

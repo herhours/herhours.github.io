@@ -525,8 +525,8 @@ function beatClips(f, N, d) {
 const slotsOf = (d) => { let m = 0; for (const c of d.cuts) m = Math.max(m, c.img + 1); return m; };
 
 export const HJ_LOOKS = [
-  { id: 'red-run', lab: true, name: 'Red Run', sub: T('흑백에 빨강만 · RUN 띠와 초시계 · GO 도장 · 끝에 이름 카드', 'black and white, the reds kept · RUN strips with a timer · GO stamps · a name card'),
+  { id: 'red-run', cat: '현준샘', name: 'Red Run', sub: T('흑백에 빨강만 · RUN 띠와 초시계 · GO 도장 · 끝에 이름 카드', 'black and white, the reds kept · RUN strips with a timer · GO stamps · a name card'),
     draw: drawRedRun, build: buildRedRun, clipsAt: redClips, photo: { min: 10, shape: 'tall', slots: slotsOf } },
-  { id: 'beat-turns', lab: true, kfont: true, name: 'Beat Turns', sub: T('박자마다 튀는 카메라 · 금속 이름 · 큰 글자 도장 · 연사 스틸', 'the camera kicks on the beat · a metal name · big stamps · burst stills'),
+  { id: 'beat-turns', cat: '현준샘', kfont: true, name: 'Beat Turns', sub: T('박자마다 튀는 카메라 · 금속 이름 · 큰 글자 도장 · 연사 스틸', 'the camera kicks on the beat · a metal name · big stamps · burst stills'),
     draw: drawBeatTurns, build: buildBeatTurns, clipsAt: beatClips, photo: { min: 12, shape: 'tall', slots: slotsOf } },
 ];

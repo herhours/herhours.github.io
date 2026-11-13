@@ -442,6 +442,6 @@ function onScreen(f, N, d) {
 }
 
 export const KIDS_LOOKS = [
-  { id: 'paper-diary', lab: true, kfont: true, cheer: true, name: T('종이 일기', 'Paper Diary'), sub: T('색종이에 붙인 사진 · 스티커와 깃발 · 이름이 들어간 응원 · 끝은 상장', 'photos stuck on coloured paper · stickers and flags · a cheer with your name · an award at the end'),
+  { id: 'paper-diary', cat: '현준샘', kfont: true, cheer: true, name: T('종이 일기', 'Paper Diary'), sub: T('색종이에 붙인 사진 · 스티커와 깃발 · 이름이 들어간 응원 · 끝은 상장', 'photos stuck on coloured paper · stickers and flags · a cheer with your name · an award at the end'),
     draw: drawPaperDiary, build: buildPaperDiary, clipsAt: onScreen, photo: { min: 8, shape: 'tall', slots: (d) => d.slotCount } },
 ];
