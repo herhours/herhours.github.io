@@ -338,3 +338,14 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
 .opt .sbars{display:flex;align-items:flex-end;gap:5px;height:46px;width:78px;flex:none}
 .opt .sbars i{flex:1;height:12%;border-radius:999px;background:rgba(140,255,176,.35);transition:background .3s}
 .opt .sbars.lit i{background:var(--accent)}
+
+/* 11-13 시험자 의견 ②③: 사진은 옆으로 미는 한 줄 → 세로 격자(몇 장이든 한눈에 순서·구성), 순서는 끌어서(ui.js dragWire).
+   ◀ ▶ 는 숨김. 터치는 꾹 눌러야 끌기가 시작돼서 손가락 세로 스크롤과 안 다툰다. #thumbs 로 써야 index.html 안의 74px 규칙을 이긴다 */
+#thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;overflow:visible}
+#thumbs .tw,#thumbs > .ph,#thumbs > video{width:100%;margin:0}
+#thumbs .tw > .th,#thumbs .tw > video,#thumbs > .ph,#thumbs > video{width:100%;height:auto;aspect-ratio:1/1}
+.thumbs .mv{display:none}
+#thumbs .tw{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:transform .15s,filter .15s}
+#thumbs .tw.drag{transform:scale(1.08);z-index:5;filter:drop-shadow(0 8px 18px rgba(0,0,0,.6))}
+/* 11-13 시험자 의견 ④: 길이·시작 지점 상자가 고른 곡 바로 아래로 온다(ui.js placeCut) — 두 칸 격자(lab/ref)에서도 한 줄 전체 */
+#ourSongs > .cut{grid-column:1/-1;margin:2px 0 12px}

@@ -18,10 +18,13 @@ const LAB = (() => { try { const q = new URLSearchParams(location.search).get('l
 // each class template opens with its own words; switching templates swaps them only if the class has not changed them
 const KIDS_TEXT = { 'minjeong-hw': { brand: '민정샘 반', t1: 'HALLOWEEN', t2: 'NIGHT PARTY' }, minjeong: { brand: '민정샘 반', t1: 'OUR CLASS', t2: 'BEST DAY EVER' } };
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+// 11-13 시험자 의견: "처음 나오는 대표 음악이 조금 무겁고 어둡다 — 첫인상이니 밝고 편안하게" → Green Light(EP01, 밤 분위기) 대신
+// 출시 때 영샘이 고른 곡 중 밝은 쪽. 목록 순서(가사 곡 맨 위 Green Light)는 그대로, 처음 고른 곡만 바뀐다.
+const FIRST_SONG = 'wings';
 
 const S = {
   tpl: null, images: [], photoFiles: [], demo: [], demoHw: [], demoKids: { halloween: [], everyday: [] },
-  useOurs: true, song: KIDS ? SONGS.find((s) => s.id === KIDS_SONGS[0]) : SONGS[0], audioFile: null,
+  useOurs: true, song: KIDS ? SONGS.find((s) => s.id === KIDS_SONGS[0]) : SONGS.find((s) => s.id === FIRST_SONG), audioFile: null,
   d: null, N: 960, seconds: MAX_SEC,
   vf: 0,            // virtual frame shown while the song is not playing
   started: false,   // has the user pressed play at least once
@@ -32,14 +35,14 @@ const S = {
   showTitle: true,
   userPhrases: [], tap: null,   // lyrics the user timed to their own song by tapping   // clip sound under the song: present, never on top of it
   // which part of the song becomes the short (영샘 10-03): length, start, and where the chorus is
-  len: 32, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
+  len: 30, offset: 0, songDur: MAX_SEC, fullBuf: null, chorusAt: null,
   photoBlobs: [],    // the chosen photos, shrunk, so the work survives closing the app (10-11)
   ready: false, restoring: false,
   // 10-11: the big button read "Make" from the first second, so people pressed it before choosing anything.
   // Until the four steps have been walked once it leads to the first step instead.
   flowDone: (() => { try { return !!localStorage.getItem('hh-flowed'); } catch { return false; } })(),
 };
-const LENGTHS = [15, 32, 60, 90, 180];
+const LENGTHS = [15, 30, 60, 90, 180];   // 11-13 시험자 의견: 32초는 낯선 단위 → 30초 (32는 9월 HH 쇼츠 틀에서 온 숫자)
 // ?debug exposes state for frame-by-frame checks (contact sheets) from the console
 if (new URLSearchParams(location.search).has('debug')) Object.assign(window, { hhS: S, hhRebuild: () => rebuild() });
 
@@ -269,7 +272,7 @@ function applyCut() {
   $('offChorus').disabled = S.chorusAt == null || +off.max === 0;
   $('cutHint').textContent = +off.max === 0 ? T(`곡이 ${Math.round(dur)}초라 처음부터 끝까지 써요.`, `The song is ${Math.round(dur)}s, so all of it is used.`)
     : S.chorusAt != null && Math.abs(S.offset - S.chorusAt) < 0.6 ? T('후렴이 시작되는 곳부터예요.', 'Starts where the chorus kicks in.')
-    : T('막대를 밀어 시작점을 골라요. 놓으면 그 부분을 들려줘요.', 'Slide to choose the start. Let go to hear that part.');
+    : T('막대를 밀어 시작 지점을 골라요. 놓으면 그 부분을 들려줘요.', 'Slide to choose the start. Let go to hear that part.');
 }
 // lyrics tapped against the old start no longer line up; say so instead of showing them wrong
 function cutMoved(startMoved) {
@@ -415,8 +418,8 @@ async function usePhotos(files, add = false) {
 }
 
 // ---------- photo order (10-20 영샘: "사진 나오는 순서 정할 수 있도록") ----------
-// Each picture in the strip gets its number and ◀ ▶ under it - one tap moves it one place. Buttons rather than dragging:
-// the class is children on phones, and a drag in a sideways-scrolling strip fights the scroll.
+// Each picture gets its number. 10-20 ◀ ▶ buttons (a drag in the old sideways strip fought the scroll) - 11-13 the strip
+// became a grid and the order is set by dragging (dragWire below); the buttons stay in the markup, hidden by CSS.
 function renderOrder() {
   const th = $('thumbs'); th.innerHTML = '';
   const n = S.images.length;
@@ -434,8 +437,51 @@ function renderOrder() {
     const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'rm'; rm.textContent = '✕';
     rm.setAttribute('aria-label', T(`${i + 1}번 사진 빼기`, `Remove photo ${i + 1}`)); rm.onclick = () => removePhoto(i);
     w.append(v.hhThumb, no, rm, mv); th.appendChild(w);
+    dragWire(w);
   });
 }
+// 11-13 시험자 의견: "좌우 버튼보다 사진을 직접 끌어서 원하는 자리에" — 칸이 세로 격자가 되면서(옆 스크롤과 다투던 10-20 이유가 사라짐)
+// 끌기로 바꾼다. 마우스는 8px 움직이면 바로, 터치는 0.26초 꾹 누른 뒤부터(그 전에 움직이면 화면 스크롤). 끄는 동안 칸이 실시간으로
+// 자리를 바꾸고, 놓으면 그 순서로 저장. 끄는 동안 화면 스크롤은 막는다. 끝난 뒤 따라오는 클릭이 '보일 부분' 창을 열지 않게 한 번 삼킨다.
+let drag = null, dragJust = 0;
+document.addEventListener('touchmove', (e) => { if (drag?.on) e.preventDefault(); }, { passive: false });
+document.addEventListener('click', (e) => { if (Date.now() - dragJust < 450 && e.target.closest('#thumbs')) { e.stopPropagation(); e.preventDefault(); } }, true);
+$('thumbs').addEventListener('contextmenu', (e) => { if (e.target.closest('.tw')) e.preventDefault(); });
+const tws = () => [...$('thumbs').querySelectorAll('.tw')];
+function dragOn() {
+  if (!drag || drag.on) return;
+  drag.on = true; drag.w.classList.add('drag'); document.body.classList.add('photo-drag');
+  try { navigator.vibrate?.(12); } catch {}
+}
+function dragWire(w) {
+  w.addEventListener('pointerdown', (e) => {
+    if (S.busy || e.button > 0 || e.target.closest('button') || S.images.length < 2) return;
+    drag = { w, id: e.pointerId, x: e.clientX, y: e.clientY, on: false, mouse: e.pointerType === 'mouse', from: tws().indexOf(w) };
+    if (!drag.mouse) drag.t = setTimeout(dragOn, 260);
+  });
+}
+// move/up are watched on the whole window, not on the tile: moving the tile in the page (after/before) drops its
+// pointer capture, and the first check showed the drag stopping after one swap (11-13 check_fb1113)
+addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (!drag.on) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
+    if (drag.mouse) dragOn(); else { clearTimeout(drag.t); drag = null; return; }   // 꾹 누르기 전에 움직임 = 스크롤
+  }
+  e.preventDefault();
+  const w = drag.w, list = tws(), hit = list.find((t) => { const r = t.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; });
+  if (hit && hit !== w) { const a = list.indexOf(w), b = list.indexOf(hit); hit[a < b ? 'after' : 'before'](w); }
+}, { passive: false });
+const dragEnd = (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  clearTimeout(drag.t);
+  const { on, from, w } = drag; drag = null;
+  if (!on) return;
+  w.classList.remove('drag'); document.body.classList.remove('photo-drag'); dragJust = Date.now();
+  const to = tws().indexOf(w);
+  if (to !== from && to >= 0) movePhoto(from, to); else renderOrder();
+};
+addEventListener('pointerup', dragEnd); addEventListener('pointercancel', dragEnd);
 async function removePhoto(i) {
   if (S.busy || !S.images[i]) return;
   const [v] = S.images.splice(i, 1);
@@ -518,7 +564,17 @@ const KIDS_GROUPS = [
 // 10-20 영샘: "이미지 아이콘 없는 노래도 이미지 넣어서 아이콘 만들자" - the instrumentals and class songs got scene covers
 // (no singer, so no face). The class link still keeps our characters' faces off its list: only the scene covers show there.
 const hasCover = (s) => (KIDS ? /^(kids|app)_/.test(s.id) : true);
+// 11-13 시험자 의견: "음악을 고르면 길이·시작 지점 설정이 그 음악 바로 아래에" — 맨 아래까지 내려가지 않게, 설정 상자(.cut)를
+// 고른 곡 줄 바로 다음으로 옮긴다. 내 음악 파일이면 그 줄 아래(원래 자리). 목록을 다시 그리기 전에 먼저 빼 둔다(innerHTML 이 지우므로).
+const cutBox = () => document.querySelector('.pane-song .cut');
+function parkCut() { const c = cutBox(); if (c && $('ourSongs').contains(c)) $('audio').after(c); }
+function placeCut() {
+  const c = cutBox(); if (!c) return;
+  const on = S.useOurs && $('ourSongs').querySelector('.opt.on');
+  if (on) on.after(c); else $('audio').after(c);
+}
 function renderSongs() {
+  parkCut();
   const groups = KIDS ? KIDS_GROUPS.map(([pick, label]) => [SONGS.filter(pick).sort((a, b) => KIDS_SONGS.indexOf(a.id) - KIDS_SONGS.indexOf(b.id)), label])
     : SONG_GROUPS.map(([g, label]) => [SONGS.filter((s) => s.group === g), label]);
   $('ourSongs').innerHTML = groups.map(([list, label]) => `<p class="song-group">${label()}</p>` + list.map((s) => `<button class="opt${S.useOurs && s.id === S.song.id ? ' on' : ''}" data-song="${s.id}">
@@ -527,6 +583,7 @@ function renderSongs() {
         : `<span class="cov gr-${KIDS ? 'bright' : s.group}"><svg width="24" height="24"><use href="#i-music"/></svg></span>`}
       <span class="t"><b>${s.name}</b><span>${s.lyrics === false ? T('곡 제목이 글자로 나와요', 'the title becomes the type') : T('가사가 박자에 켜져요', 'lyrics light up on the beat')}</span></span>${S.useOurs && s.id === S.song.id ? EQ_HTML : ''}</button>`).join('')).join('');
   $('ourSongs').querySelectorAll('[data-song]').forEach((b) => { b.onclick = () => pickSong(SONGS.find((s) => s.id === b.dataset.song), true); });
+  placeCut();
 }
 // 21st 28201 (10-21 영샘 "막대 좋아"): 지금 고른 노래 줄에 소리 막대. 원본은 가짜 막대라, 이미 받아 둔 노래(S.fullBuf)를 재생 위치에서
 // 주파수 7칸으로 읽는다(Goertzel). 소리 길(pv)은 건드리지 않는다 — 아이폰에서 소리가 끊길 위험이 없다.
@@ -576,7 +633,7 @@ async function pickSong(song, play = false) {
   await new Promise((r) => { pv.onloadedmetadata = r; setTimeout(r, 3000); });
   S.offset = 0; S.chorusAt = null; S.songDur = pv.duration || MAX_SEC; applyCut();
   if (!KIDS) { $('brand').value = S.tpl.brand; $('t1').value = S.tpl.title1; $('t2').value = S.tpl.title2; }
-  $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작점은 아래에서.', 'Pick a song file. Length and start point below.');
+  $('shint').textContent = T('내 노래 파일을 골라요. 길이와 시작 지점은 바로 아래에서.', 'Pick a song file. Length and start point right below.');
   rebuild(); chips(); syncPlay();
   // 10-20 log: one "rejection Failed to fetch" right after opening - this read had no catch; now it says what failed
   fetch(song.file).then((r) => r.arrayBuffer()).then(listen).catch((e) => rlog(`song read fail ${song.id} ${e?.message || e}`));
@@ -597,7 +654,7 @@ async function useAudioFile(f, play = false) {
   if (KIDS) { $('t1').placeholder = g1; $('t2').placeholder = g2; }   // 10-20: the class link fills nothing in for them
   else { $('t1').value = g1; $('t2').value = g2; }
   S.userPhrases = []; S.tap = null; lyricHint();
-  $('shint').textContent = T('아래에서 길이와 시작점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.', 'Choose length and start below. “Add words” puts in lyrics or a line.');
+  $('shint').textContent = T('바로 아래에서 길이와 시작 지점을 골라요. 「글 넣기」로 가사나 한마디도 넣어요.', 'Choose length and start below. “Add words” puts in lyrics or a line.');
   rebuild(); chips(); syncPlay();
   await listen(await f.arrayBuffer());
 }
@@ -793,7 +850,7 @@ async function restore(w) {
     S.look = lookById(w.look); rebuild();   // the preview draws every frame; a look must never meet another look's data
     if (w.audio) await useAudioFile(w.audio);
     else { const s = SONGS.find((x) => x.id === w.song); if (s && s.id !== S.song.id) await pickSong(s); }
-    S.len = w.len || S.len; S.offset = w.offset || 0;
+    S.len = w.len === 32 ? 30 : (w.len || S.len); S.offset = w.offset || 0;
     if (S.fullBuf) S.chorusAt = findChorus(S.fullBuf, Math.min(S.len, S.songDur));
     applyCut();
     $('brand').value = w.brand ?? $('brand').value; $('t1').value = w.t1 ?? $('t1').value; $('t2').value = w.t2 ?? $('t2').value;

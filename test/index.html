@@ -25,6 +25,8 @@ body{position:fixed;inset:0}
 .frame{border-radius:0;border:0;box-shadow:none}
 .top{position:absolute;top:0;left:0;right:0;z-index:3;
   background:linear-gradient(to bottom,rgba(0,0,0,.65),rgba(0,0,0,0))}
+/* 11-13 시험자 의견: 위 줄과 오른쪽 도구줄에 「내 영상」·「정보」가 두 번 — 도구줄은 늘 보이니 위 줄은 이름만 */
+.top .lnks{display:none}
 /* The video is letterboxed by `contain`, so its drawn height is min(screen, width*16/9).
    The look's photo band sits at 600..1140 of 1920 - centre 45.3%, i.e. 4.7% above the video's
    own centre. Anchoring the rail there keeps it off the lyric line (1210) at every size. */
@@ -324,7 +326,7 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <input type="file" id="photos" accept="image/*,image/heic,image/heif,video/*" multiple>
     <div class="thumbs" id="thumbs"></div>
     <p class="hint" id="phint">고르면 바로 위 화면에 나와요.</p>
-    <p class="hint" id="focusTip" hidden>✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고를 수 있어요.</p>
+    <p class="hint" id="focusTip" hidden>✋ 사진을 누르면 화면에 보일 부분(얼굴 등)을 고르고, 꾹 눌러 끌면 순서를 바꿔요.</p>
     <p class="hint" id="iosTip" hidden>아이폰: 오래된 사진은 iCloud에서 원본을 받아 오느라 몇 초 걸려요. 방금 찍은 사진은 바로 들어가요. 빠르게 하려면 설정 → 사진 → 「다운로드 및 원본 유지」(저장 공간을 더 써요).</p>
     <p class="hint" id="padv"></p>
     <div class="gain" id="clipGainRow" hidden>
@@ -352,15 +354,15 @@ body.is-tapping .pane-lyrics .tapbox{gap:8px}
     <div id="ourSongs" class="songs"></div>
     <label class="opt" for="audio">
       <svg width="22" height="22"><use href="#i-music"/></svg>
-      <span class="t"><b>내 음악 파일</b><span id="shint">내 노래 파일을 골라요. 길이와 시작점은 아래에서.</span></span>
+      <span class="t"><b>내 음악 파일</b><span id="shint">내 노래 파일을 골라요. 길이와 시작 지점은 바로 아래에서.</span></span>
     </label>
     <input type="file" id="audio" accept="audio/*">
     <div class="cut">
       <div class="cutrow"><span class="cl">길이</span>
-        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="32" class="on">32초</button><button data-len="60">60초</button><button data-len="90">90초</button><button data-len="180">3분</button></div>
+        <div class="seg" id="lenSeg"><button data-len="15">15초</button><button data-len="30" class="on">30초</button><button data-len="60">60초</button><button data-len="90">90초</button><button data-len="180">3분</button></div>
       </div>
-      <div class="cutrow"><span class="cl">어디부터</span><b id="offV">0:00</b><span class="cdim" id="offTo"></span></div>
-      <input type="range" id="offset" min="0" max="0" step="0.5" value="0" aria-label="시작점">
+      <div class="cutrow"><span class="cl">시작 지점</span><b id="offV">0:00</b><span class="cdim" id="offTo"></span></div>
+      <input type="range" id="offset" min="0" max="0" step="0.5" value="0" aria-label="시작 지점">
       <div class="two"><button class="pill ghost" id="offStart">처음부터</button><button class="pill ghost" id="offChorus">후렴부터</button></div>
       <p class="hint" id="cutHint"></p>
     </div>
