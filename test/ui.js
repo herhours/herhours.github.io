@@ -2,7 +2,7 @@
 // The shell supplies the markup and two hooks (window.hhOpen / window.hhClose); everything
 // below is identical in both so the two designs cannot drift apart in behaviour.
 import { W, H, FPS, MAX_SEC, loadFonts, fileToBitmap, drawFrame, decodeAudio, trimBuffer,
-         encode, buildData, loadDemo, loadDemoHw, loadDemoKids, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS, KIDS_SONGS } from './core.js';
+         encode, buildData, loadDemo, loadDemoHw, loadDemoKids, loadTemplate, canEncodeAudio, canEncodeVideo, ensureLyricFont, hangulReady, SONGS, KIDS_SONGS, finishFrame, END_MUSIC_SEC } from './core.js';
 import { LOOKS, lookById } from './looks.js';
 import { analyze, findChorus } from './beats.js';
 import { isVideoFile, fileToClip, tickPreview, pausePreview, exportStepper, visibleStepper, watchDraws, scanVisibility, mixClipSound, clipAudio, clipLevel, rms } from './media.js';
@@ -135,7 +135,12 @@ function renderLooks() {
   box.innerHTML = '';
   const open = LOOKS.filter((l) => !l.lab || LAB);
   const shown = KIDS ? [...open.filter((l) => l.kids), ...open.filter((l) => !l.kids)] : open.filter((l) => !l.kids);
+  let cat = null;
   for (const l of shown) {
+    if (l.cat && l.cat !== cat) {   // 11-13: a category's looks sit together behind its label (「for 혜린」)
+      const lb = document.createElement('span'); lb.className = 'lkcat'; lb.textContent = l.cat; box.appendChild(lb);
+    }
+    cat = l.cat || null;
     const b = document.createElement('button');
     b.className = 'tile' + (l.id === S.look.id ? ' on' : '');
     if (l.photo?.min) b.dataset.min = l.photo.min;   // 11-12: a page may show "N photos+" on the tile (lab/ref does)
@@ -216,6 +221,9 @@ function loop(now) {
   const t0 = performance.now();
   seen.clear();
   S.look.draw(ctx, S.vf, S.N, S.d);
+  finishFrame(ctx, S.vf, S.N);   // 11-13: every look ends in black (core.js) - the preview shows it too
+  // the preview's song fades over the same last seconds as the file (iPhones ignore .volume - the file still fades there)
+  if (!pv.paused) { const left = S.seconds - (pv.currentTime - S.offset); try { pv.volume = left < END_MUSIC_SEC ? Math.max(0, left / END_MUSIC_SEC) ** 2 : 1; } catch {} }
   // a clip is heard only while it is on screen and the song is playing
   for (const c of S.d.images) if (c.live) { c.clip.video.muted = pv.paused || !seen.has(c); c.clip.video.volume = Math.min(1, clipLevel(c, S.musicRms || 0.1, S.clipGain)); }
   drawMs = drawMs * 0.9 + (performance.now() - t0) * 0.1;

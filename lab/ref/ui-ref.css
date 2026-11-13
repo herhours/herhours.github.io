@@ -501,3 +501,6 @@ body.ref-full .rfullx svg{color:#1a1408}
 .rupload .plus{font-size:26px;font-weight:200;color:var(--accent);line-height:1}
 .pane-photo #padv{display:none}
 .pane-photo > .thumbs{order:1}
+
+/* 11-13 카테고리 이름표(「for 혜린」) — 두 칸 격자에선 한 줄 머리글 */
+.looks .lkcat{grid-column:1/-1;writing-mode:horizontal-tb;justify-content:flex-start;border:0;margin:8px 0 -4px;padding:0 2px;font-size:13px;letter-spacing:.06em}

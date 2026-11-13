@@ -349,3 +349,5 @@ body.th-halloween .making #eta,body.th-everyday .making #eta,body.th-halloween .
 #thumbs .tw.drag{transform:scale(1.08);z-index:5;filter:drop-shadow(0 8px 18px rgba(0,0,0,.6))}
 /* 11-13 시험자 의견 ④: 길이·시작 지점 상자가 고른 곡 바로 아래로 온다(ui.js placeCut) — 두 칸 격자(lab/ref)에서도 한 줄 전체 */
 #ourSongs > .cut{grid-column:1/-1;margin:2px 0 12px}
+/* 11-13 카테고리 이름표(「for 혜린」) — 옆으로 미는 줄에선 세로 글씨 칸 */
+.looks .lkcat{flex:0 0 auto;align-self:stretch;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;padding:0 6px;margin-left:6px;border-left:1px solid var(--line);font:700 14px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--accent);white-space:nowrap}

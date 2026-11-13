@@ -368,6 +368,25 @@ export function trimBuffer(buf, seconds, from = 0) {
   return outB;
 }
 
+// ---------- ending (11-13 영샘: "시작과 끝을 명확하게 — 끝은 암전, 음악은 몇 초 페이드아웃") ----------
+// Every look, every length (15s ~ 3min): the picture goes to black over the last 1.2s (fully black for the last 0.15s)
+// and the music fades over the last 2.5s. One place, called after the look draws - preview and export alike.
+export const END_FADE_SEC = 1.2, END_MUSIC_SEC = 2.5;
+export function finishFrame(ctx, f, N) {
+  const left = (N - 1 - f) / FPS;
+  if (left >= END_FADE_SEC) return;
+  const a = clamp(1 - (left - 0.15) / (END_FADE_SEC - 0.15));
+  ctx.save(); ctx.globalAlpha = a * a * (3 - 2 * a); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); ctx.restore();
+}
+export function fadeTail(buf, sec = END_MUSIC_SEC) {
+  const n = Math.min(buf.length, Math.round(sec * buf.sampleRate));
+  for (let c = 0; c < buf.numberOfChannels; c++) {
+    const d = buf.getChannelData(c);
+    for (let i = 0; i < n; i++) { const x = i / n; d[buf.length - n + i] *= (1 - x) * (1 - x); }   // 귀에 고르게 줄어들게(곡선)
+  }
+  return buf;
+}
+
 // ---------- encode ----------
 // Draws N frames of `d` onto `canvas` (1080x1920) and muxes them with `audioBuf` into an mp4 Blob.
 export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFrame, beforeFrame }) {
@@ -397,12 +416,13 @@ export async function encode({ canvas, d, N, audioBuf, onProgress, draw = drawFr
   output.addVideoTrack(vsrc, { frameRate: FPS });
   output.addAudioTrack(asrc);
   await output.start();
-  await asrc.add(audioBuf);
+  await asrc.add(fadeTail(audioBuf));   // after the clip-sound mix, so a clip still playing at the end fades too
   asrc.close();
   const t0 = performance.now();
   for (let f = 0; f < N; f++) {
     if (beforeFrame) await beforeFrame(f / FPS);
     draw(ctx, f, N, d);
+    finishFrame(ctx, f, N);
     await vsrc.add(f / FPS, 1 / FPS);
     if (f % 15 === 0) {
       onProgress?.(f / N, (performance.now() - t0) / 1000);
