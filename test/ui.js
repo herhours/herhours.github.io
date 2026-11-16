@@ -315,7 +315,7 @@ let pickAt = 0, pickSeq = 0;
 $('photos').addEventListener('click', () => {
   pickAt = performance.now(); const my = ++pickSeq;
   pickLog(`picker open (had ${S.images.length}${S.demoChosen === false ? '' : ' demo'})`);
-  if (isIOS()) $('phint').textContent = T('사진첩에서 고르면 아이폰이 사진을 준비해요. 창이 닫힌 뒤에도 조금 걸릴 수 있어요.', 'After you pick, the iPhone prepares the photos. It can take a moment after the picker closes.');
+  if (isIOS()) $('phint').textContent = T('아이폰은 한 번에 5개쯤씩 나눠 넣으면 빨라요 (넣은 사진은 쌓여요). 고른 뒤 아이폰이 사진을 준비하느라 조금 걸릴 수 있어요.', 'On an iPhone, add about 5 at a time (they add up). After you pick, the phone takes a moment to prepare them.');
   // back on the page with no change and no cancel: the phone is still fetching originals (iCloud) or converting video
   const back = () => {
     if (document.hidden) return;
@@ -323,7 +323,7 @@ $('photos').addEventListener('click', () => {
     setTimeout(() => {
       if (my !== pickSeq || !pickAt) return;
       pickLog(`picker back, no files yet after ${Math.round((performance.now() - pickAt) / 1000)}s`);
-      if (isIOS()) $('phint').textContent = T('아직 사진이 안 들어왔어요. 아이폰이 iCloud 원본을 받거나 영상을 바꾸는 중일 수 있어요 — 잠깐 기다려 주세요. 계속 안 되면 최근에 찍은 사진 2~3장으로 해 보세요.', 'No photos yet. The iPhone may be fetching iCloud originals or converting video — give it a moment. If it stays empty, try 2–3 recent photos.');
+      if (isIOS()) $('phint').textContent = T('아직 사진이 안 들어왔어요. 아이폰이 iCloud 원본을 받거나 영상을 바꾸는 중일 수 있어요 — 잠깐 기다려 주세요. 계속 안 되면 5개쯤씩 나눠서 넣어 주세요.', 'No photos yet. The iPhone may be fetching iCloud originals or converting video — give it a moment. If it stays empty, add about 5 at a time.');
       setTimeout(() => { if (my === pickSeq && pickAt) pickLog(`picker still nothing after ${Math.round((performance.now() - pickAt) / 1000)}s`); }, 20000);
     }, 1500);
   };
@@ -331,7 +331,14 @@ $('photos').addEventListener('click', () => {
   // iOS may fire neither focus nor visibilitychange for its picker sheet - one plain timer says so either way
   setTimeout(() => { if (my === pickSeq && pickAt) pickLog(`picker 30s: no change, no cancel (hidden ${document.hidden}, focus ${document.hasFocus()})`); }, 30000);
 });
-$('photos').addEventListener('cancel', () => { pickLog(`picker cancel after ${Math.round((performance.now() - pickAt) / 1000)}s`); pickAt = 0; });
+// 11-16 same phone, 2026.11.16-1 log: 20 picked → `picker 30s: no change` → `picker cancel after 122s`. Three had come in at
+// once a few minutes before. iOS prepares every picked item before it hands any over, and when that fails it hands over
+// nothing and says "cancel". The app cannot make the phone succeed, but picks add up here (data-add), so it says to go in fives.
+$('photos').addEventListener('cancel', () => {
+  const sec = Math.round((performance.now() - pickAt) / 1000);
+  pickLog(`picker cancel after ${sec}s`); pickAt = 0;
+  if (isIOS() && sec >= 15) $('phint').textContent = T('아이폰이 사진을 넘겨주지 못했어요 (한 번에 많이 고르면 생겨요). 5개쯤씩 나눠서 넣어 주세요 — 넣은 사진은 그대로 쌓여요.', 'The iPhone didn’t hand the photos over (it happens with many at once). Add about 5 at a time — they add up.');
+});
 $('photos').onchange = (e) => {
   const all = [...e.target.files];
   pickLog(`pick ${all.length}${pickAt ? ` after ${Math.round((performance.now() - pickAt) / 1000)}s` : ''}: ${all.slice(0, 6).map((f) => `${f.type || '(no type)'} ${(f.size / 1048576).toFixed(1)}MB`).join(', ')}`);
@@ -897,6 +904,8 @@ async function restore(w) {
       await usePhotos(w.photos.map((b, i) => new File([b], `photo_${i + 1}.jpg`, { type: 'image/jpeg' })));
       if (w.aligns) S.images.filter((x) => !x.live).forEach((x, i) => { if (w.aligns[i]) x.hhAlign = w.aligns[i]; });
       [...$('thumbs').querySelectorAll('.th')].forEach((th, i) => th.classList.toggle('aligned', !!w.aligns?.[i]));
+      // work saved before 11-16 holds Blobs an iPhone may no longer read - say so plainly instead of a list of file names
+      if (!S.images.some((x) => !x.live)) { rlog(`restore: none of ${w.photos.length} saved photos could be read`); $('phint').textContent = T('저장해 둔 사진을 이 폰이 못 읽었어요. 사진만 다시 골라 주세요 — 나머지는 그대로예요.', 'This phone couldn’t read the saved photos. Please pick the photos again — the rest is kept.'); }
     }
     if (w.clips) $('phint').textContent += ' ' + T(`영상 ${w.clips}개는 다시 골라 주세요.`, `Please pick the ${w.clips} video clip(s) again.`);
     measureCut(); chips(); renderLooks(); renderSongs();
