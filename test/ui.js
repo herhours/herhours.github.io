@@ -306,9 +306,36 @@ if ($('offset')) {   // shell A (index.A.html) has no cut controls
 // 10-20 영샘 아이폰(사파리, 반 링크): "사진 골랐는데 안 됨" — a pick whose files all failed the type check did nothing
 // and said nothing. A phone can hand over a file with an empty type, so the extension counts too, and every pick is logged.
 const IMG_EXT = /\.(jpe?g|png|heic|heif|webp|gif|avif|bmp)$/i;
+// 11-16 영샘 아이폰(iOS 26.6 사파리, 2026.11.13-3): "사진 선택했는데 안 불러와진다" — the sheet had `open`, `boot ok` and then
+// nothing, not even `pick`. So nothing said whether the picker never came back, came back empty, or the tab died right after.
+// Now the picker's open / cancel / return are logged and sent AT ONCE (the page can be frozen or killed while the picker is
+// up, and a line waiting for the 4-second flush would die with it), and an iPhone is told it is the phone that is working.
+const pickLog = (m) => { rlog(m); if (SHEET_LOG) sheetFlush(); };
+let pickAt = 0, pickSeq = 0;
+$('photos').addEventListener('click', () => {
+  pickAt = performance.now(); const my = ++pickSeq;
+  pickLog(`picker open (had ${S.images.length}${S.demoChosen === false ? '' : ' demo'})`);
+  if (isIOS()) $('phint').textContent = T('사진첩에서 고르면 아이폰이 사진을 준비해요. 창이 닫힌 뒤에도 조금 걸릴 수 있어요.', 'After you pick, the iPhone prepares the photos. It can take a moment after the picker closes.');
+  // back on the page with no change and no cancel: the phone is still fetching originals (iCloud) or converting video
+  const back = () => {
+    if (document.hidden) return;
+    removeEventListener('focus', back); document.removeEventListener('visibilitychange', back);
+    setTimeout(() => {
+      if (my !== pickSeq || !pickAt) return;
+      pickLog(`picker back, no files yet after ${Math.round((performance.now() - pickAt) / 1000)}s`);
+      if (isIOS()) $('phint').textContent = T('아직 사진이 안 들어왔어요. 아이폰이 iCloud 원본을 받거나 영상을 바꾸는 중일 수 있어요 — 잠깐 기다려 주세요. 계속 안 되면 최근에 찍은 사진 2~3장으로 해 보세요.', 'No photos yet. The iPhone may be fetching iCloud originals or converting video — give it a moment. If it stays empty, try 2–3 recent photos.');
+      setTimeout(() => { if (my === pickSeq && pickAt) pickLog(`picker still nothing after ${Math.round((performance.now() - pickAt) / 1000)}s`); }, 20000);
+    }, 1500);
+  };
+  addEventListener('focus', back); document.addEventListener('visibilitychange', back);
+  // iOS may fire neither focus nor visibilitychange for its picker sheet - one plain timer says so either way
+  setTimeout(() => { if (my === pickSeq && pickAt) pickLog(`picker 30s: no change, no cancel (hidden ${document.hidden}, focus ${document.hasFocus()})`); }, 30000);
+});
+$('photos').addEventListener('cancel', () => { pickLog(`picker cancel after ${Math.round((performance.now() - pickAt) / 1000)}s`); pickAt = 0; });
 $('photos').onchange = (e) => {
   const all = [...e.target.files];
-  rlog(`pick ${all.length}: ${all.slice(0, 6).map((f) => `${f.type || '(no type)'} ${(f.size / 1048576).toFixed(1)}MB`).join(', ')}`);
+  pickLog(`pick ${all.length}${pickAt ? ` after ${Math.round((performance.now() - pickAt) / 1000)}s` : ''}: ${all.slice(0, 6).map((f) => `${f.type || '(no type)'} ${(f.size / 1048576).toFixed(1)}MB`).join(', ')}`);
+  pickAt = 0;
   const files = all.filter((f) => f.type.startsWith('image/') || isVideoFile(f) || (!f.type && IMG_EXT.test(f.name)));
   // 11-11 (lab/ref 의 빈 칸 격자): a page whose picker is marked data-add adds the pick after the photos already in -
   // an empty numbered slot reads as "one more", and picking there used to replace everything. Other pages pick the set anew.
