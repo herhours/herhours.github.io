@@ -98,8 +98,10 @@ async function listen(arrayBuffer) {
   measureCut();
 }
 function measureCut() {
+  // 11-17 PT 점검 #14: a length/chorus tap while a new song is still loading is not a failure - the loader measures
+  // again when the song is in (loadSongBuf → measureCut), so there is nothing to warn about yet
+  if (!S.fullBuf) { S.beat = null; rebuild(); renderLooks(); return; }
   try {
-    if (!S.fullBuf) throw new Error('no song');
     const seg = trimBuffer(S.fullBuf, S.seconds, S.offset);
     S.beat = analyze(seg, S.seconds);
     S.musicRms = rms(seg, 0, S.seconds);
@@ -565,7 +567,15 @@ function openFocus(img, th) {
   const cv = $('focusCv'), k = Math.min(1, 900 / Math.max(img.width, img.height));
   cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
   cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-  placeRing(); window.hhOpen('focus');
+  placeRing(); focusNav(); window.hhOpen('focus');
+}
+// 11-17 아이폰 테스터 의견 ⑤: "위치 정하는 창에서 나갔다 다시 고르지 않고 다음 사진으로" (영샘 보충: 순번 3 / 19, 마지막 장은 '완료')
+const focusIdx = () => S.images.indexOf(focusImg);
+function focusNav() {
+  const i = focusIdx(), n = S.images.length, last = i < 0 || i >= n - 1;
+  $('focusCount').textContent = `${i + 1} / ${n}`; $('focusCount').hidden = i < 0 || n < 2;
+  $('focusDone').textContent = last ? T('완료', 'Done') : T('다음 사진 ›', 'Next photo ›');
+  $('focusBack').hidden = last;
 }
 const focusAt = (e) => {
   const r = $('focusCv').getBoundingClientRect();
@@ -578,7 +588,12 @@ $('focusBox').addEventListener('pointermove', (e) => { if (focusDown) focusAt(e)
 const focusUp = () => { if (!focusDown) return; focusDown = false; rlog(`photo focus ${focusImg.hhAlign?.x},${focusImg.hhAlign?.y}`); rebuild(); };   // rebuild: a look may lay out per photo in build(); it also saves the draft
 $('focusBox').addEventListener('pointerup', focusUp); $('focusBox').addEventListener('pointercancel', focusUp);
 $('focusReset').onclick = () => { if (!focusImg) return; delete focusImg.hhAlign; placeRing(); focusTh?.classList.remove('aligned'); saveSoon(); };
-$('focusDone').onclick = () => window.hhOpen('photo');
+$('focusDone').onclick = () => {
+  const nx = S.images[focusIdx() + 1];
+  if (focusIdx() < 0 || !nx?.hhThumb) { window.hhOpen('photo'); return; }
+  openFocus(nx, nx.hhThumb); document.querySelector('.panel').scrollTop = 0;
+};
+$('focusBack').onclick = () => window.hhOpen('photo');
 
 $('useDemo').onclick = () => {
   pausePreview(S.images);
@@ -1409,6 +1424,9 @@ async function boot(label, fn) {
       // what it does for a child ("Save Video" is in it) - no Instagram anywhere on the screen.
       if (isIOS()) $('share').lastChild.textContent = T('사진 앱에 저장', 'Save to Photos');
       else { $('share').hidden = true; $('save').classList.remove('ghost'); }
+      // 11-17 PT 점검 #3·#4: the about page keeps the class (back link too), and the help names the class's own button
+      $('aboutLink').href = './about.html?class=kids';
+      $('helpPhotos').lastChild.textContent = T('완성 화면 「사진 앱에 저장」 → 공유 창에서 「동영상 저장」.', 'On the finished screen, “Save to Photos” → “Save Video”.');
       // A3: the first text box is printed on the video - 「이름」 invites the child's own name
       $('brandLbl').textContent = T('반 이름', 'Class name');
       document.fonts.load('80px "Black Han Sans"', '민정샘 반 참 잘했어요 HALLOWEEN NIGHT PARTY').catch(() => {});

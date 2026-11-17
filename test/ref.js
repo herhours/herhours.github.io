@@ -71,7 +71,8 @@
     look: () => $('#lookInfo b')?.textContent?.trim() || T2('고르기', 'Pick'),
     photo: () => { const n = $$('#thumbs .tw').length || $$('#thumbs img, #thumbs .th, #thumbs video').length; return n ? T2(`${n}장`, `${n}`) : T2('예시 사진', 'Demo photos'); },
     song: () => document.body.classList.contains('mine-song') ? T2('내 음악', 'My song') : ($('#ourSongs .opt.on .t b')?.textContent?.trim() || T2('고르기', 'Pick')),
-    text: () => { const b = $('#brand'); return (b?.value || b?.placeholder || T2('이름', 'Name')).trim() || T2('이름', 'Name'); },
+    // 11-17 PT 점검 #11: an empty box showed its faint example (「민정샘 반」) here, as if it were the words in the video
+    text: () => ($('#brand')?.value || '').trim() || T2('글자 없음', 'No text'),
   };
   const tick = () => {
     if (document.body.classList.contains('panel-open') || document.hidden) return;

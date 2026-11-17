@@ -504,3 +504,25 @@ body.ref-full .rfullx svg{color:#1a1408}
 
 /* 11-13 카테고리 이름표(「for 혜린」) — 두 칸 격자에선 한 줄 머리글 */
 .looks .lkcat{grid-column:1/-1;writing-mode:horizontal-tb;justify-content:flex-start;border:0;margin:8px 0 -4px;padding:0 2px;font-size:13px;letter-spacing:.06em}
+/* ══ 11-17 아이폰 테스터 의견 ⑤ + 피티 독립 점검(2026.11.16-2) ══ */
+/* ⑤·#9 보일 부분 창: 순번, 「다음 사진」·「다 됐어요」는 바닥에 붙어 늘 보인다(320×568 에서 완료가 그림 밑으로 밀렸다) */
+.fcount{margin:-6px 0 8px;text-align:center;font-size:14px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.fcount[hidden],#focusBack[hidden]{display:none}
+#focusCv{max-height:max(150px,calc(56vh - 200px))}
+@media (max-height:720px){#focusCv{max-height:max(120px,calc(60vh - 210px))}}
+.pane-focus > .hint{text-align:center;margin-bottom:0}
+.pane-focus > .flink{all:unset;cursor:pointer;display:block;width:fit-content;margin:0 auto;padding:10px 12px;color:var(--accent);font-size:13.5px;touch-action:manipulation}
+.pane-focus .stepnav{margin-top:8px}
+/* #2 만들기 위 요약 줄: 두 줄이 되면 위 줄 단추의 누르는 칸이 아래 줄을 덮어 「스타일」을 눌러도 「노래」가 열렸다 — 줄 높이 안에서만 누르게, 긴 파일 이름은 줄인다 */
+.makesum{line-height:30px}
+.makesum button{line-height:1.4;padding:5px 4px;margin:-5px -4px;max-width:13em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+/* #1 짧은 화면 완성: 정보·출처가 영상 위로 올라와 겹쳤다 — 위 카드를 조금 줄이고, 넘치면 아래 판이 위로 밀지 않고 스크롤 */
+@media (max-height:620px){ body.is-done{--hero:46%} }
+body.is-done .dock{justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+body.is-done .donebox{margin-top:auto}
+/* #6 재생 막대: 누르는 높이 30 → 36px */
+#seek{height:36px}
+/* 11-17 check_1117 이 320 폭(폴드 바깥 화면 폭)에서 찾음: 칸이 50px 남짓인데 ✕ 의 누르는 칸(38px)이 칸 가운데까지 덮어
+   사진 가운데를 누르면 '보일 부분' 대신 사진이 빠졌다 — ✕ 누르는 칸을 32px(피티 #6 하한)로, 칸 가운데는 비운다 */
+#thumbs .tw .rm{top:3px;right:3px}
+#thumbs .tw .rm::before{inset:-3px -3px -9px -9px}

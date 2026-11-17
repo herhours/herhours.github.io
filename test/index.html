@@ -156,10 +156,12 @@
 
   <div class="pane pane-focus">
     <h2>보일 부분 고르기</h2>
+    <p class="fcount" id="focusCount" hidden></p>
     <div class="focusbox" id="focusBox"><canvas id="focusCv"></canvas><i class="ring" id="focusRing"></i></div>
     <p class="hint" id="focusHint">보이고 싶은 곳을 누르거나 끌어요. 위 영상에 바로 보여요.</p>
-    <div class="two">
-      <button class="pill ghost" id="focusReset">처음대로</button>
+    <button type="button" class="flink" id="focusReset">처음대로</button>
+    <div class="two stepnav">
+      <button class="pill ghost" id="focusBack">다 됐어요</button>
       <button class="pill" id="focusDone">다 됐어요</button>
     </div>
   </div>
@@ -226,13 +228,13 @@
     <h2>도움말</h2>
     <div class="two">
       <button class="pill ghost" data-open="welcome">사용법</button>
-      <a class="pill ghost" href="./about.html">안내 · 개인정보</a>
+      <a class="pill ghost" href="./about.html" id="aboutLink">안내 · 개인정보</a>
     </div>
     <button class="pill" id="installBtn" hidden style="margin-top:12px">앱으로 설치</button>
     <p class="hint" id="installHint" hidden></p>
     <ul class="helps">
       <li><b>저장은 어디로?</b><span>완성 화면 「저장」 → 이름 정하기. 안드로이드는 다운로드 폴더, 아이폰은 「파일」 앱에 들어가요.</span></li>
-      <li><b>아이폰 사진첩에 넣으려면</b><span>완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.</span></li>
+      <li id="helpPhotos"><b>아이폰 사진첩에 넣으려면</b><span>완성 화면 「인스타에 올리기」 → 공유 창에서 「동영상 저장」.</span></li>
       <li id="helpInApp" hidden><b>카톡에서 열었나요?</b><span>앱 안 브라우저에서는 인스타로 바로 보내기가 안 될 수 있어요. 크롬·사파리로 열면 돼요.</span></li>
       <li><b>멈춘 것 같을 때</b><span>처음 열 때 노래·글꼴을 받느라 몇 초 걸려요. 「다시 불러오기」가 보이면 눌러 주세요.</span></li>
     </ul>

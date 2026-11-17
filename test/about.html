@@ -37,6 +37,7 @@ html[lang="ko"] span[data-lang="ko"], html[lang="en"] span[data-lang="en"]{displ
     <li>고른 사진·영상·노래는 <b>이 폰(브라우저) 안에서만</b> 쓰여요. 어떤 서버로도 보내지 않아요.</li>
     <li>영상도 폰 안에서 만들어지고, 저장하거나 공유하는 것은 직접 고를 때만이에요.</li>
     <li>계정·이름·이메일을 받지 않아요. 앱은 처음 안내를 봤는지만 이 브라우저에 기억해요.</li>
+    <li class="testlog" hidden><b>시험판 기록:</b> 이 시험판 주소에서는 앱을 고치려고 사용 기록을 우리 기록표(구글 시트)로 보내요 — 기종·화면 크기·버전·진행 단계·오류, 고른 파일의 종류·크기·해상도. 사진·영상·노래 자체와 입력한 글자는 보내지 않아요. 「의견 보내기」에 직접 쓴 글은 그대로 보내져요.</li>
   </ul>
 
   <h2>노래와 사진의 권리</h2>
@@ -62,9 +63,10 @@ html[lang="ko"] span[data-lang="ko"], html[lang="en"] span[data-lang="en"]{displ
 
   <h2>Privacy</h2>
   <ul>
-    <li>The photos, clips and songs you pick are used <b>only inside this phone’s browser</b>. Nothing is sent to any server.</li>
+    <li>The photos, clips and songs you pick are used <b>only inside this phone’s browser</b>. They are never sent to any server.</li>
     <li>The video is made on your phone, and it’s only saved or shared when you choose to.</li>
     <li>No account, name or email is collected. The app only remembers, in this browser, that you’ve seen the welcome steps.</li>
+    <li class="testlog" hidden><b>Test-version log:</b> at this test address the app sends a usage log to our log sheet (Google Sheets) so we can fix it — device, screen size, version, which step, errors, and the type, size and resolution of picked files. Your photos, clips, songs and the words you type are not sent. Anything you write in “Send feedback” is sent as written.</li>
   </ul>
 
   <h2>Rights to songs and photos</h2>
@@ -86,6 +88,11 @@ html[lang="ko"] span[data-lang="ko"], html[lang="en"] span[data-lang="en"]{displ
 
 <p class="dim" id="ver" style="margin-top:28px"></p>
 </main>
-<script>document.getElementById('ver').textContent = 'Her Hours Shorts ' + self.HH_VERSION; document.title = T('Her Hours Shorts · 안내', 'Her Hours Shorts · About');</script>
+<script>document.getElementById('ver').textContent = 'Her Hours Shorts ' + self.HH_VERSION; document.title = T('Her Hours Shorts · 안내', 'Her Hours Shorts · About');
+// 11-17 PT 점검 #3: the class link came here and 「앱으로」 went back to plain ./ - English, no class, Instagram back on.
+// The class rides along both ways (i18n.js already makes ?class=kids Korean on this page).
+{ const c = new URLSearchParams(location.search).get('class'); if (c) document.querySelector('.back').href = './?class=' + encodeURIComponent(c); }
+// #5: the test address does send a usage log (ui.js rlog) - say so there, plainly
+if (location.pathname.startsWith('/test/')) document.querySelectorAll('.testlog').forEach((e) => { e.hidden = false; });</script>
 </body>
 </html>
