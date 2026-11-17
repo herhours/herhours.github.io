@@ -70,6 +70,8 @@ function rebuild() {
   if ($('cheerRows')) $('cheerRows').hidden = !S.look.cheer;
   // our own song's lyrics are timed from 0; a later start moves them with it
   if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
+  const held = S.images.length ? holdImages(S.look, base, S.beat) : null;
+  if (held) base.images = held;
   S.d = S.look.build(base, S.beat);
   // 10-18 (영샘, Galaxy test): on the class link the making/done screens wear the chosen template's type too
   document.body.classList.toggle('th-halloween', KIDS && S.look.theme === 'halloween');
@@ -79,6 +81,26 @@ function rebuild() {
     c.textContent = `${n}/${max}`; c.classList.toggle('full', n >= max);
   });
   saveSoon();
+}
+// 11-17 판 B — 아이폰 테스터 ③ "사진이 모자라면 반복 말고 한 장을 오래" (영샘 '좋은 것 같아', 전 길이 같은 규칙):
+// the look's cuts stay as they are; when there are fewer photos than cuts, each photo stays for several cuts in a row
+// (every cut already has its own move, so the picture holds and only the framing changes on the beat). One pass
+// through the photos while a photo would stay HOLD_MAX seconds or less; longer than that, it goes round again.
+// Looks that show several photos at once (three panels, the class collage) keep the old cycling.
+// 견본 단계: ?hold=1 켜기 · ?holdmax=초. 영샘 판정 뒤 기본값을 정한다.
+const QS = new URLSearchParams(location.search);
+// 11-17 15:4x 영샘 견본 판정 "새로, 8초 OK" → 기본으로 켠다(?hold=0 은 예전 반복, 비교용)
+const HOLD_ON = QS.get('hold') !== '0', HOLD_MAX = +(QS.get('holdmax') || 8);
+const holds = (look) => HOLD_ON && !NO_HOLD.has(look.id);
+const NO_HOLD = new Set(['triptych', 'minjeong', 'minjeong-hw', 'halloween']);
+function holdImages(look, base, beat) {
+  const imgs = base.images, n = imgs.length;
+  if (!holds(look) || !look.photo?.slots || n < 1) return null;
+  const slots = look.photo.slots(look.build(base, beat), S.N);
+  if (n >= slots) return null;
+  const cut = S.N / FPS / slots, ideal = slots / n;
+  const per = ideal * cut <= HOLD_MAX ? ideal : Math.max(1, Math.floor(HOLD_MAX / cut));
+  return Array.from({ length: slots }, (_, i) => imgs[Math.floor(i / per) % n]);
 }
 const demoFor = (look) => (KIDS && S.demoKids[look.theme || 'everyday']?.length ? S.demoKids[look.theme || 'everyday'] : look.id === 'halloween' && S.demoHw.length ? S.demoHw : S.demo);
 function shiftPhrases(ps, by, N) {
@@ -121,14 +143,30 @@ function advice(look) {
     `${min}+ photos recommended · up to ${slots} are used · ${wide ? 'landscape' : 'portrait'} photos fit best`)];
   const n = S.images.length;
   if (n) {
-    let now = n < min ? T(`지금 ${n}장 — 같은 사진이 반복돼요`, `${n} now — some photos will repeat`)
+    const few = n < min && holds(look);   // 판 B: fewer photos are not a fault any more - each one stays longer
+    let now = few ? T(`지금 ${n}장 — 한 장씩 길게 보여 줘요`, `${n} now — each photo stays longer`)
+      : n < min ? T(`지금 ${n}장 — 같은 사진이 반복돼요`, `${n} now — some photos will repeat`)
       : n > slots ? T(`지금 ${n}장 — 앞 ${slots}장만 쓰여요`, `${n} now — only the first ${slots} are used`) : T(`지금 ${n}장 — 딱 좋아요`, `${n} now — just right`);
     const tall = S.images.filter((im) => im.height > im.width * 1.1).length;
     if (wide && tall > n / 2) now += T(' · 세로 사진은 위쪽 위주로 잘려요', ' · portrait photos are cropped to their upper part');
     if (!wide && tall < n / 2) now += T(' · 가로 사진은 양옆이 잘려요', ' · landscape photos lose their sides');
     lines.push(now);
   }
-  return { slots, min, lines, ok: !n || (n >= min && n <= slots) };
+  return { slots, min, lines, ok: !n || ((n >= min || holds(look)) && n <= slots) };
+}
+// 11-17 판 B ② 아이폰 테스터 "30초면 사진 몇 개 들어가는지" (영샘: 전 길이 같은 규칙) — 길이 고르는 줄 바로 아래에
+// 길이마다 몇 장까지 다 쓰이는지. 스타일·노래 박자에 따라 달라서 지금 고른 것으로 센다.
+function lenPhotos() {
+  const el = $('lenPhotos'); if (!el || !S.tpl) return;
+  const lens = [...document.querySelectorAll('#lenSeg button')].filter((b) => !b.disabled).map((b) => +b.dataset.len);
+  const parts = lens.map((len) => {
+    const base = buildData({ tpl: S.tpl, images: demoFor(S.look), useOurs: S.useOurs, brand: '', title1: '', title2: '', blank: KIDS, songLyrics: S.songLyrics });
+    base.N = Math.round(len * FPS);
+    const n = S.look.photo.slots(S.look.build(base, S.beat), base.N);
+    return T(`${len < 60 ? `${len}초` : len % 60 ? `${len}초` : `${len / 60}분`} ${n}장`, `${len}s ${n}`);
+  });
+  el.textContent = T(`길이마다 최대 사진 수: ${parts.join(' · ')}`, `Most photos used: ${parts.join(' · ')}`)
+    + (holds(S.look) ? T(' — 적게 넣으면 한 장씩 길게 보여 줘요', ' — with fewer, each one stays longer') : '');
 }
 
 function renderLooks() {
@@ -159,6 +197,7 @@ function renderLooks() {
   const a = advice(S.look), info = $('lookInfo');
   if (info) info.innerHTML = `<b>${S.look.name}</b> · ${S.look.sub}`
     + a.lines.map((x, i) => `<span class="adv${i && !a.ok ? ' warn' : ''}">${x}</span>`).join('');
+  lenPhotos();
   // a mouse wheel scrolls the strip sideways on a computer
   if (!box.dataset.wheel) {
     box.dataset.wheel = '1';
