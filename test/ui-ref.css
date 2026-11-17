@@ -526,3 +526,16 @@ body.is-done .donebox{margin-top:auto}
    사진 가운데를 누르면 '보일 부분' 대신 사진이 빠졌다 — ✕ 누르는 칸을 32px(피티 #6 하한)로, 칸 가운데는 비운다 */
 #thumbs .tw .rm{top:3px;right:3px}
 #thumbs .tw .rm::before{inset:-3px -3px -9px -9px}
+
+/* ══ 11-17 판 C — 글자 자리 (아이폰 테스터 ① + 피티 #8) ══ */
+/* 글자 단계: 위 미리보기는 잘리지 않은 9:16 전체 — 어디에 무엇이 나오는지 그대로 */
+body[data-pane="text"].panel-open .frame canvas,body[data-pane="text"].panel-open .frame video{object-fit:contain;object-position:50% 50%;background:#000}
+body[data-pane="text"].panel-open .stage::before,body[data-pane="text"].panel-open .stage::after{display:none}
+/* 지금 치는 칸의 글자가 나오는 자리 — 금빛 테두리가 천천히 숨 쉰다 */
+.txtspot{position:fixed;z-index:11;pointer-events:none;border-radius:10px;border:2px solid var(--accent);
+  box-shadow:0 0 0 2px rgba(0,0,0,.45),0 0 16px 2px var(--acc-glow);animation:spotbreath 1.6s ease-in-out infinite}
+.txtspot[hidden]{display:none}
+@keyframes spotbreath{50%{box-shadow:0 0 0 2px rgba(0,0,0,.45),0 0 26px 6px var(--acc-glow);border-color:#fff}}
+@media (prefers-reduced-motion:reduce){.txtspot{animation:none}}
+.panel .spothint{margin:-6px 0 10px;text-align:center;color:var(--accent);font-size:13.5px}
+.spothint[hidden]{display:none}

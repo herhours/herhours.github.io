@@ -53,26 +53,7 @@ const pv = $('pv');
 
 // ---------- data ----------
 function rebuild() {
-  const base = buildData({
-    tpl: S.tpl,
-    images: S.images.length ? S.images : demoFor(S.look),
-    useOurs: S.useOurs,
-    brand: $('brand').value, title1: $('t1').value, title2: $('t2').value,
-    phrases: S.userPhrases, blank: KIDS, songLyrics: S.songLyrics,
-  });
-  base.N = S.N;
-  // 11-07 '음악만': either kind of words can be switched off; the class link keeps its own rule (empty field = nothing)
-  if (!KIDS && !S.songLyrics) base.phrases = [];
-  if (!KIDS && !S.showTitle) { base.title1 = ''; base.title2 = ''; base.tag = ''; }
-  // 11-11 (영샘 "넣어 줘"): a look that cheers (종이 일기) takes the two cheer lines from their own boxes - only pages that have the
-  // boxes show them, and an empty box keeps the look's own line
-  base.cheer = [$('cheer1')?.value || '', $('cheer2')?.value || ''];
-  if ($('cheerRows')) $('cheerRows').hidden = !S.look.cheer;
-  // our own song's lyrics are timed from 0; a later start moves them with it
-  if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
-  const held = S.images.length ? holdImages(S.look, base, S.beat) : null;
-  if (held) base.images = held;
-  S.d = S.look.build(base, S.beat);
+  S.d = makeData();
   // 10-18 (영샘, Galaxy test): on the class link the making/done screens wear the chosen template's type too
   document.body.classList.toggle('th-halloween', KIDS && S.look.theme === 'halloween');
   document.body.classList.toggle('th-everyday', KIDS && S.look.theme === 'everyday');
@@ -81,6 +62,141 @@ function rebuild() {
     c.textContent = `${n}/${max}`; c.classList.toggle('full', n >= max);
   });
   saveSoon();
+  spotSoon();
+}
+// The look's data from what is on screen now; `over` swaps a text box's value (판 C: where does this box's text land?)
+function makeData(over = {}) {
+  const v = (id) => (id in over ? over[id] : $(id)?.value || '');
+  const base = buildData({
+    tpl: S.tpl,
+    images: S.images.length ? S.images : demoFor(S.look),
+    useOurs: S.useOurs,
+    brand: v('brand'), title1: v('t1'), title2: v('t2'),
+    phrases: S.userPhrases, blank: KIDS, songLyrics: S.songLyrics,
+  });
+  base.N = S.N;
+  // 11-07 '음악만': either kind of words can be switched off; the class link keeps its own rule (empty field = nothing)
+  if (!KIDS && !S.songLyrics) base.phrases = [];
+  if (!KIDS && !S.showTitle) { base.title1 = ''; base.title2 = ''; base.tag = ''; }
+  // 11-11 (영샘 "넣어 줘"): a look that cheers (종이 일기) takes the two cheer lines from their own boxes - only pages that have the
+  // boxes show them, and an empty box keeps the look's own line
+  base.cheer = [v('cheer1'), v('cheer2')];
+  if ($('cheerRows')) $('cheerRows').hidden = !S.look.cheer;
+  // our own song's lyrics are timed from 0; a later start moves them with it
+  if (S.useOurs && S.offset) base.phrases = shiftPhrases(base.phrases, -Math.round(S.offset * FPS), S.N);
+  const held = S.images.length ? holdImages(S.look, base, S.beat) : null;
+  if (held) base.images = held;
+  return S.look.build(base, S.beat);
+}
+
+// ---------- 판 C: 글자 자리 (11-16 아이폰 테스터 ① "글자 문구가 어디에 들어가는지 바로 보이게" + 11-17 피티 #8) ----------
+// The text step shows the whole 9:16 (ui-ref.css), and the box being typed in lights its place in the video. Every look
+// puts words in its own place and at its own time, so the place is found, not listed: the same frame is drawn twice with
+// two different words in that box (random sparkle held still by a fixed seed) and the pixels that differ are its place.
+// The preview stops on the first frame where that place shows.
+const SPOT_IDS = ['brand', 't1', 't2', 'cheer1', 'cheer2'];
+let spotId = null, spot = null, spotT = 0, spotHeld = null;
+const spotCv = document.createElement('canvas'); spotCv.width = W; spotCv.height = H;
+const spotEls = [0, 1, 2].map(() => { const e = document.createElement('i'); e.className = 'txtspot'; e.hidden = true; document.body.appendChild(e); return e; });
+function seeded(fn) {
+  const r = Math.random; let s = 12345;
+  Math.random = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  try { return fn(); } finally { Math.random = r; }
+}
+// read back at a quarter size - a phone reading 8MB per try twenty times over was the cost to avoid
+const spotSm = document.createElement('canvas'); spotSm.width = W / 4; spotSm.height = H / 4;
+function drawPixels(d, f) {
+  seeded(() => S.look.draw(spotCv.getContext('2d'), f, S.N, d));
+  const g = spotSm.getContext('2d', { willReadFrequently: true });
+  g.drawImage(spotCv, 0, 0, spotSm.width, spotSm.height);
+  return g.getImageData(0, 0, spotSm.width, spotSm.height).data;
+}
+// one word box can print in two places (Window Band: the name at the top and again at the foot) - points far apart
+// up and down become separate boxes, at most three
+function boxesOf(pts) {
+  pts.sort((m, n) => m[1] - n[1]);
+  const groups = []; let g = null;
+  for (const pt of pts) { if (!g || pt[1] - g.at(-1)[1] > 80) groups.push((g = [])); g.push(pt); }
+  return groups.filter((q) => q.length >= 6).slice(0, 3).map((q) => {
+    const xs = q.map((v) => v[0]).sort((m, n) => m - n), ys = q.map((v) => v[1]);
+    const lo = (v) => v[Math.floor(v.length * 0.02)], hi = (v) => v[Math.ceil(v.length * 0.98) - 1];
+    return { x0: lo(xs) - 28, y0: ys[0] - 28, x1: hi(xs) + 32, y1: ys.at(-1) + 32 };
+  });
+}
+// a few frames' drawing is real work on a phone - it yields between tries so the keyboard and the page keep moving, and
+// a newer search (another box, more typing) makes an older one stop
+let spotSeq = 0;
+async function findSpot(id, first) {
+  const el = $(id); if (!el || !S.d) return null;
+  const my = ++spotSeq;
+  const a = el.value || el.placeholder || 'Her Hours', b = a === 'WWWWWW' ? 'MMMMMM' : 'WWWWWW';
+  const dA = makeData({ [id]: a }), dB = makeData({ [id]: b });
+  // a fresh tap looks through the middle first, then the opening and the closing card (several looks print their
+  // title only at the start or only on the last card - Clockface); typing again tries the frame already found first
+  const N = S.N, mid = [0.3, 0.5, 0.7, 0.15, 0.85].map((k) => Math.round(N * k));
+  const tries = [first ?? -1, ...mid, 20, 45, 80, N - 80, N - 55, N - 40].filter((f, i, l) => f >= 0 && f < N && l.indexOf(f) === i);
+  const w = spotSm.width, h = spotSm.height;
+  for (const f of tries) {
+    await new Promise((r) => setTimeout(r, 0));
+    if (my !== spotSeq) return 'stale';
+    const p = drawPixels(dA, f), q = drawPixels(dB, f), pts = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      if (Math.abs(p[i] - q[i]) + Math.abs(p[i + 1] - q[i + 1]) + Math.abs(p[i + 2] - q[i + 2]) > 90) pts.push([x * 4, y * 4]);
+    }
+    if (pts.length < 12) continue;
+    const boxes = boxesOf(pts);
+    if (boxes.length) return { f, boxes };
+  }
+  return null;
+}
+function hideSpot() {
+  spotEls.forEach((e) => { e.hidden = true; });
+  if (spotHeld) { S.started = spotHeld.started; spotHeld = null; }   // the preview runs again as it did before the text box
+}
+async function showSpot(id, again) {
+  const prevF = again && spot ? spot.f : null;
+  spotId = id;
+  if (!again) { spot = null; spotEls.forEach((e) => { e.hidden = true; }); if ($('spotHint')) $('spotHint').hidden = true; }
+  if (!id || document.body.dataset.pane !== 'text' || !document.body.classList.contains('panel-open')) { spot = null; hideSpot(); return; }
+  let found;
+  try { found = await findSpot(id, prevF); } catch (e) { found = null; }
+  if (found === 'stale' || spotId !== id) return;
+  spot = found; spotEls.forEach((e) => { e.hidden = true; });
+  const hint = $('spotHint');
+  if (hint) {
+    const lbl = $(id)?.closest('.row')?.querySelector('label')?.textContent || '';
+    hint.hidden = false;
+    hint.textContent = !spot ? T(`이 스타일에서는 「${lbl}」 글자가 영상에 안 나와요`, `This look doesn’t show “${lbl}” in the video`)
+      : spot.f > S.N * 0.8 ? T(`「${lbl}」 글자는 끝 장면에 나와요 — 위에 금테로 보여 줘요`, `“${lbl}” shows on the closing card — outlined above`)
+      : spot.f < S.N * 0.12 ? T(`「${lbl}」 글자는 처음에 나와요 — 위에 금테로 보여 줘요`, `“${lbl}” shows at the start — outlined above`)
+      : T(`「${lbl}」 글자 자리를 위에 금테로 보여 줘요`, `“${lbl}” is outlined above`);
+  }
+  if (!spot) return;
+  if (pv.paused) {   // stop on the frame where it shows (a playing song keeps going)
+    if (!spotHeld) spotHeld = { started: S.started };
+    S.started = true; S.vf = spot.f;
+  }
+  spot.boxes.forEach((_, i) => { spotEls[i].hidden = false; }); placeSpot();
+}
+function spotSoon() { if (!spotId) return; clearTimeout(spotT); spotT = setTimeout(() => showSpot(spotId, true), 250); }
+// The boxes follow the picture: the stage is object-fit:contain on the text step, so the frame sits centred in the canvas box
+function placeSpot() {
+  if (!spot || spotEls[0].hidden) return;
+  if (document.body.dataset.pane !== 'text' || !document.body.classList.contains('panel-open')) { spotId = null; spot = null; hideSpot(); return; }
+  const r = stage.getBoundingClientRect(), k = Math.min(r.width / W, r.height / H);
+  const ox = r.left + (r.width - W * k) / 2, oy = r.top + (r.height - H * k) / 2;
+  spot.boxes.forEach((bx, i) => {
+    const x0 = Math.max(0, bx.x0), y0 = Math.max(0, bx.y0), x1 = Math.min(W, bx.x1), y1 = Math.min(H, bx.y1);
+    Object.assign(spotEls[i].style, { left: `${ox + x0 * k}px`, top: `${oy + y0 * k}px`, width: `${(x1 - x0) * k}px`, height: `${(y1 - y0) * k}px` });
+  });
+}
+for (const id of SPOT_IDS) {
+  $(id)?.addEventListener('focus', () => showSpot(id));
+  $(id)?.addEventListener('blur', () => setTimeout(() => {
+    if (SPOT_IDS.some((x) => document.activeElement === $(x))) return;
+    spotId = null; spot = null; hideSpot(); if ($('spotHint')) $('spotHint').hidden = true;
+  }, 120));
 }
 // 11-17 판 B — 아이폰 테스터 ③ "사진이 모자라면 반복 말고 한 장을 오래" (영샘 '좋은 것 같아', 전 길이 같은 규칙):
 // the look's cuts stay as they are; when there are fewer photos than cuts, each photo stays for several cuts in a row
@@ -263,6 +379,7 @@ function loop(now) {
   seen.clear();
   S.look.draw(ctx, S.vf, S.N, S.d);
   finishFrame(ctx, S.vf, S.N);   // 11-13: every look ends in black (core.js) - the preview shows it too
+  placeSpot();
   // the preview's song fades over the same last seconds as the file (iPhones ignore .volume - the file still fades there)
   if (!pv.paused) { const left = S.seconds - (pv.currentTime - S.offset); try { pv.volume = left < END_MUSIC_SEC ? Math.max(0, left / END_MUSIC_SEC) ** 2 : 1; } catch {} }
   // a clip is heard only while it is on screen and the song is playing
