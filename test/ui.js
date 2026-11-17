@@ -172,6 +172,7 @@ async function showSpot(id, again) {
       : spot.f < S.N * 0.12 ? T(`「${lbl}」 글자는 처음에 나와요 — 위에 금테로 보여 줘요`, `“${lbl}” shows at the start — outlined above`)
       : T(`「${lbl}」 글자 자리를 위에 금테로 보여 줘요`, `“${lbl}” is outlined above`);
   }
+  layTyping();
   if (!spot) return;
   if (pv.paused) {   // stop on the frame where it shows (a playing song keeps going)
     if (!spotHeld) spotHeld = { started: S.started };
@@ -191,10 +192,56 @@ function placeSpot() {
     Object.assign(spotEls[i].style, { left: `${ox + x0 * k}px`, top: `${oy + y0 * k}px`, width: `${(x1 - x0) * k}px`, height: `${(y1 - y0) * k}px` });
   });
 }
+// 11-17 영샘 실폰(2026.11.17-3): 금테는 잘 나오는데, 칸을 누르면 자판이 올라오며 화면이 밀려 위 미리보기가 안 보였다.
+// → 폰에서 치는 동안은 '타자 모드': 자판 위에 보이는 창(visualViewport) 맨 위에 미리보기, 그 아래 안내 한 줄, 맨 아래(자판 바로 위)에
+// 지금 치는 칸 하나. 나머지는 잠깐 가려진다. 자판을 내리거나 다른 곳을 누르면 원래 화면.
+const VV = window.visualViewport, TOUCH = matchMedia('(pointer:coarse)').matches, stageBox = document.querySelector('.stage');   // #stage 는 그 안의 캔버스
+let typingRow = null, vvMax = VV ? VV.height : innerHeight, kbSeen = false;
+function layTyping() {
+  if (!typingRow) return;
+  const top = VV ? VV.offsetTop : 0, h = VV ? VV.height : innerHeight, gap = 8;
+  vvMax = Math.max(vvMax, h);
+  const kbNow = h < vvMax * 0.78;
+  if (kbNow) kbSeen = true;
+  else if (kbSeen) { document.activeElement?.blur?.(); return; }   // 자판을 내렸다(안드로이드 뒤로 키는 칸을 떠나지 않는다)
+  const rowTop = top + h - typingRow.offsetHeight - gap;
+  typingRow.style.top = `${rowTop}px`;
+  const hint = $('spotHint'), hh = hint && !hint.hidden ? hint.offsetHeight + 6 : 0;
+  if (hint) hint.style.top = hh ? `${rowTop - hh}px` : '';
+  Object.assign(stageBox.style, { top: `${top}px`, height: `${Math.max(120, rowTop - hh - top - gap)}px` });
+  placeSpot();
+}
+function startTyping(row) {
+  if (!TOUCH || !row) return;
+  if (typingRow && typingRow !== row) { typingRow.classList.remove('typing-row'); typingRow.style.top = ''; }
+  if (!typingRow) { vvMax = Math.max(VV ? VV.height : innerHeight, innerHeight * 0.9); kbSeen = false; }
+  typingRow = row; row.classList.add('typing-row'); document.body.classList.add('typing');
+  layTyping(); setTimeout(layTyping, 250); setTimeout(layTyping, 600);
+}
+function endTyping() {
+  if (!typingRow) return;
+  typingRow.classList.remove('typing-row'); typingRow.style.top = ''; typingRow = null;
+  document.body.classList.remove('typing'); stageBox.style.top = ''; stageBox.style.height = '';
+  if ($('spotHint')) $('spotHint').style.top = '';
+  placeSpot();
+}
+VV?.addEventListener('resize', layTyping); VV?.addEventListener('scroll', layTyping);
+// 치는 동안엔 다른 칸이 가려지니 자판의 엔터(다음)로 다음 칸, 마지막 칸이면 자판을 닫는다
+const nextBox = (id) => SPOT_IDS.slice(SPOT_IDS.indexOf(id) + 1).map($).find((e) => e && e.offsetParent !== null && !e.closest('[hidden]'));
 for (const id of SPOT_IDS) {
-  $(id)?.addEventListener('focus', () => showSpot(id));
+  const el = $(id); if (!el) continue;
+  el.enterKeyHint = nextBox(id) ? 'next' : 'done';
+  el.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    e.preventDefault(); const nx = nextBox(id);
+    if (nx) nx.focus(); else el.blur();
+  });
+}
+for (const id of SPOT_IDS) {
+  $(id)?.addEventListener('focus', () => { startTyping($(id).closest('.row')); showSpot(id); });
   $(id)?.addEventListener('blur', () => setTimeout(() => {
     if (SPOT_IDS.some((x) => document.activeElement === $(x))) return;
+    endTyping();
     spotId = null; spot = null; hideSpot(); if ($('spotHint')) $('spotHint').hidden = true;
   }, 120));
 }

@@ -539,3 +539,13 @@ body[data-pane="text"].panel-open .stage::before,body[data-pane="text"].panel-op
 @media (prefers-reduced-motion:reduce){.txtspot{animation:none}}
 .panel .spothint{margin:-6px 0 10px;text-align:center;color:var(--accent);font-size:13.5px}
 .spothint[hidden]{display:none}
+
+/* ══ 11-17 타자 모드 — 영샘 실폰 "자판이 나오면 화면이 위로 올라가서 안 보이네" ══ */
+/* 자판 위 보이는 창: 위 = 미리보기(금테), 그 아래 = 안내 한 줄, 맨 아래 = 지금 치는 칸 하나. 자리는 ui.js layTyping 이 잡는다 */
+body.typing .stage{position:fixed;z-index:30;border-radius:0 0 22px 22px;transition:none;background:#000}
+body.typing .top,body.typing .playbtn,body.typing .transport{visibility:hidden}
+body.typing .txtspot{z-index:33}
+body.typing .typing-row{position:fixed;left:10px;right:10px;z-index:32;margin:0;background:var(--tile-on);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 -6px 24px rgba(0,0,0,.55)}
+body.typing #spotHint:not([hidden]){position:fixed;left:12px;right:12px;z-index:32;margin:0;padding:4px 8px;border-radius:10px;
+  background:rgba(10,10,12,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}

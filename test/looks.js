@@ -6,6 +6,9 @@ import { HJ_LOOKS } from './looks_hj.js';
 import { KIDS_LOOKS } from './looks_kids.js';
 import { OPENINGS, OPENING_LEN } from './openings.js';
 import { HYERIN_LOOKS } from './looks_hyerin.js';
+import { DAYS_LOOKS } from './looks_days.js';
+// 판 D 견본(11-17): 기념일 묶음은 ?days=1 에서만 — 영샘 판정 뒤 기본으로 연다
+const DAYS_ON = new URLSearchParams(self.location?.search || '').get('days') === '1';
 import { W, H, drawFrame as drawWindowBand, drawCover, grainPattern, F_LYRIC, F_CAPS, paintWord, LYRIC, krScale, titleCase } from './core.js';
 
 const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
@@ -2356,6 +2359,7 @@ export const LOOKS = [
   },
   // 11-13 「for 혜린」 — a category of its own (ui.js prints the label before the first one)
   ...HYERIN_LOOKS,
+  ...(DAYS_ON ? DAYS_LOOKS : []),
   // shown only through the class link (?class=kids) — ui.js puts these first there and leaves them out elsewhere
   minjeongLook('minjeong-hw', '민정샘 · 핼러윈', T('핼러윈 특집 · 네온 사진 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'Halloween special · neon photos · three panels with a pulse · a 「well done」 badge'), 'halloween'),
   minjeongLook('minjeong', '민정샘', T('노을빛 네온 · 가운데 3칸+펄스 · 끝에 「참 잘했어요」 배지', 'pastel dusk neon · three panels with a pulse · a 「well done」 badge'), 'everyday'),
