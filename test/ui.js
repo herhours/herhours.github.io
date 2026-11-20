@@ -463,6 +463,74 @@ pv.addEventListener('pause', syncPlay);
 $('play').onclick = (e) => { e.stopPropagation(); togglePlay(); };
 $('tap').onclick = togglePlay;
 
+// ---------- 시작 지점 트리머 (11-21 시험 견본, ?trim=1 켜고 · ?trim=0 끔 — 이 폰에 기억) ----------
+// 21st 39903 Clip Trimmer 를 우리 판으로: 필름 대신 소리 파형 띠 위에 지금 길이만큼 금빛 창. 창을 끌면 시작점이 옮겨지고,
+// 띠를 톡 누르면 그 자리가 창 가운데로. 놓으면 그 부분을 들려준다(지금 막대와 같은 약속). 판정 1순위 = 앱 디자인을 안 깨는가.
+// applyCut 보다 위에 둔다 — 부팅 중 applyCut 이 먼저 불려도 trimEl 이 준비돼 있게.
+const TRIM = (() => { try { const q = QS.get('trim'); if (q === '1') localStorage.setItem('hh-trim', '1'); if (q === '0') localStorage.removeItem('hh-trim'); return !!localStorage.getItem('hh-trim'); } catch { return QS.get('trim') === '1'; } })();
+const trimEl = $('trim');
+let trimPeaks = null, trimPeaksOf = null, trimDrag = null;
+function trimDur() { return S.fullBuf ? S.fullBuf.duration : (S.songDur || 0); }
+function trimDraw() {
+  const cv = $('trimWave'), W = trimEl.clientWidth, H = trimEl.clientHeight;
+  if (!W || !H) return;
+  const dpr = Math.min(3, devicePixelRatio || 1);
+  if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const n = Math.max(24, Math.floor(W / 4));   // 막대 4px 간격
+  if (S.fullBuf && (trimPeaksOf !== S.fullBuf || trimPeaks.length !== n)) {
+    const d = S.fullBuf.getChannelData(0), step = Math.max(1, Math.floor(d.length / n)), out = new Float32Array(n);
+    for (let k = 0; k < n; k++) { let s = 0, c = 0; for (let i = k * step; i < (k + 1) * step; i += 32) { s += d[i] * d[i]; c++; } out[k] = Math.sqrt(s / Math.max(1, c)); }
+    let mx = 0; for (let k = 0; k < n; k++) mx = Math.max(mx, out[k]);
+    for (let k = 0; k < n; k++) out[k] = Math.pow(out[k] / (mx || 1), 0.7);
+    trimPeaks = out; trimPeaksOf = S.fullBuf;
+  }
+  const D = trimDur(), x0 = D ? S.offset / D * W : 0, x1 = D ? (S.offset + S.seconds) / D * W : W;
+  const gold = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e9c27a';
+  const real = trimPeaks && trimPeaksOf === S.fullBuf;
+  for (let k = 0; k < n; k++) {
+    const x = k * (W / n) + 1, h = real ? 6 + trimPeaks[k] * (H - 18) : 6 + 8 * (0.5 + 0.5 * Math.sin(k * 0.7));
+    g.fillStyle = x >= x0 && x <= x1 ? gold : 'rgba(244,245,246,.22)';
+    g.fillRect(x, (H - h) / 2, 2, h);
+  }
+}
+function trimLayout() {
+  if (!TRIM || !trimEl) return;
+  const D = trimDur(), W = trimEl.clientWidth, sel = $('tsel');
+  trimEl.classList.toggle('off', !(D > S.seconds + 0.25));
+  sel.style.left = `${D ? S.offset / D * W : 0}px`;
+  sel.style.width = `${D ? Math.max(28, S.seconds / D * W) : W}px`;
+  $('tticks').innerHTML = D ? [0, 0.25, 0.5, 0.75, 1].map((k) => `<span>${mmss(k * D)}</span>`).join('') : '';
+  trimDraw();
+}
+function trimSet(off) {
+  const D = trimDur(); if (!D) return;
+  S.offset = Math.round(Math.min(Math.max(0, off), Math.max(0, D - S.seconds)) * 2) / 2;   // 막대와 같은 0.5초 눈금
+  applyCut(); rebuild();
+}
+if (TRIM && trimEl) {
+  $('offset').hidden = true; trimEl.hidden = false; $('tticks').hidden = false;
+  const xToT = (cx) => { const r = trimEl.getBoundingClientRect(); return (cx - r.left) / r.width * trimDur(); };
+  trimEl.addEventListener('pointerdown', (e) => {
+    if (!trimDur()) return;
+    if (!e.target.closest('.tsel')) trimSet(xToT(e.clientX) - S.seconds / 2);   // 띠를 누르면 그 자리가 창 가운데로
+    trimDrag = { x: e.clientX, off: S.offset };
+    pv.pause(); $('tsel').classList.add('drag');
+    trimEl.setPointerCapture(e.pointerId);
+  });
+  trimEl.addEventListener('pointermove', (e) => { if (trimDrag) trimSet(trimDrag.off + (e.clientX - trimDrag.x) / trimEl.clientWidth * trimDur()); });
+  const up = async () => { if (!trimDrag) return; trimDrag = null; $('tsel').classList.remove('drag'); cutMoved(true); try { await pv.play(); } catch {} };
+  trimEl.addEventListener('pointerup', up); trimEl.addEventListener('pointercancel', up);
+  (function trimTick() {   // 재생 위치 선 — 창 안에서만
+    requestAnimationFrame(trimTick);
+    const D = trimDur(), ph = $('tph'); if (!D || !trimEl.offsetParent) return;
+    const on = !pv.paused && pv.currentTime >= S.offset - 0.05 && pv.currentTime <= S.offset + S.seconds + 0.05;
+    ph.classList.toggle('on', on);
+    if (on) ph.style.left = `${pv.currentTime / D * trimEl.clientWidth}px`;
+  })();
+  new ResizeObserver(() => trimLayout()).observe(trimEl);
+}
+
 // ---------- which part of the song (영샘 10-03: length + where it starts) ----------
 function applyCut() {
   const dur = S.songDur || S.len;
@@ -485,7 +553,9 @@ function applyCut() {
   $('offChorus').disabled = S.chorusAt == null || +off.max === 0;
   $('cutHint').textContent = +off.max === 0 ? T(`곡이 ${Math.round(dur)}초라 처음부터 끝까지 써요.`, `The song is ${Math.round(dur)}s, so all of it is used.`)
     : S.chorusAt != null && Math.abs(S.offset - S.chorusAt) < 0.6 ? T('후렴이 시작되는 곳부터예요.', 'Starts where the chorus kicks in.')
+    : TRIM ? T('금빛 창을 끌어 시작 지점을 골라요. 놓으면 그 부분을 들려줘요.', 'Drag the gold window to choose the start. Let go to hear that part.')
     : T('막대를 밀어 시작 지점을 골라요. 놓으면 그 부분을 들려줘요.', 'Slide to choose the start. Let go to hear that part.');
+  trimLayout();
 }
 // lyrics tapped against the old start no longer line up; say so instead of showing them wrong
 function cutMoved(startMoved) {
