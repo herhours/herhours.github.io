@@ -463,11 +463,11 @@ pv.addEventListener('pause', syncPlay);
 $('play').onclick = (e) => { e.stopPropagation(); togglePlay(); };
 $('tap').onclick = togglePlay;
 
-// ---------- 시작 지점 트리머 (11-21 시험 견본, ?trim=1 켜고 · ?trim=0 끔 — 이 폰에 기억) ----------
+// ---------- 시작 지점 트리머 (11-20 영샘 실폰 "굿잡" → "기본으로 바꿔" · 2026.11.20-2 부터 기본 켜짐, ?trim=0 이면 이 폰은 예전 막대) ----------
 // 21st 39903 Clip Trimmer 를 우리 판으로: 필름 대신 소리 파형 띠 위에 지금 길이만큼 금빛 창. 창을 끌면 시작점이 옮겨지고,
 // 띠를 톡 누르면 그 자리가 창 가운데로. 놓으면 그 부분을 들려준다(지금 막대와 같은 약속). 판정 1순위 = 앱 디자인을 안 깨는가.
 // applyCut 보다 위에 둔다 — 부팅 중 applyCut 이 먼저 불려도 trimEl 이 준비돼 있게.
-const TRIM = (() => { try { const q = QS.get('trim'); if (q === '1') localStorage.setItem('hh-trim', '1'); if (q === '0') localStorage.removeItem('hh-trim'); return !!localStorage.getItem('hh-trim'); } catch { return QS.get('trim') === '1'; } })();
+const TRIM = (() => { try { const q = QS.get('trim'); if (q === '0') localStorage.setItem('hh-trim-off', '1'); if (q === '1') localStorage.removeItem('hh-trim-off'); return !localStorage.getItem('hh-trim-off'); } catch { return QS.get('trim') !== '0'; } })();
 const trimEl = $('trim');
 let trimPeaks = null, trimPeaksOf = null, trimDrag = null;
 function trimDur() { return S.fullBuf ? S.fullBuf.duration : (S.songDur || 0); }
